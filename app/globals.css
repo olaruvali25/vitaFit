@@ -1,7 +1,13 @@
 @import "tailwindcss";
 
+/* Smooth scrolling */
+html {
+  scroll-behavior: smooth;
+}
+
 /* CSS variables for shadcn (RGB values without rgb() wrapper) */
 :root {
+  --brand-pale-green: 140 33% 92%;
   --background: 247 250 248;
   --foreground: 17 17 17;
   --card: 255 255 255;
@@ -70,9 +76,22 @@
 
 /* Base styles */
 body {
-  background-color: rgb(var(--background));
+  background: #020617;
+  min-height: 100vh;
   color: rgb(var(--foreground));
   font-family: var(--font-inter), 'Inter', system-ui, -apple-system, sans-serif;
+  position: relative;
+}
+
+body::before {
+  content: '';
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  z-index: 0;
+  background: 
+    radial-gradient(circle at top left, hsl(140, 33%, 92%) 0%, rgba(230, 247, 236, 0.9) 15%, rgba(230, 247, 236, 0.0) 55%),
+    radial-gradient(circle at bottom right, rgba(230, 247, 236, 0.12) 0%, rgba(230, 247, 236, 0.0) 40%);
 }
 
 /* Animations */
@@ -87,4 +106,81 @@ body {
 
 .animate-scroll {
   animation: scroll linear infinite;
+}
+
+@keyframes shimmer {
+  0% {
+    background-position: -200% 0;
+  }
+  100% {
+    background-position: 200% 0;
+  }
+}
+
+.animate-shimmer {
+  animation: shimmer 2.5s ease-in-out infinite;
+  background-size: 200% 100%;
+}
+
+/* HIDE default ugly Windows XP spinners */
+input[type="number"]::-webkit-inner-spin-button,
+input[type="number"]::-webkit-outer-spin-button {
+  -webkit-appearance: none;
+  appearance: none;
+  margin: 0;
+}
+
+input[type="number"] {
+  -moz-appearance: textfield;
+  appearance: textfield;
+}
+
+/* Custom modern arrow buttons */
+input[type="number"] {
+  position: relative;
+  padding-right: 32px !important;
+}
+
+/* Container for custom arrows */
+.number-input-wrapper {
+  position: relative;
+  display: inline-block;
+  width: 100%;
+}
+
+.number-input-arrows {
+  position: absolute;
+  right: 4px;
+  top: 50%;
+  transform: translateY(-50%);
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  z-index: 10;
+  pointer-events: all;
+}
+
+.number-input-arrow {
+  width: 24px;
+  height: 18px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  background: transparent;
+  border: none;
+  border-radius: 4px;
+  transition: all 0.2s ease;
+  color: rgba(255, 255, 255, 0.6);
+}
+
+.number-input-arrow:hover {
+  background: rgba(24, 194, 96, 0.15);
+  color: rgba(24, 194, 96, 1);
+}
+
+.number-input-arrow svg {
+  width: 12px;
+  height: 12px;
+  fill: currentColor;
 }

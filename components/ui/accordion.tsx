@@ -15,8 +15,9 @@ const Accordion = React.forwardRef<
   React.HTMLAttributes<HTMLDivElement> & {
     type?: "single" | "multiple"
     defaultValue?: string | string[]
+    onValueChange?: (value: string | null) => void
   }
->(({ className, type = "single", defaultValue, ...props }, ref) => {
+>(({ className, type = "single", defaultValue, onValueChange, ...props }, ref) => {
   const [openItems, setOpenItems] = React.useState<Set<string>>(() => {
     if (!defaultValue) return new Set()
     if (type === "single") {
@@ -28,17 +29,30 @@ const Accordion = React.forwardRef<
   const onToggle = React.useCallback((value: string) => {
     setOpenItems((prev) => {
       const next = new Set(prev)
+      let newValue: string | null = null
+      
       if (next.has(value)) {
         next.delete(value)
+        if (type === "single") {
+          newValue = null
+        }
       } else {
         if (type === "single") {
-          return new Set([value])
+          next.clear()
+          next.add(value)
+          newValue = value
+        } else {
+          next.add(value)
         }
-        next.add(value)
       }
+      
+      if (type === "single" && onValueChange) {
+        onValueChange(newValue)
+      }
+      
       return next
     })
-  }, [type])
+  }, [type, onValueChange])
 
   return (
     <AccordionContext.Provider value={{ openItems, onToggle, type }}>
@@ -65,7 +79,7 @@ const AccordionItem = React.forwardRef<
     <AccordionItemContext.Provider value={{ value }}>
       <div
         ref={ref}
-        className={cn("border-b", className)}
+        className={cn(className)}
         data-state={isOpen ? "open" : "closed"}
         {...props}
       />

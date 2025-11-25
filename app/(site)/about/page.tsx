@@ -2,232 +2,251 @@
 
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
-import { Badge } from "@/components/ui/badge"
-import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion"
-import { Target, Brain, Heart, Users, Sparkles, TrendingUp } from "lucide-react"
 import Link from "next/link"
+import { FadeInView } from "@/components/ui/fade-in-view"
+import { CheckCircle2, Heart, Target, Users } from "lucide-react"
+import { FeatureShowcase } from "@/components/feature-showcase"
+import { GradualSpacing, VariableFontHoverByRandomLetter } from "@/components/ui/text-effect"
 
 export default function AboutPage() {
+  const showcaseTabs = [
+    {
+      value: "week-view",
+      label: "Weekly View",
+      src: "/images/transformation-before-1.png",
+    },
+    {
+      value: "meals",
+      label: "Meals & Macros",
+      src: "/images/transformation-before-2.png",
+    },
+    {
+      value: "adjustments",
+      label: "Smart Adjustments",
+      src: "/images/transformation-before-3.png",
+    },
+  ]
+
+  const showcaseSteps = [
+    {
+      id: "step-1",
+      title: "Tell us how you really live",
+      text:
+        "To fit health into your life, not force your life around a diet. Share your work schedule, sleep, training days, and the foods you actually enjoy!",
+    },
+    {
+      id: "step-2",
+      title: "Get a weekly plan that fits",
+      text:
+        "To make getting in shape feel clear, not confusing. VitaFit builds your meals around your time, your calories, and your preferences. Each day has a clear structure, so you always know what to eat!",
+    },
+    {
+      id: "step-3",
+      title: "Adjust as life happens",
+      text:
+        "To help you build habits you’re proud of and results you can actually see. Busy week? Extra dinner out? Progress speeding up or slowing down? Update a few details and VitaFit recalculates macros, meals, and training so your plan always matches your reality.",
+    },
+  ]
+
   return (
-    <div className="container px-4 py-16 md:py-24">
-      <div className="mx-auto max-w-4xl">
-        {/* Hero Section */}
-        <div className="text-center mb-16">
-          <h1 className="text-4xl font-bold mb-4">About VitaFit</h1>
-          <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
-            We're on a mission to make personalized nutrition and fitness accessible to everyone, powered by AI.
-          </p>
-        </div>
+    <div className="relative px-4 py-16 md:py-24">
+      {/* Page-specific green-tinted background to lean into VitaFit's emerald aesthetic */}
+      <div className="pointer-events-none absolute inset-0 -z-10 bg-gradient-to-b from-emerald-950/70 via-emerald-900/50 to-transparent" />
+      <div className="container mx-auto max-w-4xl space-y-16">
+        {/* 1️⃣ Hero (top of About page) */}
+        <FadeInView>
+          <section className="text-center space-y-6">
+            <div className="inline-flex items-center gap-2 rounded-full border border-emerald-500/30 bg-emerald-500/10 px-4 py-1 text-xs font-medium uppercase tracking-[0.2em] text-emerald-300">
+              <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 shadow-[0_0_10px_rgba(16,185,129,0.8)]" />
+              About VitaFit
+            </div>
 
-        {/* Why VitaFit Exists */}
-        <section className="mb-16">
-          <Card>
-            <CardHeader>
-              <div className="flex items-center gap-3 mb-2">
-                <Target className="h-8 w-8 text-primary" />
-                <CardTitle className="text-2xl">Why VitaFit Exists</CardTitle>
-              </div>
-            </CardHeader>
-            <CardContent className="space-y-4">
-              <p className="text-muted-foreground">
-                We believe that everyone deserves access to personalized health and fitness guidance, regardless of their budget or location. Traditional personal trainers and nutritionists can be expensive and time-consuming, making them inaccessible to many people.
-              </p>
-              <p className="text-muted-foreground">
-                VitaFit was born from the idea that AI technology could democratize personalized health coaching. By combining advanced algorithms with evidence-based nutrition and fitness science, we create custom plans that adapt to your unique needs, goals, and lifestyle.
-              </p>
-              <p className="text-muted-foreground">
-                Our platform learns from your preferences, tracks your progress, and continuously refines your plan to ensure you stay motivated and achieve lasting results.
-              </p>
-            </CardContent>
-          </Card>
-        </section>
+            <h1 className="text-balance text-3xl md:text-4xl lg:text-5xl font-semibold tracking-tight text-white">
+              Built for real people with{" "}
+              <span className="bg-gradient-to-r from-emerald-400 via-lime-300 to-emerald-400 bg-clip-text text-transparent">
+                real lives.
+              </span>
+            </h1>
 
-        {/* How the AI Works */}
-        <section className="mb-16">
-          <h2 className="text-3xl font-bold mb-8 text-center">How Our AI Works</h2>
-          <div className="grid gap-6 md:grid-cols-3">
-            <Card>
-              <CardHeader>
-                <Brain className="h-10 w-10 text-primary mb-4" />
-                <CardTitle>Data Analysis</CardTitle>
-              </CardHeader>
-              <CardContent>
-                <p className="text-sm text-muted-foreground">
-                  Our AI analyzes your assessment data, including your goals, body composition, activity level, dietary preferences, and schedule constraints.
-                </p>
-              </CardContent>
-            </Card>
-            
-            <Card>
-              <CardHeader>
-                <Sparkles className="h-10 w-10 text-primary mb-4" />
-                <CardTitle>Plan Generation</CardTitle>
-              </CardHeader>
-              <CardContent>
-                <p className="text-sm text-muted-foreground">
-                  Using machine learning algorithms trained on thousands of successful transformations, we generate personalized meal plans and workout routines tailored to you.
-                </p>
-              </CardContent>
-            </Card>
-            
-            <Card>
-              <CardHeader>
-                <TrendingUp className="h-10 w-10 text-primary mb-4" />
-                <CardTitle>Continuous Adaptation</CardTitle>
-              </CardHeader>
-              <CardContent>
-                <p className="text-sm text-muted-foreground">
-                  Your plan evolves weekly based on your progress, feedback, and changing goals, ensuring you stay on track and motivated.
-                </p>
-              </CardContent>
-            </Card>
-          </div>
-        </section>
+            <p className="text-base md:text-lg text-white/70 max-w-2xl mx-auto leading-relaxed">
+              VitaFit was created for anyone who wants to get in shape{" "}
+              but is tired of guesswork, guilt, and “all or nothing” plans.
+            </p>
+          </section>
+        </FadeInView>
 
-        {/* Why Personalized Nutrition Matters */}
-        <section className="mb-16">
-          <Card className="border-primary bg-primary/5">
-            <CardHeader>
-              <div className="flex items-center gap-3 mb-2">
-                <Heart className="h-8 w-8 text-primary" />
-                <CardTitle className="text-2xl">Why Personalized Nutrition Matters</CardTitle>
-              </div>
-            </CardHeader>
-            <CardContent className="space-y-4">
-              <p className="text-muted-foreground">
-                One-size-fits-all diets don't work because every person is unique. Your metabolism, activity level, food preferences, allergies, schedule, and goals all play a crucial role in determining what nutrition plan will work best for you.
-              </p>
-              <p className="text-muted-foreground">
-                Personalized nutrition considers:
-              </p>
-              <ul className="list-disc list-inside space-y-2 text-muted-foreground ml-4">
-                <li>Your body composition and metabolic rate</li>
-                <li>Your activity level and workout schedule</li>
-                <li>Your dietary preferences and restrictions</li>
-                <li>Your lifestyle and time constraints</li>
-                <li>Your specific health and fitness goals</li>
-              </ul>
-              <p className="text-muted-foreground">
-                By tailoring your meal plan to these factors, you're more likely to stick with it, see results faster, and maintain your progress long-term.
-              </p>
-            </CardContent>
-          </Card>
-        </section>
+        {/* Feature Showcase directly under hero */}
+        <FadeInView delay={0.05}>
+          <FeatureShowcase
+            eyebrow="How VitaFit actually fits your life"
+            title="Your goals. Your lifestyle. One simple system."
+            description="See how VitaFit turns your goals, schedule, and food preferences into a clear weekly structure you can actually follow, without starving, guessing, or rebuilding your life around a diet."
+            stats={["3-minute setup", "100% lifestyle-based", "No generic macros"]}
+            steps={showcaseSteps}
+            tabs={showcaseTabs}
+            defaultTab="week-view"
+            panelMinHeight={520}
+            className="mt-4 rounded-3xl border-none bg-white/5/5 shadow-[0_18px_80px_rgba(15,23,42,0.65)]"
+          />
+        </FadeInView>
 
-        {/* Our Mission */}
-        <section className="mb-16">
-          <Card className="bg-muted/50">
-            <CardHeader className="text-center">
-              <div className="flex items-center justify-center gap-3 mb-4">
-                <Users className="h-10 w-10 text-primary" />
-                <CardTitle className="text-3xl">Our Mission</CardTitle>
-              </div>
-            </CardHeader>
-            <CardContent className="text-center">
-              <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
-                To empower millions of people worldwide to achieve their health and fitness goals through accessible, personalized, and evidence-based AI-powered nutrition and fitness guidance.
-              </p>
-              <div className="mt-8 flex flex-wrap justify-center gap-4">
-                <Badge variant="outline" className="text-sm py-2 px-4">
-                  Evidence-Based
-                </Badge>
-                <Badge variant="outline" className="text-sm py-2 px-4">
-                  Personalized
-                </Badge>
-                <Badge variant="outline" className="text-sm py-2 px-4">
-                  Accessible
-                </Badge>
-                <Badge variant="outline" className="text-sm py-2 px-4">
-                  Sustainable
-                </Badge>
-              </div>
-            </CardContent>
-          </Card>
-        </section>
-
-        {/* FAQ Section */}
-        <section className="mb-16">
-          <h2 className="text-3xl font-bold mb-8 text-center">Frequently Asked Questions</h2>
-          <Accordion type="single" collapsible className="w-full">
-            <AccordionItem value="item-1">
-              <AccordionTrigger>Is the AI really personalized?</AccordionTrigger>
-              <AccordionContent>
-                Yes! Our AI analyzes your unique assessment data, preferences, and progress to create truly personalized plans. No two members receive the same meal plan or workout routine.
-              </AccordionContent>
-            </AccordionItem>
-            <AccordionItem value="item-2">
-              <AccordionTrigger>How often does my plan update?</AccordionTrigger>
-              <AccordionContent>
-                Your plan updates weekly based on your progress, feedback, and any changes to your goals or preferences. This ensures you're always working with a plan that's optimized for your current situation.
-              </AccordionContent>
-            </AccordionItem>
-            <AccordionItem value="item-3">
-              <AccordionTrigger>What makes VitaFit different from other fitness apps?</AccordionTrigger>
-              <AccordionContent>
-                Unlike generic fitness apps, VitaFit uses AI to create truly personalized plans that adapt to you. We combine meal planning and workouts in one platform, and our plans evolve based on your progress and feedback.
-              </AccordionContent>
-            </AccordionItem>
-            <AccordionItem value="item-4">
-              <AccordionTrigger>Is the nutrition advice evidence-based?</AccordionTrigger>
-              <AccordionContent>
-                Absolutely. Our AI is trained on evidence-based nutrition and fitness science. All recommendations align with current research and best practices from registered dietitians and certified fitness professionals.
-              </AccordionContent>
-            </AccordionItem>
-          </Accordion>
-        </section>
-
-        {/* Founder Section (Placeholder) */}
-        <section className="mb-16">
-          <Card>
-            <CardHeader>
-              <CardTitle className="text-2xl">Our Team</CardTitle>
-              <CardDescription>Meet the people behind VitaFit</CardDescription>
-            </CardHeader>
-            <CardContent>
-              <div className="grid gap-6 md:grid-cols-2">
-                <div className="space-y-4">
-                  <div className="h-32 w-32 rounded-full bg-muted mx-auto flex items-center justify-center">
-                    <Users className="h-16 w-16 text-muted-foreground" />
-                  </div>
-                  <div className="text-center">
-                    <h3 className="font-semibold text-lg">Founder & CEO</h3>
-                    <p className="text-sm text-muted-foreground mt-1">
-                      Passionate about making personalized health guidance accessible to everyone through technology.
-                    </p>
-                  </div>
+        {/* 2️⃣ Short story (founder-style, brand-neutral) */}
+        <FadeInView delay={0.1}>
+          <section>
+            <Card className="border-none bg-white/[0.02] backdrop-blur-xl">
+              <CardHeader className="flex items-start gap-3">
+                <div className="mt-1 rounded-full bg-emerald-500/15 p-2">
+                  <Heart className="h-5 w-5 text-emerald-400" />
                 </div>
-                <div className="space-y-4">
-                  <div className="h-32 w-32 rounded-full bg-muted mx-auto flex items-center justify-center">
-                    <Brain className="h-16 w-16 text-muted-foreground" />
-                  </div>
-                  <div className="text-center">
-                    <h3 className="font-semibold text-lg">AI & Product Team</h3>
-                    <p className="text-sm text-muted-foreground mt-1">
-                      A dedicated team of engineers, data scientists, and nutrition experts working to improve your experience every day.
-                    </p>
-                  </div>
+                <div>
+                  <CardTitle className="text-xl md:text-2xl text-white">Why VitaFit was built</CardTitle>
+                  <CardDescription className="text-sm text-white/60 mt-1">
+                    Not another fitness app yelling macros at you. A system that starts with your actual life.
+                  </CardDescription>
                 </div>
-              </div>
-            </CardContent>
-          </Card>
-        </section>
+              </CardHeader>
+              <CardContent className="space-y-4 text-sm md:text-base text-white/70 leading-relaxed">
+                <p>
+                  Most fitness apps throw numbers, charts, and generic plans at you.
+                  <br />
+                  “Eat 1,600 calories.” “Train 5x per week.” “Hit 10k steps.”
+                </p>
+                <p>
+                  But they don&apos;t ask the most important questions:
+                </p>
+                <ul className="space-y-1.5 pl-4 text-white/70 list-disc">
+                  <li>What does your actual day look like?</li>
+                  <li>How much time do you really have?</li>
+                  <li>What food do you genuinely enjoy — and what do you hate?</li>
+                </ul>
+                <p>
+                  VitaFit was built to fix that.
+                  <br />
+                  Not by shouting louder… but by listening better.
+                </p>
+              </CardContent>
+            </Card>
+          </section>
+        </FadeInView>
 
-        {/* CTA */}
-        <div className="text-center">
-          <Card className="border-primary">
-            <CardHeader>
-              <CardTitle className="text-2xl">Ready to Start Your Journey?</CardTitle>
-              <CardDescription className="text-base">
-                Join thousands of members transforming their health with VitaFit
-              </CardDescription>
-            </CardHeader>
-            <CardContent>
-              <Button size="lg" asChild>
-                <Link href="/assessment">Get Started Free</Link>
-              </Button>
-            </CardContent>
-          </Card>
-        </div>
+        {/* 3️⃣ Mission section */}
+        <FadeInView delay={0.2}>
+          <section>
+            <Card className="border-none bg-gradient-to-br from-emerald-500/10 via-emerald-500/5 to-transparent">
+              <CardHeader className="text-center">
+                <div className="inline-flex items-center justify-center gap-2 rounded-full bg-emerald-500/10 px-4 py-1 mb-3">
+                  <Target className="h-4 w-4 text-emerald-400" />
+                  <span className="text-xs font-medium uppercase tracking-[0.18em] text-emerald-200">
+                    Our mission is simple
+                  </span>
+                </div>
+                <CardTitle className="text-2xl text-white">Our mission is simple:</CardTitle>
+              </CardHeader>
+              <CardContent className="mt-2 space-y-3">
+                {[
+                  "To make getting in shape feel clear, not confusing.",
+                  "To fit health into your life, not force your life around a diet.",
+                  "To remove the shame and “start over Monday” cycle.",
+                  "To help you build habits you’re proud of — and results you can actually see.",
+                ].map((text, idx) => (
+                  <div key={idx} className="flex items-start gap-3">
+                    <CheckCircle2 className="mt-0.5 h-4 w-4 text-emerald-400 shrink-0" />
+                    <p className="text-sm md:text-base text-white/75">{text}</p>
+                  </div>
+                ))}
+              </CardContent>
+            </Card>
+          </section>
+        </FadeInView>
+
+        {/* 4️⃣ What VitaFit actually does (clear + benefit-driven outro text) */}
+        <FadeInView delay={0.3} duration={0.7} y={24}>
+          <section className="space-y-4">
+            <div className="max-w-3xl mx-auto text-center md:text-left">
+              <p className="text-base md:text-lg leading-relaxed text-emerald-50/90">
+                You don&apos;t need a{" "}
+                <span className="text-emerald-300 font-semibold">perfect routine</span>, you{" "}
+                need something that understands your{" "}
+                <span className="text-emerald-300 font-semibold">schedule</span>, your{" "}
+                <span className="text-emerald-300 font-semibold">cravings</span>, your{" "}
+                <span className="text-emerald-300 font-semibold">lifestyle</span>, your{" "}
+                <span className="text-emerald-300 font-semibold">limits</span> and your{" "}
+                <span className="text-emerald-300 font-semibold">goals</span>! Just a plan
+                built for your real life.
+              </p>
+              <div className="mt-6">
+                <GradualSpacing
+                  text="VitaFit is ready when you are."
+                  className="text-2xl md:text-3xl font-semibold text-emerald-200"
+                  duration={0.4}
+                  delayMultiple={0.05}
+                />
+              </div>
+            </div>
+          </section>
+        </FadeInView>
+
+        {/* 5️⃣ Who it’s for */}
+        <FadeInView delay={0.4}>
+          <section>
+            <Card className="border-none bg-white/[0.02]">
+              <CardHeader>
+                <CardTitle className="text-2xl md:text-3xl text-white">
+                  VitaFit is for you if…
+                </CardTitle>
+              </CardHeader>
+              <CardContent className="grid gap-4 md:grid-cols-2 text-sm md:text-base">
+                {[
+                  "You’ve tried strict diets and always bounced back.",
+                  "You’re busy, and you need clarity, not 100 more “tips”.",
+                  "You want guidance without paying hundreds for a coach every month.",
+                  "You’re ready to stop guessing — and finally follow a plan built for your life.",
+                ].map((text, idx) => (
+                  <div key={idx} className="flex items-start gap-3">
+                    <div className="mt-0.5 rounded-full bg-emerald-500/15 p-1.5">
+                      <CheckCircle2 className="h-3.5 w-3.5 text-emerald-400" />
+                    </div>
+                    <p className="text-white/75">{text}</p>
+                  </div>
+                ))}
+              </CardContent>
+            </Card>
+          </section>
+        </FadeInView>
+
+        {/* 6️⃣ Final emotional closer + CTA */}
+        <FadeInView delay={0.5}>
+          <section>
+            <Card className="relative overflow-hidden border-none bg-gradient-to-br from-emerald-500/15 via-emerald-500/5 to-transparent">
+              <div className="pointer-events-none absolute -right-24 -top-24 h-64 w-64 rounded-full bg-emerald-500/15 blur-3xl" />
+              <CardHeader className="space-y-4 text-center relative z-10">
+                <div className="inline-flex items-center justify-center gap-2 rounded-full bg-emerald-500/15 px-4 py-1">
+                  <Users className="h-4 w-4 text-emerald-300" />
+                  <span className="text-xs font-medium uppercase tracking-[0.18em] text-emerald-100/90">
+                    Why we care
+                  </span>
+                </div>
+                <CardTitle className="text-xl md:text-2xl text-white">
+                  Your life doesn’t have to revolve around fitness.
+                </CardTitle>
+                <CardDescription className="text-sm md:text-base text-emerald-50/90 max-w-2xl mx-auto">
+                  But your fitness can quietly support the life you want.
+                  <br />
+                  That’s what VitaFit is here for.
+                </CardDescription>
+              </CardHeader>
+              <CardContent className="pb-8 text-center relative z-10">
+                <Button
+                  size="lg"
+                  asChild
+                  className="px-8 py-2.5 rounded-xl bg-emerald-500 text-black font-semibold hover:bg-emerald-400 shadow-[0_10px_40px_rgba(16,185,129,0.45)] transition-shadow"
+                >
+                  <Link href="/assessment">Take the Assessment</Link>
+                </Button>
+              </CardContent>
+            </Card>
+          </section>
+        </FadeInView>
       </div>
     </div>
   )

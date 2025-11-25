@@ -1,20 +1,17 @@
-'use client';
-import { cn } from '@/lib/utils';
-import {
-  AnimatePresence,
-  motion
-} from 'motion/react';
+"use client";
+import { cn } from "@/lib/utils";
+import { AnimatePresence, motion } from "motion/react";
 import type {
   TargetAndTransition,
   Transition,
   Variant,
   Variants,
-} from 'motion/react'
-import React from 'react';
+} from "motion/react";
+import React, { useMemo } from "react";
 
-export type PresetType = 'blur' | 'fade-in-blur' | 'scale' | 'fade' | 'slide';
+export type PresetType = "blur" | "fade-in-blur" | "scale" | "fade" | "slide";
 
-export type PerType = 'word' | 'char' | 'line';
+export type PerType = "word" | "char" | "line";
 
 export type TextEffectProps = {
   children: string;
@@ -72,17 +69,17 @@ const presetVariants: Record<
   blur: {
     container: defaultContainerVariants,
     item: {
-      hidden: { opacity: 0, filter: 'blur(12px)' },
-      visible: { opacity: 1, filter: 'blur(0px)' },
-      exit: { opacity: 0, filter: 'blur(12px)' },
+      hidden: { opacity: 0, filter: "blur(12px)" },
+      visible: { opacity: 1, filter: "blur(0px)" },
+      exit: { opacity: 0, filter: "blur(12px)" },
     },
   },
   'fade-in-blur': {
     container: defaultContainerVariants,
     item: {
-      hidden: { opacity: 0, y: 20, filter: 'blur(12px)' },
-      visible: { opacity: 1, y: 0, filter: 'blur(0px)' },
-      exit: { opacity: 0, y: 20, filter: 'blur(12px)' },
+      hidden: { opacity: 0, y: 20, filter: "blur(12px)" },
+      visible: { opacity: 1, y: 0, filter: "blur(0px)" },
+      exit: { opacity: 0, y: 20, filter: "blur(12px)" },
     },
   },
   scale: {
@@ -114,30 +111,30 @@ const presetVariants: Record<
 const AnimationComponent: React.FC<{
   segment: string;
   variants: Variants;
-  per: 'line' | 'word' | 'char';
+  per: "line" | "word" | "char";
   segmentWrapperClassName?: string;
 }> = React.memo(({ segment, variants, per, segmentWrapperClassName }) => {
   const content =
     per === 'line' ? (
-      <motion.span variants={variants} className='block'>
+      <motion.span variants={variants} className="block">
         {segment}
       </motion.span>
     ) : per === 'word' ? (
       <motion.span
-        aria-hidden='true'
+        aria-hidden="true"
         variants={variants}
-        className='inline-block whitespace-pre'
+        className="inline-block whitespace-pre"
       >
         {segment}
       </motion.span>
     ) : (
-      <motion.span className='inline-block whitespace-pre'>
-        {segment.split('').map((char, charIndex) => (
+      <motion.span className="inline-block whitespace-pre">
+        {segment.split("").map((char, charIndex) => (
           <motion.span
             key={`char-${charIndex}`}
-            aria-hidden='true'
+            aria-hidden="true"
             variants={variants}
-            className='inline-block whitespace-pre'
+            className="inline-block whitespace-pre"
           >
             {char}
           </motion.span>
@@ -161,7 +158,7 @@ const AnimationComponent: React.FC<{
 AnimationComponent.displayName = 'AnimationComponent';
 
 const splitText = (text: string, per: PerType) => {
-  if (per === 'line') return text.split('\n');
+  if (per === "line") return text.split("\n");
   return text.split(/(\s+)/);
 };
 
@@ -170,7 +167,7 @@ const hasTransition = (
 ): variant is TargetAndTransition & { transition?: Transition } => {
   if (!variant) return false;
   return (
-    typeof variant === 'object' && 'transition' in variant
+    typeof variant === "object" && "transition" in variant
   );
 };
 
@@ -208,8 +205,8 @@ const createVariantsWithTransition = (
 
 export function TextEffect({
   children,
-  per = 'word',
-  as = 'p',
+  per = "word",
+  as = "p",
   variants,
   className,
   preset = 'fade',
@@ -265,19 +262,19 @@ export function TextEffect({
   };
 
   return (
-    <AnimatePresence mode='popLayout'>
+    <AnimatePresence mode="popLayout">
       {trigger && (
         <MotionTag
-          initial='hidden'
-          animate='visible'
-          exit='exit'
+          initial="hidden"
+          animate="visible"
+          exit="exit"
           variants={computedVariants.container}
           className={className}
           onAnimationComplete={onAnimationComplete}
           onAnimationStart={onAnimationStart}
           style={style}
         >
-          {per !== 'line' ? <span className='sr-only'>{children}</span> : null}
+          {per !== "line" ? <span className="sr-only">{children}</span> : null}
           {segments.map((segment, index) => (
             <AnimationComponent
               key={`${per}-${index}-${segment}`}
@@ -292,3 +289,129 @@ export function TextEffect({
     </AnimatePresence>
   );
 }
+
+// --- Variable font hover effect by random letter ---
+
+// Function to shuffle an array
+function shuffleArray(array: number[]) {
+  for (let i = array.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [array[i], array[j]] = [array[j], array[i]];
+  }
+}
+
+interface VariableTextProps {
+  label: string;
+  fromFontVariationSettings?: string;
+  toFontVariationSettings?: string;
+  transition?: Transition;
+  staggerDuration?: number;
+  className?: string;
+  onClick?: () => void;
+}
+
+export const VariableFontHoverByRandomLetter = ({
+  label,
+  fromFontVariationSettings = "'wght' 400, 'slnt' 0",
+  toFontVariationSettings = "'wght' 900, 'slnt' -10",
+  transition = {
+    type: "spring",
+    duration: 0.7,
+  },
+  staggerDuration = 0.03,
+  className,
+  onClick,
+  ...props
+}: VariableTextProps) => {
+  const shuffledIndices = useMemo(() => {
+    const indices = Array.from({ length: label.length }, (_, i) => i);
+    shuffleArray(indices);
+    return indices;
+  }, [label]);
+
+  const letterVariants = {
+    hover: (index: number) => ({
+      fontVariationSettings: toFontVariationSettings,
+      transition: {
+        ...transition,
+        delay: staggerDuration * index,
+      },
+    }),
+    initial: (index: number) => ({
+      fontVariationSettings: fromFontVariationSettings,
+      transition: {
+        ...transition,
+        delay: staggerDuration * index,
+      },
+    }),
+  };
+
+  return (
+    <motion.span
+      className={className}
+      onClick={onClick}
+      whileHover="hover"
+      initial="initial"
+      {...props}
+    >
+      <span className="sr-only">{label}</span>
+
+      {label.split("").map((letter: string, i: number) => {
+        const index = shuffledIndices[i];
+        return (
+          <motion.span
+            key={i}
+            className="inline-block whitespace-pre"
+            aria-hidden="true"
+            variants={letterVariants}
+            custom={index}
+          >
+            {letter}
+          </motion.span>
+        );
+      })}
+    </motion.span>
+  );
+};
+
+// --- GradualSpacing: animated per-letter heading ---
+
+interface GradualSpacingProps {
+  text: string;
+  duration?: number;
+  delayMultiple?: number;
+  framerProps?: Variants;
+  className?: string;
+}
+
+export function GradualSpacing({
+  text,
+  duration = 0.5,
+  delayMultiple = 0.04,
+  framerProps = {
+    hidden: { opacity: 0, x: -20 },
+    visible: { opacity: 1, x: 0 },
+  },
+  className,
+}: GradualSpacingProps) {
+  return (
+    <div className="flex justify-center md:justify-start space-x-0">
+      <AnimatePresence>
+        {text.split("").map((char, i) => (
+          <motion.h2
+            key={i}
+            initial="hidden"
+            animate="visible"
+            exit="hidden"
+            variants={framerProps}
+            transition={{ duration, delay: i * delayMultiple }}
+            className={cn("drop-shadow-sm", className)}
+          >
+            {char === " " ? <span>&nbsp;</span> : char}
+          </motion.h2>
+        ))}
+      </AnimatePresence>
+    </div>
+  );
+}
+

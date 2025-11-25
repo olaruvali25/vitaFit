@@ -1,186 +1,92 @@
 "use client"
 
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
-import { Badge } from "@/components/ui/badge"
-import { Star } from "lucide-react"
+import { FadeInView } from "@/components/ui/fade-in-view"
+import { ReviewsTestimonials } from "@/components/reviews-testimonials"
+import { CardCarousel } from "@/components/ui/card-carousel"
 
-const testimonials = [
+const whiteImageDataUri =
+  "data:image/svg+xml;utf8,%3Csvg xmlns='http://www.w3.org/2000/svg' width='500' height='500'%3E%3Crect width='100%25' height='100%25' fill='white'/%3E%3C/svg%3E";
+
+const carouselImages = [
   {
-    name: "Sarah Mitchell",
-    goal: "Lost 15kg in 3 months",
-    rating: 5,
-    review: "VitaFit changed my life! The meal plans are delicious and the workouts fit perfectly into my busy schedule. I've lost 15kg and feel more energetic than ever. The AI really understands my preferences and adapts weekly.",
-    avatar: "SM",
-    beforeAfter: true,
+    id: 1,
+    title: "Sarah – Lost 25 lbs",
+    beforeImage: "/images/transformation-before-1.png",
+    afterImage: "/images/transformation-after-1.png",
+    profileImage: "/images/profile-sarah.png",
+    reviewerName: "Sarah M.",
+    reviewText: "Didn't expect VitaFit to work this well.",
   },
   {
-    name: "Mike Thompson",
-    goal: "Built muscle, gained strength",
-    rating: 5,
-    review: "As someone new to fitness, the personalized guidance made all the difference. I feel stronger and more confident! The workout plans are challenging but achievable, and the meal plans help me fuel my body properly.",
-    avatar: "MT",
-    beforeAfter: false,
+    id: 2,
+    title: "Darius – Lost 28 lbs",
+    beforeImage: "/images/transformation-before-2.png",
+    afterImage: "/images/transformation-after-2.png",
+    profileImage: "/images/profile-darius.png",
+    reviewerName: "Darius P.",
+    reviewText: "My meals finally match my schedule, not the other way around.",
   },
   {
-    name: "Emma Lawson",
-    goal: "Maintained healthy lifestyle",
-    rating: 5,
-    review: "The weekly updates keep me accountable and the variety in meals means I never get bored. Highly recommend! I've been using VitaFit for 6 months and it's become an essential part of my routine.",
-    avatar: "EL",
-    beforeAfter: false,
+    id: 3,
+    title: "Mateo – Gained 18 lbs of muscle",
+    beforeImage: "/images/transformation-before-3.png",
+    afterImage: "/images/transformation-after-3.png",
+    profileImage: "/images/profile-mateo.png",
+    reviewerName: "Mateo R.",
+    reviewText: "Clear structure around training days changed everything.",
   },
   {
-    name: "David Chen",
-    goal: "Lost 20kg, improved health",
-    rating: 5,
-    review: "After trying multiple diets and fitness apps, VitaFit finally worked for me. The AI creates plans that actually fit my lifestyle. I've lost 20kg and my doctor is thrilled with my improved health markers.",
-    avatar: "DC",
-    beforeAfter: true,
+    id: 4,
+    title: "Naomi – Recomp in 4 weeks",
+    beforeImage: "/images/transformation-before-4.png",
+    afterImage: "/images/transformation-after-4.png",
+    profileImage: "/images/profile-naomi.png",
+    reviewerName: "Naomi L.",
+    reviewText: "I stopped “starting over Monday” and just kept going.",
   },
   {
-    name: "Jessica Rodriguez",
-    goal: "Gained muscle, improved endurance",
-    rating: 5,
-    review: "I love how the plans adapt to my progress. The workouts are varied and keep me motivated. The meal plans are family-friendly too, which makes meal prep so much easier. Best investment I've made in my health!",
-    avatar: "JR",
-    beforeAfter: false,
+    id: 5,
+    title: "Livia – Lost 24 lbs",
+    beforeImage: "/images/transformation-before-5.png",
+    afterImage: "/images/transformation-after-5.png",
+    profileImage: "/images/profile-livia.png",
+    reviewerName: "Livia S.",
+    reviewText: "VitaFit fits my family, my job, and my cravings.",
   },
   {
-    name: "James Wilson",
-    goal: "Lost 12kg, gained confidence",
-    rating: 5,
-    review: "The motivational support and reminders are game-changers. I never feel alone on this journey. The personalized approach means I'm not following generic advice - it's tailored to me. Couldn't be happier!",
-    avatar: "JW",
-    beforeAfter: false,
+    id: 6,
+    title: "You – Next transformation",
+    beforeImage: whiteImageDataUri,
+    afterImage: whiteImageDataUri,
+    profileImage: "",
+    reviewerName: "Your name",
+    reviewText: "Your story gets written next.",
   },
-]
+];
 
 export default function ReviewsPage() {
   return (
-    <div className="container px-4 py-16 md:py-24">
-      <div className="mx-auto max-w-6xl">
-        <div className="text-center mb-12">
-          <h1 className="text-4xl font-bold mb-4">What Our Members Say</h1>
-          <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
-            Real stories from real people who transformed their health with VitaFit
-          </p>
-        </div>
-
-        {/* Before/After Placeholder Section */}
-        <div className="mb-16">
-          <h2 className="text-2xl font-bold text-center mb-8">Transformation Stories</h2>
-          <div className="grid gap-8 md:grid-cols-2">
-            <Card>
-              <CardHeader>
-                <CardTitle>Sarah's Journey</CardTitle>
-                <CardDescription>Lost 15kg in 3 months</CardDescription>
-              </CardHeader>
-              <CardContent>
-                <div className="grid grid-cols-2 gap-4 mb-4">
-                  <div className="space-y-2">
-                    <div className="aspect-square bg-muted rounded-lg flex items-center justify-center">
-                      <span className="text-sm text-muted-foreground">Before</span>
-                    </div>
-                    <p className="text-xs text-center text-muted-foreground">Before</p>
-                  </div>
-                  <div className="space-y-2">
-                    <div className="aspect-square bg-primary/10 rounded-lg flex items-center justify-center border-2 border-primary">
-                      <span className="text-sm text-primary font-medium">After</span>
-                    </div>
-                    <p className="text-xs text-center text-muted-foreground">After</p>
-                  </div>
-                </div>
-                <p className="text-sm text-muted-foreground">
-                  "VitaFit's personalized approach helped me achieve results I never thought possible. The meal plans were delicious and the workouts were perfectly tailored to my fitness level."
-                </p>
-              </CardContent>
-            </Card>
-
-            <Card>
-              <CardHeader>
-                <CardTitle>David's Transformation</CardTitle>
-                <CardDescription>Lost 20kg, improved health</CardDescription>
-              </CardHeader>
-              <CardContent>
-                <div className="grid grid-cols-2 gap-4 mb-4">
-                  <div className="space-y-2">
-                    <div className="aspect-square bg-muted rounded-lg flex items-center justify-center">
-                      <span className="text-sm text-muted-foreground">Before</span>
-                    </div>
-                    <p className="text-xs text-center text-muted-foreground">Before</p>
-                  </div>
-                  <div className="space-y-2">
-                    <div className="aspect-square bg-primary/10 rounded-lg flex items-center justify-center border-2 border-primary">
-                      <span className="text-sm text-primary font-medium">After</span>
-                    </div>
-                    <p className="text-xs text-center text-muted-foreground">After</p>
-                  </div>
-                </div>
-                <p className="text-sm text-muted-foreground">
-                  "After years of struggling with my weight, VitaFit finally provided a sustainable solution. The AI adapts to my needs and keeps me motivated every step of the way."
-                </p>
-              </CardContent>
-            </Card>
+    <div className="relative px-4 py-16 md:py-24">
+      {/* Page-specific green-tinted background to match About page */}
+      <div className="pointer-events-none absolute inset-0 -z-10 bg-gradient-to-b from-emerald-950/70 via-emerald-900/50 to-transparent" />
+      <div className="container mx-auto max-w-6xl">
+        <FadeInView>
+          <div className="text-center mb-12">
+            <h1 className="text-4xl font-bold mb-4 text-emerald-300">
+              They Were Exactly Where You Are!
+            </h1>
+            <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
+              The only difference? They finally had a plan that didn’t fight their lifestyle, it
+              worked with it.
+            </p>
           </div>
-        </div>
+        </FadeInView>
 
-        {/* Testimonials Grid */}
-        <div>
-          <h2 className="text-2xl font-bold text-center mb-8">Member Reviews</h2>
-          <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
-            {testimonials.map((testimonial, index) => (
-              <Card key={index}>
-                <CardHeader>
-                  <div className="flex items-center gap-4 mb-2">
-                    <div className="h-12 w-12 rounded-full bg-primary/10 flex items-center justify-center text-primary font-semibold">
-                      {testimonial.avatar}
-                    </div>
-                    <div className="flex-1">
-                      <CardTitle className="text-lg">{testimonial.name}</CardTitle>
-                      <Badge variant="secondary" className="mt-1">
-                        {testimonial.goal}
-                      </Badge>
-                    </div>
-                  </div>
-                  <div className="flex items-center gap-1">
-                    {[...Array(testimonial.rating)].map((_, i) => (
-                      <Star key={i} className="h-4 w-4 fill-primary text-primary" />
-                    ))}
-                  </div>
-                </CardHeader>
-                <CardContent>
-                  <p className="text-sm text-muted-foreground leading-relaxed">
-                    "{testimonial.review}"
-                  </p>
-                </CardContent>
-              </Card>
-            ))}
-          </div>
-        </div>
+        <ReviewsTestimonials />
 
-        {/* CTA Section */}
-        <div className="mt-16 text-center">
-          <Card className="border-primary bg-primary/5">
-            <CardHeader>
-              <CardTitle className="text-2xl">Ready to Start Your Transformation?</CardTitle>
-              <CardDescription className="text-base">
-                Join thousands of members achieving their health and fitness goals
-              </CardDescription>
-            </CardHeader>
-            <CardContent>
-              <div className="flex flex-col sm:flex-row gap-4 justify-center">
-                <Badge variant="outline" className="text-sm py-2 px-4">
-                  ⭐ 4.9/5 average rating
-                </Badge>
-                <Badge variant="outline" className="text-sm py-2 px-4">
-                  👥 10,000+ active members
-                </Badge>
-                <Badge variant="outline" className="text-sm py-2 px-4">
-                  ✅ 7-day money-back guarantee
-                </Badge>
-              </div>
-            </CardContent>
-          </Card>
+        {/* Card carousel proof section */}
+        <div className="mt-10">
+          <CardCarousel images={carouselImages} />
         </div>
       </div>
     </div>

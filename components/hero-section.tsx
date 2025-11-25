@@ -6,10 +6,18 @@ import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Select } from '@/components/ui/select'
 import { Label } from '@/components/ui/label'
-import { TextEffect } from '@/components/ui/text-effect'
 import { AnimatedGroup } from '@/components/ui/animated-group'
 import { HeroHeader } from './header'
-import { LogoCloud } from './logo-cloud'
+import AssessmentForm from './forms/AssessmentForm'
+import type { AssessmentFormData } from './forms/AssessmentForm'
+import { ShootingStars } from '@/components/ui/shooting-stars'
+import { StarsBackground } from '@/components/ui/stars-background'
+import LogoCloudTwo from '@/components/ui/logo-cloud-two'
+import { InfiniteSlider } from '@/components/motion-primitives/infinite-slider'
+import { ProgressiveBlur } from '@/components/motion-primitives/progressive-blur'
+import { CardContainer, CardBody, CardItem } from '@/components/ui/3d-card'
+import { GlowingEffect } from '@/components/ui/glowing-effect'
+import { Star } from 'lucide-react'
 
 const transitionVariants = {
     item: {
@@ -31,23 +39,45 @@ const transitionVariants = {
     },
 }
 
+const reviews = [
+    {
+        name: "Sarah M.",
+        rating: 5,
+        text: "For the first time, I'm not starving or stressed from a diet. Everything fits my schedule perfectly. I've never stayed this consistent.",
+        image: "https://i.pravatar.cc/80?img=12",
+    },
+    {
+        name: "Daniel K.",
+        rating: 5,
+        text: "Down 7kg and the meals feel like something I'd actually choose to eat. It doesn't feel like a diet, it feels like my life finally has structure.",
+        image: "https://i.pravatar.cc/80?img=32",
+    },
+    {
+        name: "Amelia R.",
+        rating: 5,
+        text: "I always quit after a week… but VitaFit checks in, adjusts my plan, and keeps me grounded. It feels like someone finally understands how busy my life is.",
+        image: "https://i.pravatar.cc/80?img=24",
+    },
+    {
+        name: "Leo P.",
+        rating: 5,
+        text: "I'm eating more, feeling better, and my energy is insane. The personalized macros changed everything for me.",
+        image: "https://i.pravatar.cc/80?img=5",
+    },
+    {
+        name: "Maya T.",
+        rating: 5,
+        text: "I didn't realize how much time I was wasting deciding what to eat. Now it's all planned, balanced, and I'm actually seeing results.",
+        image: "https://i.pravatar.cc/80?img=47",
+    },
+]
+
 export default function HeroSection() {
-    const [formData, setFormData] = React.useState({
-        goal: "",
-        gender: "",
-        age: "",
-        weight: "",
-        height: "",
-        activity: "",
-    })
-
-    const handleChange = (name: string, value: string) => {
-        setFormData((prev) => ({ ...prev, [name]: value }))
-    }
-
-    const handleSubmit = (e: React.FormEvent) => {
-        e.preventDefault()
+    const handleFormSubmit = (data: AssessmentFormData) => {
         // Store form data and redirect to full assessment
+        console.log("Form submitted:", data)
+        // In production, you can send this to Make.com webhook or your backend
+        // For now, redirect to assessment page
         window.location.href = "/assessment"
     }
 
@@ -56,25 +86,51 @@ export default function HeroSection() {
             <HeroHeader />
 
             <main className="overflow-hidden [--color-primary-foreground:var(--color-white)] [--color-primary:var(--color-green-600)]">
-                <section>
-                    <div className="relative mx-auto max-w-6xl px-6 pb-20 pt-32 lg:pt-48">
+                <section id="assessment" className="relative overflow-hidden bg-gradient-to-br from-slate-900 via-emerald-950/30 to-slate-900 scroll-mt-20">
+                    {/* Nature-inspired wellness background layers */}
+                    <div className="absolute inset-0 pointer-events-none z-[1]">
+                        {/* Base gradient - lighter nature tones */}
+                        <div 
+                            className="absolute inset-0"
+                            style={{
+                                background: `
+                                    radial-gradient(circle at 20% 30%, rgba(24, 194, 96, 0.15) 0%, rgba(24, 194, 96, 0.05) 25%, transparent 50%),
+                                    radial-gradient(circle at 80% 70%, rgba(16, 185, 129, 0.12) 0%, rgba(16, 185, 129, 0.04) 30%, transparent 55%),
+                                    radial-gradient(circle at 50% 50%, rgba(230, 247, 236, 0.08) 0%, transparent 40%),
+                                    linear-gradient(135deg, rgba(15, 23, 42, 0.95) 0%, rgba(6, 78, 59, 0.3) 50%, rgba(15, 23, 42, 0.95) 100%)
+                                `
+                            }}
+                        />
+                        {/* Soft light rays for wellness feel */}
+                        <div 
+                            className="absolute inset-0 opacity-30"
+                            style={{
+                                background: `
+                                    linear-gradient(180deg, transparent 0%, rgba(24, 194, 96, 0.03) 20%, transparent 40%),
+                                    linear-gradient(90deg, transparent 0%, rgba(16, 185, 129, 0.02) 30%, transparent 60%)
+                                `
+                            }}
+                        />
+                    </div>
+                    {/* Shooting Stars - must be above gradient */}
+                    <ShootingStars />
+                    <StarsBackground />
+                    <div className="relative mx-auto max-w-6xl px-6 pb-12 pt-20 lg:pt-28">
                         <div className="relative z-10 mx-auto max-w-4xl text-center">
-                            <TextEffect
-                                preset="fade-in-blur"
-                                speedSegment={0.3}
-                                as="h1"
-                                className="text-balance text-5xl font-medium md:text-6xl">
-                                Your Personal AI Nutritionist & Fitness Planner
-                            </TextEffect>
-                            <TextEffect
-                                per="line"
-                                preset="fade-in-blur"
-                                speedSegment={0.3}
-                                delay={0.5}
-                                as="p"
-                                className="mx-auto mt-6 max-w-2xl text-pretty text-lg text-muted-foreground">
-                                Get a weekly meal plan and workout routine, tailored to your lifestyle, schedule, and goals.
-                            </TextEffect>
+                            <h1 className="text-balance text-4xl font-medium md:text-5xl text-white mb-4">
+                                Your Personal <span className="text-[#18c260] relative inline-block" style={{
+                                    background: 'linear-gradient(90deg, #18c260 0%, #1FCC5F 50%, #18c260 100%)',
+                                    backgroundSize: '200% 100%',
+                                    WebkitBackgroundClip: 'text',
+                                    WebkitTextFillColor: 'transparent',
+                                    backgroundClip: 'text',
+                                    animation: 'shimmer 3s ease-in-out infinite'
+                                }}>AI Nutritionist. The Plan That Fits YOUR Life! </span>
+                            </h1>
+                            <p className="mx-auto mt-4 max-w-2xl text-pretty text-base text-white/80">
+                            No more guessing. No more random diets.
+                            Just a weekly plan built exactly for your body, your schedule, and your goals, so you finally stay consistent and see real results.
+                            </p>
 
                             <AnimatedGroup
                                 variants={{
@@ -88,107 +144,13 @@ export default function HeroSection() {
                                     },
                                     item: transitionVariants.item,
                                 }}
-                                className="mt-12">
+                                className="mt-8">
                                 {/* Assessment Form */}
-                                <form
-                                    onSubmit={handleSubmit}
-                                    className="mx-auto max-w-2xl space-y-6 bg-background rounded-[calc(var(--radius)+0.5rem)] border p-6 shadow-lg">
-                                    <div className="text-left">
-                                        <h3 className="text-xl font-semibold mb-2">Quick Assessment</h3>
-                                        <p className="text-sm text-muted-foreground mb-4">
-                                            Get started with a personalized plan in minutes
-                                        </p>
-                                    </div>
-                                    
-                                    <div className="grid gap-4 sm:grid-cols-2">
-                                        <div className="space-y-2">
-                                            <Label htmlFor="goal">Goal</Label>
-                                            <Select
-                                                id="goal"
-                                                value={formData.goal}
-                                                onChange={(e) => handleChange("goal", e.target.value)}
-                                                required>
-                                                <option value="">Select goal</option>
-                                                <option value="lose">Lose Weight</option>
-                                                <option value="build">Build Muscle</option>
-                                                <option value="maintain">Maintain</option>
-                                            </Select>
-                                        </div>
-                                        <div className="space-y-2">
-                                            <Label htmlFor="gender">Gender</Label>
-                                            <Select
-                                                id="gender"
-                                                value={formData.gender}
-                                                onChange={(e) => handleChange("gender", e.target.value)}
-                                                required>
-                                                <option value="">Select gender</option>
-                                                <option value="male">Male</option>
-                                                <option value="female">Female</option>
-                                                <option value="other">Other</option>
-                                            </Select>
-                                        </div>
-                                    </div>
-                                    
-                                    <div className="grid gap-4 sm:grid-cols-3">
-                                        <div className="space-y-2">
-                                            <Label htmlFor="age">Age</Label>
-                                            <Input
-                                                id="age"
-                                                type="number"
-                                                placeholder="25"
-                                                value={formData.age}
-                                                onChange={(e) => handleChange("age", e.target.value)}
-                                                required
-                                            />
-                                        </div>
-                                        <div className="space-y-2">
-                                            <Label htmlFor="weight">Weight (kg)</Label>
-                                            <Input
-                                                id="weight"
-                                                type="number"
-                                                placeholder="70"
-                                                value={formData.weight}
-                                                onChange={(e) => handleChange("weight", e.target.value)}
-                                                required
-                                            />
-                                        </div>
-                                        <div className="space-y-2">
-                                            <Label htmlFor="height">Height (cm)</Label>
-                                            <Input
-                                                id="height"
-                                                type="number"
-                                                placeholder="175"
-                                                value={formData.height}
-                                                onChange={(e) => handleChange("height", e.target.value)}
-                                                required
-                                            />
-                                        </div>
-                                    </div>
-                                    
-                                    <div className="space-y-2">
-                                        <Label htmlFor="activity">Activity Level</Label>
-                                        <Select
-                                            id="activity"
-                                            value={formData.activity}
-                                            onChange={(e) => handleChange("activity", e.target.value)}
-                                            required>
-                                            <option value="">Select activity level</option>
-                                            <option value="sedentary">Sedentary</option>
-                                            <option value="light">Light</option>
-                                            <option value="moderate">Moderate</option>
-                                            <option value="active">Active</option>
-                                            <option value="athlete">Athlete</option>
-                                        </Select>
-                                    </div>
-                                    
-                                    <Button type="submit" className="w-full" size="lg">
-                                        Continue to Full Assessment
-                                    </Button>
-                                </form>
+                                <AssessmentForm onSubmit={handleFormSubmit} />
 
                                 <div
                                     aria-hidden
-                                    className="bg-radial from-primary/50 dark:from-primary/25 relative mx-auto mt-32 max-w-2xl to-transparent to-55% text-left">
+                                    className="bg-radial from-primary/50 dark:from-primary/25 relative mx-auto mt-16 max-w-2xl to-transparent to-55% text-left">
                                     <div className="bg-background border-border/50 absolute inset-0 mx-auto w-80 -translate-x-3 -translate-y-12 rounded-[2rem] border p-2 [mask-image:linear-gradient(to_bottom,#000_50%,transparent_90%)] sm:-translate-x-6">
                                         <div className="relative h-96 overflow-hidden rounded-[1.5rem] border p-2 pb-12 before:absolute before:inset-0 before:bg-[repeating-linear-gradient(-45deg,var(--color-border),var(--color-border)_1px,transparent_1px,transparent_6px)] before:opacity-50"></div>
                                     </div>
@@ -205,7 +167,66 @@ export default function HeroSection() {
                         </div>
                     </div>
                 </section>
-                <LogoCloud />
+                
+                {/* Brand Logos Section */}
+                <LogoCloudTwo />
+                
+                {/* Reviews Slider */}
+                <section className="relative pb-16 md:pb-32 bg-gradient-to-br from-black via-green-950/20 to-black z-10">
+                    {/* Green gradient background */}
+                    <div className="absolute inset-0">
+                        <div className="absolute inset-0 bg-gradient-to-br from-[#18c260]/[0.08] via-green-500/[0.05] to-[#18c260]/[0.08]"></div>
+                    </div>
+                    <div className="group relative w-full z-10">
+                        <div className="relative py-6 w-full overflow-hidden">
+                            <InfiniteSlider speedOnHover={15} speed={30} gap={24}>
+                                {reviews.map((review, index) => (
+                                    <div key={index} className="flex">
+                                        <CardContainer className="inter-var w-[340px]">
+                                            <CardBody className="bg-card relative group/card dark:hover:shadow-2xl dark:hover:shadow-[#18c260]/[0.1] dark:bg-card dark:border-white/[0.2] border-border w-full h-auto rounded-xl p-5 border shadow-sm transition-all duration-300 hover:shadow-lg hover:shadow-[#18c260]/[0.1]">
+                                                <GlowingEffect
+                                                    spread={20}
+                                                    glow={false}
+                                                    disabled={false}
+                                                    proximity={64}
+                                                    inactiveZone={0.7}
+                                                    borderWidth={2}
+                                                    blur={0}
+                                                    movementDuration={2}
+                                                />
+                                                <CardItem translateZ="30" className="relative z-10">
+                                                    <div className="flex items-center gap-3 mb-3">
+                                                        <img
+                                                            src={review.image}
+                                                            alt={review.name}
+                                                            className="w-10 h-10 rounded-full object-cover"
+                                                        />
+                                                        <div className="flex-1 min-w-0">
+                                                            <p className="font-medium text-sm text-foreground truncate">{review.name}</p>
+                                                            <div className="flex gap-0.5 mt-1">
+                                                                {Array.from({ length: 5 }).map((_, i) => (
+                                                                    <Star
+                                                                        key={i}
+                                                                        className={`w-3 h-3 ${i < review.rating ? 'fill-[#18c260] text-[#18c260]' : 'fill-muted text-muted-foreground'}`}
+                                                                    />
+                                                                ))}
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                    <p className="text-sm text-muted-foreground">
+                                                        {review.text}
+                                                    </p>
+                                                </CardItem>
+                                            </CardBody>
+                                        </CardContainer>
+                                    </div>
+                                ))}
+                            </InfiniteSlider>
+                            <ProgressiveBlur direction="left" blurIntensity={0.3} className="absolute top-0 h-full w-full max-w-[60px] opacity-50" />
+                            <ProgressiveBlur direction="right" blurIntensity={0.3} className="absolute right-0 top-0 h-full w-full max-w-[60px] opacity-50" />
+                        </div>
+                    </div>
+                </section>
             </main>
         </>
     )
@@ -233,7 +254,7 @@ const AppComponent = () => {
                 <div className="text-sm font-medium">Progress</div>
             </div>
             <div className="space-y-3">
-                <div className="text-foreground border-b border-white/10 pb-3 text-sm font-medium">This month, you're making great progress toward your fitness goals.</div>
+                <div className="text-foreground border-b border-white/10 pb-3 text-sm font-medium">Progress Starts With One Good Week. VitaFit Makes Every Day Count.</div>
                 <div className="space-y-3">
                     <div className="space-y-1">
                         <div className="space-x-1">

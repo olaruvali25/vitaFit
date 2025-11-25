@@ -2,7 +2,7 @@ import { cn } from '@/lib/utils'
 
 export const Logo = ({ className, uniColor }: { className?: string; uniColor?: boolean }) => {
     return (
-        <span className={cn('text-2xl font-bold text-primary', className)}>
+        <span className={cn('text-2xl font-bold text-white', className)}>
             VitaFit
         </span>
     )

@@ -1,18 +1,34 @@
 import * as React from "react"
 import { cn } from "@/lib/utils"
+import { GlowingEffect } from "./glowing-effect"
 
 const Card = React.forwardRef<
   HTMLDivElement,
-  React.HTMLAttributes<HTMLDivElement>
->(({ className, ...props }, ref) => (
+  React.HTMLAttributes<HTMLDivElement> & {
+    enableGlow?: boolean
+  }
+>(({ className, enableGlow = true, ...props }, ref) => (
   <div
     ref={ref}
     className={cn(
-      "rounded-lg border bg-card text-card-foreground shadow-sm",
+      "relative rounded-lg border bg-card text-card-foreground shadow-sm",
       className
     )}
     {...props}
-  />
+  >
+    {enableGlow && (
+      <GlowingEffect
+        spread={80}
+        blur={15}
+        borderWidth={3}
+        glow={false}
+        disabled={false}
+        proximity={100}
+        inactiveZone={0.5}
+        movementDuration={1.5}
+      />
+    )}
+  </div>
 ))
 Card.displayName = "Card"
 

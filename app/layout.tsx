@@ -8,8 +8,9 @@ const inter = Inter({
 });
 
 export const metadata: Metadata = {
-  title: "VitaFit - Your Personal AI Nutritionist & Fitness Planner",
-  description: "Get a weekly meal plan and workout routine, tailored to your lifestyle, schedule, and goals.",
+  title: "VitaFit - AI Meal Planning That Works",
+  description:
+    "Instant AI meal planning with perfect macros and calories for your goal. No more guesswork—just weekly menus to feel better, live better, look better.",
 };
 
 export default function RootLayout({
