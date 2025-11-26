@@ -45,7 +45,7 @@ export const TimelineContent = <T extends keyof HTMLElementTagNameMap = "div">({
   const isInView = useInView(timelineRef, {
     once
   })
-  const MotionComponent = motion[as || "div"] as React.ElementType
+  const MotionComponent = motion[as || "div"] as any
   return (
     <MotionComponent
       initial="hidden"

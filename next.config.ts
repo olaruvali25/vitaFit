@@ -23,6 +23,11 @@ const nextConfig: NextConfig = {
       },
     ],
   },
+  // Exclude Prisma adapter packages from Turbopack bundling (server-only native modules)
+  serverExternalPackages: [
+    '@prisma/adapter-libsql',
+    '@libsql/client',
+  ],
 };
 
 export default nextConfig;

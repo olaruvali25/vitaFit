@@ -1,9 +1,6 @@
 "use client"
 
-import { Input } from "@/components/ui/input"
-import { NumberInput } from "@/components/ui/number-input"
 import { Label } from "@/components/ui/label"
-import { Textarea } from "@/components/ui/textarea"
 import { Select } from "@/components/ui/select"
 import { AssessmentFormData } from "./AssessmentForm"
 import ShimmerButton from "./ShimmerButton"
@@ -15,12 +12,87 @@ interface PageTwoProps {
   onSubmit: () => void
 }
 
+const DIETARY_OPTIONS = [
+  { value: "no-dairy", label: "No dairy" },
+  { value: "gluten-free", label: "Gluten-free" },
+  { value: "vegetarian", label: "Vegetarian" },
+  { value: "vegan", label: "Vegan" },
+  { value: "pescatarian", label: "Pescatarian" },
+  { value: "no-red-meat", label: "No red meat" },
+  { value: "low-carb", label: "Low carb" },
+  { value: "low-fodmap", label: "Low FODMAP" },
+  { value: "nut-free", label: "Nut-free" },
+  { value: "shellfish-free", label: "Shellfish-free" },
+]
+
+function parseDietaryString(value: string): string[] {
+  if (!value) return []
+  return value
+    .split(",")
+    .map((v) => v.trim())
+    .filter(Boolean)
+}
+
 export default function PageTwo({
   formData,
   updateFormData,
   onBack,
   onSubmit,
 }: PageTwoProps) {
+  const parsedDietary = parseDietaryString(formData.dietaryRestrictions)
+
+  const toggleDietary = (value: string) => {
+    const current = parseDietaryString(formData.dietaryRestrictions)
+    const exists = current.includes(value)
+    const next = exists
+      ? current.filter((v) => v !== value)
+      : [...current, value]
+    updateFormData({ dietaryRestrictions: next.join(", ") })
+  }
+
+  const firstName =
+    (formData.fullName || "")
+      .trim()
+      .split(" ")
+      .filter(Boolean)[0] ?? ""
+
+  const mealTime = formData.mealPrepDuration
+  const activity = formData.activityLevel
+  const days = formData.workoutDays
+  const timeline = formData.timeline
+
+  let hypeHeadline = "We’ll bend the plan around your real life."
+  let hypeBody =
+    "As you fill this in, VitaFit is already mapping meals and macros around your schedule — not some perfect routine."
+
+  if (mealTime === "15-30") {
+    hypeHeadline = `Perfect${firstName ? `, ${firstName}` : ""} — you’ve got quick cooking time.`
+    hypeBody =
+      "We’ll lean into fast, repeatable recipes, so you can stay consistent even on your busiest days."
+  } else if (mealTime === "30-45") {
+    hypeHeadline = `Nice${firstName ? `, ${firstName}` : ""} — you've got solid time in the kitchen.`
+    hypeBody =
+      "We’ll mix ultra-fast meals with a few “look forward to it” recipes that still fit your macros."
+  } else if (mealTime === "45-60" || mealTime === "60+") {
+    hypeHeadline = `Love this — we’ve got real room to cook.`
+    hypeBody =
+      "We’ll use that time for more variety and higher-satiety meals, while still keeping prep feeling simple."
+  }
+
+  let confidence = 70
+  if (activity === "lightly-active" || activity === "moderately-active") {
+    confidence += 3
+  } else if (activity === "active" || activity === "very-active") {
+    confidence += 6
+  }
+  const daysNum = days ? parseInt(days) : 0
+  if (daysNum >= 3 && daysNum <= 5) confidence += 4
+  if (daysNum > 5) confidence += 6
+  if (timeline === "1-month") confidence -= 4
+  if (timeline === "6-months" || timeline === "1-year") confidence += 4
+  if (confidence < 55) confidence = 55
+  if (confidence > 92) confidence = 92
+
   return (
     <div className="space-y-4">
       {/* Header */}
@@ -97,20 +169,30 @@ export default function PageTwo({
         </div>
 
         {/* Dietary Restrictions */}
-        <div className="space-y-1.5">
-          <Label htmlFor="dietaryRestrictions" className="text-xs text-white/80">
-            Dietary Restrictions <span className="text-white/50 text-xs">(optional)</span>
+        <div className="space-y-2">
+          <Label className="text-xs text-white/80">
+            Dietary Restrictions{" "}
+            <span className="text-white/50 text-xs">(tap all that apply)</span>
           </Label>
-          <Textarea
-            id="dietaryRestrictions"
-            value={formData.dietaryRestrictions}
-            onChange={(e) =>
-              updateFormData({ dietaryRestrictions: e.target.value })
-            }
-            rows={2}
-            className="min-h-[60px] rounded-xl bg-white/5 border border-white/20 text-sm text-white placeholder:text-white/50 focus:border-[#18c260]/50 focus:shadow-[0_0_0_1px_rgba(24,194,96,0.15),0_0_12px_rgba(24,194,96,0.15)] focus:outline-none transition-all duration-300 resize-none"
-            placeholder="e.g., No dairy, gluten-free, vegetarian..."
-          />
+          <div className="flex flex-wrap gap-2">
+            {DIETARY_OPTIONS.map((opt) => {
+              const isActive = parsedDietary.includes(opt.value)
+              return (
+                <button
+                  key={opt.value}
+                  type="button"
+                  onClick={() => toggleDietary(opt.value)}
+                  className={`rounded-full px-3 py-1.5 text-xs font-medium border transition-all duration-200 ${
+                    isActive
+                      ? "border-emerald-300 bg-emerald-500/20 text-emerald-50 shadow-[0_0_18px_rgba(16,185,129,0.35)]"
+                      : "border-white/20 bg-white/5 text-white/75 hover:border-emerald-300/60 hover:bg-emerald-500/10"
+                  }`}
+                >
+                  {opt.label}
+                </button>
+              )
+            })}
+          </div>
         </div>
 
         {/* Workout Days per Week */}
@@ -180,6 +262,41 @@ export default function PageTwo({
             <option value="60+">60+ min</option>
           </Select>
         </div>
+
+        {/* Hype / Plan insight card */}
+        {(mealTime || activity || days || timeline) && (
+          <div className="mt-1 space-y-3 rounded-2xl border border-emerald-500/25 bg-emerald-500/8 px-4 py-3">
+            <div className="flex items-start gap-3">
+              <div className="mt-1 flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-emerald-500/20 text-sm text-emerald-200">
+                ⚡
+              </div>
+              <div className="flex-1">
+                <p className="text-sm font-semibold text-emerald-50">
+                  {hypeHeadline}
+                </p>
+                <p className="mt-1 text-[11px] text-emerald-50/90">
+                  {hypeBody}
+                </p>
+              </div>
+            </div>
+            <div className="pt-1">
+              <p className="mb-1 flex items-center justify-between text-[11px] font-medium text-emerald-100">
+                <span>Plan confidence</span>
+                <span>{confidence}/100</span>
+              </p>
+              <div className="h-1.5 w-full overflow-hidden rounded-full bg-emerald-900/40">
+                <div
+                  className="h-full rounded-full bg-emerald-400 transition-all duration-500"
+                  style={{ width: `${confidence}%` }}
+                />
+              </div>
+              <p className="mt-1 text-[10px] text-emerald-50/80">
+                As you tweak these, we&apos;ll rebalance meals, macros and prep-time
+                so the plan actually feels doable.
+              </p>
+            </div>
+          </div>
+        )}
 
         {/* Back and Submit Buttons */}
         <div className="flex flex-col sm:flex-row gap-3 pt-2">

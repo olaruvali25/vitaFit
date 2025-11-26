@@ -145,7 +145,7 @@ export function FeatureShowcase({
 
           {/* Steps (Accordion) */}
           <div className="mt-4 max-w-xl">
-            <Accordion type="single" collapsible className="w-full">
+            <Accordion type="single" className="w-full">
               {steps.map((step) => (
                 <AccordionItem key={step.id} value={step.id}>
                   <AccordionTrigger className="text-left text-base font-medium text-white data-[state=open]:text-emerald-200">

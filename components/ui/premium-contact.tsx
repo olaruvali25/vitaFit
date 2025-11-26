@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState, useRef } from 'react';
+import React, { useState, useRef, useMemo } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { 
   Mail, 
@@ -116,10 +116,10 @@ export function PremiumContact() {
       y: 0,
       transition: { 
         duration: 0.8, 
-        ease: [0.23, 0.86, 0.39, 0.96] 
+        ease: [0.23, 0.86, 0.39, 0.96] as [number, number, number, number]
       }
     }
-  };
+  } as const;
 
   const staggerContainer = {
     hidden: { opacity: 0 },
@@ -678,13 +678,21 @@ export function PremiumContact() {
                   </motion.div>
 
                   {/* Floating Particles */}
-                  {[...Array(6)].map((_, i) => (
+                  {useMemo(() => {
+                    const particleCount = 6
+                    return Array.from({ length: particleCount }, (_, i) => {
+                      const angle = i * 60 * (Math.PI / 180)
+                      const left = 20 + Math.cos(angle) * 40
+                      const top = 50 + Math.sin(angle) * 40
+                      return { i, left: left.toFixed(2), top: top.toFixed(2) }
+                    })
+                  }, []).map(({ i, left, top }) => (
                     <motion.div
                       key={i}
                       className="absolute w-2 h-2 bg-[#18c260] rounded-full"
                       style={{
-                        left: `${20 + Math.cos(i * 60 * (Math.PI / 180)) * 40}%`,
-                        top: `${50 + Math.sin(i * 60 * (Math.PI / 180)) * 40}%`,
+                        left: `${left}%`,
+                        top: `${top}%`,
                       }}
                       animate={{
                         scale: [1, 1.5, 1],

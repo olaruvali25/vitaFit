@@ -1,7 +1,7 @@
 "use client"
 
 import { usePathname } from "next/navigation"
-import { Navbar } from "@/components/navbar"
+import { HeroHeader } from "@/components/header"
 import { Footer } from "@/components/footer"
 
 export default function SiteLayout({
@@ -14,7 +14,8 @@ export default function SiteLayout({
   
   return (
     <>
-      {!isHomePage && <Navbar />}
+      {/* Use the same animated hero navbar on all non-home pages */}
+      {!isHomePage && <HeroHeader />}
       <main className="flex-1">{children}</main>
       <Footer />
     </>

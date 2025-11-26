@@ -5,6 +5,7 @@ import { Menu, X } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import React from 'react'
 import { cn } from '@/lib/utils'
+import { useSession, signOut } from 'next-auth/react'
 
 const menuItems = [
     { name: 'Pricing', href: '/pricing' },
@@ -15,6 +16,7 @@ const menuItems = [
 export const HeroHeader = () => {
     const [menuState, setMenuState] = React.useState(false)
     const [isScrolled, setIsScrolled] = React.useState(false)
+    const { data: session } = useSession()
 
     React.useEffect(() => {
         const handleScroll = () => {
@@ -75,25 +77,75 @@ export const HeroHeader = () => {
                                             </Link>
                                         </li>
                                     ))}
+                                    {session ? (
+                                        <li>
+                                            <Link
+                                                href="/account"
+                                                onClick={() => setMenuState(false)}
+                                                className="text-white hover:text-white/80 block duration-150">
+                                                <span>My Account</span>
+                                            </Link>
+                                        </li>
+                                    ) : (
+                                        <li>
+                                            <Link
+                                                href="/login"
+                                                onClick={() => setMenuState(false)}
+                                                className="text-white hover:text-white/80 block duration-150">
+                                                <span>Login</span>
+                                            </Link>
+                                        </li>
+                                    )}
                                 </ul>
                             </div>
                             <div className="flex w-full flex-col space-y-3 sm:flex-row sm:gap-3 sm:space-y-0 md:w-fit">
-                                <Button
-                                    asChild
-                                    size="sm"
-                                    className={cn(isScrolled && 'lg:hidden')}>
-                                    <Link href="/assessment" onClick={() => setMenuState(false)}>
-                                        <span>Start Free Assessment</span>
-                                    </Link>
-                                </Button>
-                                <Button
-                                    asChild
-                                    size="sm"
-                                    className={cn(isScrolled ? 'lg:inline-flex' : 'hidden')}>
-                                    <Link href="/assessment" onClick={() => setMenuState(false)}>
-                                        <span>Get Started</span>
-                                    </Link>
-                                </Button>
+                                {session ? (
+                                    <>
+                                        <Button
+                                            asChild
+                                            variant="ghost"
+                                            size="sm"
+                                            className="text-white hover:text-white/80 hover:bg-white/10">
+                                            <Link href="/account" onClick={() => setMenuState(false)}>
+                                                <span>My Account</span>
+                                            </Link>
+                                        </Button>
+                                        <Button
+                                            asChild
+                                            size="sm"
+                                            className="bg-emerald-500 hover:bg-emerald-600">
+                                            <Link href="/assessment" onClick={() => setMenuState(false)}>
+                                                <span>{isScrolled ? 'New Plan' : 'Start Free Assessment'}</span>
+                                            </Link>
+                                        </Button>
+                                    </>
+                                ) : (
+                                    <>
+                                        <Link 
+                                            href="/login" 
+                                            onClick={() => setMenuState(false)}
+                                            className="inline-flex items-center justify-center rounded-md text-sm font-medium transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 h-9 px-3 text-white hover:text-white/80 hover:bg-white/10"
+                                        >
+                                            Login
+                                        </Link>
+                                        <Button
+                                            asChild
+                                            size="sm"
+                                            className={cn(isScrolled && 'lg:hidden', 'bg-emerald-500 hover:bg-emerald-600')}>
+                                            <Link href="/assessment" onClick={() => setMenuState(false)} className="no-underline">
+                                                Start Free Assessment
+                                            </Link>
+                                        </Button>
+                                        <Button
+                                            asChild
+                                            size="sm"
+                                            className={cn(isScrolled ? 'lg:inline-flex' : 'hidden', 'bg-emerald-500 hover:bg-emerald-600')}>
+                                            <Link href="/assessment" onClick={() => setMenuState(false)} className="no-underline">
+                                                Get Started
+                                            </Link>
+                                        </Button>
+                                    </>
+                                )}
                             </div>
                         </div>
                     </div>

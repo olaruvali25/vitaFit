@@ -75,7 +75,7 @@ export default function ReviewsPage() {
             <h1 className="text-4xl font-bold mb-4 text-emerald-300">
               They Were Exactly Where You Are!
             </h1>
-            <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
+            <p className="text-lg text-white max-w-2xl mx-auto">
               The only difference? They finally had a plan that didn’t fight their lifestyle, it
               worked with it.
             </p>

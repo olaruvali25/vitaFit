@@ -1,0 +1,231 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+// SQLite datasource configuration
+// NOTE: In Prisma 7+, the DATABASE_URL is configured in prisma.config.ts, not here
+// Make sure your .env.local file contains:
+// DATABASE_URL="file:./dev.db"
+datasource db {
+  provider = "sqlite"
+}
+
+// NextAuth required models
+model Account {
+  id                String  @id @default(cuid())
+  userId            String
+  type              String
+  provider          String
+  providerAccountId String
+  refresh_token     String?
+  access_token      String?
+  expires_at        Int?
+  token_type        String?
+  scope             String?
+  id_token          String?
+  session_state     String?
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([provider, providerAccountId])
+}
+
+model Session {
+  id           String   @id @default(cuid())
+  sessionToken String   @unique
+  userId       String
+  expires      DateTime
+  user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+model VerificationToken {
+  identifier String
+  token      String   @unique
+  expires    DateTime
+
+  @@unique([identifier, token])
+}
+
+// VitaFit models
+model User {
+  id                String       @id @default(cuid())
+  name              String?
+  email              String       @unique
+  emailVerified     DateTime?
+  passwordHash       String? // For credentials auth
+  image             String?
+  role              UserRole      @default(USER)
+  hasUsedFreeTrial  Boolean       @default(false)
+  createdAt         DateTime      @default(now())
+  updatedAt         DateTime      @updatedAt
+
+  accounts          Account[]
+  sessions          Session[]
+  membership        Membership?
+  profiles          Profile[]
+}
+
+enum UserRole {
+  USER
+  ADMIN
+}
+
+model Membership {
+  id              String            @id @default(cuid())
+  userId          String            @unique
+  plan            MembershipPlan    @default(BASIC)
+  status          MembershipStatus @default(INACTIVE)
+  trialStartedAt  DateTime?
+  trialEndsAt     DateTime?
+  currentPeriodEnd DateTime?
+  createdAt       DateTime          @default(now())
+  updatedAt       DateTime          @updatedAt
+
+  user            User              @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+enum MembershipPlan {
+  BASIC
+  PLUS
+  FAMILY
+}
+
+enum MembershipStatus {
+  INACTIVE
+  TRIAL
+  ACTIVE
+  CANCELED
+}
+
+model Profile {
+  id              String   @id @default(cuid())
+  userId          String
+  name            String
+  age             Int?
+  gender          String?
+  heightCm        Float?
+  weightKg        Float?
+  goal            String?
+  goalWeight      Float?
+  activityLevel   String?
+  timeline        String?
+  dietaryRestrictions String?
+  workoutDays     String?
+  workoutDuration String?
+  mealPrepDuration String?
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+
+  user            User             @relation(fields: [userId], references: [id], onDelete: Cascade)
+  plans           Plan[]
+  progressEntries ProgressEntry[]
+
+  @@index([userId])
+}
+
+model Plan {
+  id          String   @id @default(cuid())
+  profileId   String
+  title       String
+  startDate   DateTime
+  endDate     DateTime?
+  source      String   @default("manual") // "make-webhook" or "manual"
+  // Plan targets from Make.com
+  caloriesTarget    Float?
+  proteinTargetG   Float?
+  fatTargetG       Float?
+  carbTargetG     Float?
+  workoutsPerWeek  Int?
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  profile     Profile  @relation(fields: [profileId], references: [id], onDelete: Cascade)
+  days        PlanDay[]
+
+  @@index([profileId])
+}
+
+model PlanDay {
+  id          String   @id @default(cuid())
+  planId      String
+  dayNumber   Int      // 1-7
+  date        DateTime
+  waterTargetGlasses Int @default(8)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  plan        Plan     @relation(fields: [planId], references: [id], onDelete: Cascade)
+  meals       PlanMeal[]
+  progress    PlanDayProgress?
+
+  @@unique([planId, dayNumber])
+  @@index([planId])
+}
+
+model PlanMeal {
+  id          String   @id @default(cuid())
+  planDayId   String
+  mealType    String   // "breakfast", "lunch", "dinner", "snack"
+  mealOrder   Int      // Order within the day
+  recipeId    String   // Reference to recipe library
+  recipeName  String
+  imageUrl    String?
+  description String?
+  // Calculated macros for this meal
+  calories    Float
+  proteinG    Float
+  fatG        Float
+  carbG       Float
+  // Ingredients as JSON array
+  ingredients Json     // Array of {id, name, grams, calories, proteinG, fatG, carbG}
+  isCompleted Boolean  @default(false)
+  isSkipped   Boolean  @default(false)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  planDay     PlanDay  @relation(fields: [planDayId], references: [id], onDelete: Cascade)
+
+  @@index([planDayId])
+}
+
+model PlanDayProgress {
+  id                String   @id @default(cuid())
+  planDayId         String   @unique
+  waterGlassesDrunk Int      @default(0)
+  workoutCompleted  Boolean  @default(false)
+  createdAt         DateTime @default(now())
+  updatedAt         DateTime @updatedAt
+
+  planDay           PlanDay  @relation(fields: [planDayId], references: [id], onDelete: Cascade)
+}
+
+model ProgressEntry {
+  id                String   @id @default(cuid())
+  profileId         String
+  date              DateTime @default(now())
+  weightKg          Float?
+  workoutsCompleted Int?     @default(0)
+  mealsCompleted    Int?     @default(0)
+  notes             String?
+  createdAt         DateTime @default(now())
+  updatedAt         DateTime @updatedAt
+
+  profile           Profile  @relation(fields: [profileId], references: [id], onDelete: Cascade)
+
+  @@index([profileId, date])
+  @@unique([profileId, date])
+}
+
+model PasswordResetToken {
+  id        String   @id @default(cuid())
+  userId    String
+  token     String   @unique
+  expires   DateTime
+  createdAt DateTime @default(now())
+
+  @@index([userId])
+  @@index([token])
+}

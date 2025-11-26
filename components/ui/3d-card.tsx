@@ -108,7 +108,7 @@ export const CardItem = ({
   rotateX?: number | string
   rotateY?: number | string
   rotateZ?: number | string
-}) => {
+} & Record<string, any>) => {
   const ref = useRef<HTMLDivElement>(null)
   const [isMouseEntered] = useMouseEnter()
 
@@ -125,14 +125,16 @@ export const CardItem = ({
     }
   }
 
+  const Component = Tag as React.ComponentType<any>
+  
   return (
-    <Tag
+    <Component
       ref={ref}
       className={cn("w-fit transition duration-200 ease-linear", className)}
       {...rest}
     >
       {children}
-    </Tag>
+    </Component>
   )
 }
 

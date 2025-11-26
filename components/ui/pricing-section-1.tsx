@@ -6,7 +6,9 @@ import { cn } from "@/lib/utils";
 import NumberFlow from "@number-flow/react";
 import { CheckCheck, Zap } from "lucide-react";
 import { motion } from "motion/react";
-import { useId, useRef, useState } from "react";
+import { useId, useRef, useState, useEffect, Suspense } from "react";
+import { useRouter, useSearchParams } from "next/navigation";
+import { useSession } from "next-auth/react";
 import { GlowingEffect } from "./glowing-effect";
 
 const PricingSwitch = ({
@@ -151,9 +153,17 @@ const plans = [
   },
 ];
 
-export default function PricingSection1() {
+function PricingSection1Content() {
+  const router = useRouter()
+  const searchParams = useSearchParams()
+  const { data: session, status } = useSession()
   const [isYearly, setIsYearly] = useState(false);
+  const [loadingPlan, setLoadingPlan] = useState<string | null>(null);
   const pricingRef = useRef<HTMLDivElement>(null);
+  
+  const profileId = searchParams.get("profileId")
+  const assessmentCompleted = searchParams.get("assessment") === "completed"
+  const trialAvailable = searchParams.get("trial") === "available"
 
   const revealVariants = {
     visible: (i: number) => ({
@@ -343,15 +353,55 @@ export default function PricingSection1() {
                       ))}
                     </ul>
 
-                    <button className={cn(
-                      "w-full font-semibold py-3 rounded-lg transition-all duration-300 hover:scale-105",
-                      isFreeTrial
-                        ? "bg-white/20 text-white border border-white/30 hover:bg-white/30"
-                        : isPopular
-                        ? "bg-gradient-to-r from-[#18c260] to-[#1FCC5F] text-white shadow-lg shadow-[#18c260]/30 hover:shadow-[#18c260]/50"
-                        : "bg-[#18c260] text-white hover:bg-[#1FCC5F]"
-                    )}>
-                      {isFreeTrial ? "Start Free Trial" : "Get Started"}
+                    <button 
+                      onClick={async () => {
+                        if (isFreeTrial) {
+                          // Handle free trial activation
+                          if (status === "unauthenticated") {
+                            router.push("/signup?redirect=assessment")
+                            return
+                          }
+                          
+                          setLoadingPlan(plan.name)
+                          try {
+                            // Activate free trial
+                            const response = await fetch("/api/membership/activate-trial", {
+                              method: "POST",
+                            })
+                            
+                            if (!response.ok) {
+                              throw new Error("Failed to activate trial")
+                            }
+                            
+                            // If assessment was completed, redirect back to assessment page to show loading and generate plan
+                            if (assessmentCompleted && profileId) {
+                              // Redirect to assessment page which will handle plan generation with loading screen
+                              window.location.href = `/assessment?profileId=${profileId}&assessment=completed`
+                            } else {
+                              router.push("/account")
+                            }
+                          } catch (error) {
+                            console.error("Error activating trial:", error)
+                            alert("Failed to activate trial. Please try again.")
+                            setLoadingPlan(null)
+                          }
+                        } else {
+                          // Handle paid plan - redirect to checkout/payment
+                          // For now, redirect to account
+                          router.push("/account?tab=subscription")
+                        }
+                      }}
+                      disabled={loadingPlan === plan.name}
+                      className={cn(
+                        "w-full font-semibold py-3 rounded-lg transition-all duration-300 hover:scale-105 disabled:opacity-50 disabled:cursor-not-allowed",
+                        isFreeTrial
+                          ? "bg-white/20 text-white border border-white/30 hover:bg-white/30"
+                          : isPopular
+                          ? "bg-gradient-to-r from-[#18c260] to-[#1FCC5F] text-white shadow-lg shadow-[#18c260]/30 hover:shadow-[#18c260]/50"
+                          : "bg-[#18c260] text-white hover:bg-[#1FCC5F]"
+                      )}
+                    >
+                      {loadingPlan === plan.name ? "Processing..." : isFreeTrial ? "Start Free Trial" : "Get Started"}
                     </button>
                   </div>
                 </TimelineContent>
@@ -363,5 +413,19 @@ export default function PricingSection1() {
       </div>
     </section>
   );
+}
+
+export default function PricingSection1() {
+  return (
+    <Suspense fallback={
+      <section className="relative py-32 bg-gradient-to-br from-black via-green-950/20 to-black">
+        <div className="px-4 pt-10 w-full mx-auto text-center text-white">
+          <p>Loading pricing...</p>
+        </div>
+      </section>
+    }>
+      <PricingSection1Content />
+    </Suspense>
+  )
 }
 
