@@ -34,9 +34,12 @@ export async function POST(request: NextRequest) {
       )
     }
 
-    // Check if user already exists
+    // Normalize email (trim and lowercase) to match auth.ts
+    const normalizedEmail = email.trim().toLowerCase()
+
+    // Check if user already exists (using normalized email)
     const existingUser = await prisma.user.findUnique({
-      where: { email },
+      where: { email: normalizedEmail },
     })
 
     if (existingUser) {
@@ -49,11 +52,11 @@ export async function POST(request: NextRequest) {
     // Hash password
     const passwordHash = await bcrypt.hash(password, 12)
 
-    // Create user
+    // Create user with normalized email
     const user = await prisma.user.create({
       data: {
-        name,
-        email,
+        name: name.trim(),
+        email: normalizedEmail,
         passwordHash,
       },
     })

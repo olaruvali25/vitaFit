@@ -61,10 +61,13 @@ function SignupPageContent() {
 
     try {
       const name = `${firstName} ${lastName}`.trim()
+      const normalizedEmail = email.trim().toLowerCase()
+      console.log("[Signup] Attempting to create account with email:", normalizedEmail)
+      
       const response = await fetch("/api/auth/signup", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ name, email, password }),
+        body: JSON.stringify({ name, email: normalizedEmail, password }),
       })
 
       // Check if response is JSON
@@ -86,11 +89,11 @@ function SignupPageContent() {
         return
       }
 
-      // Auto sign in after signup
+      // Auto sign in after signup (use normalized email)
       console.log("Attempting to sign in...")
       try {
         const result = await signIn("credentials", {
-          email,
+          email: normalizedEmail,
           password,
           redirect: false,
           callbackUrl: "/account",

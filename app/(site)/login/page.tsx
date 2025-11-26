@@ -22,9 +22,11 @@ export default function LoginPage() {
     setLoading(true)
 
     try {
-      console.log("[Login] Attempting to sign in with email:", email)
+      // Normalize email (trim and lowercase) to match signup and auth
+      const normalizedEmail = email.trim().toLowerCase()
+      console.log("[Login] Attempting to sign in with email:", normalizedEmail)
       const result = await signIn("credentials", {
-        email: email.trim(),
+        email: normalizedEmail,
         password,
         redirect: false,
       })

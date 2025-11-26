@@ -169,11 +169,11 @@ function AssessmentPageContent() {
 
     // Check if user is authenticated
     if (status === "unauthenticated") {
-      // Store assessment data and redirect to signup/login
+      // Store assessment data and redirect to LOGIN (not signup)
       // Data already saved above, but ensure it's there
       sessionStorage.setItem("assessmentData", JSON.stringify(data))
       // Use window.location for hard redirect to preserve data
-      window.location.href = `/signup?redirect=assessment`
+      window.location.href = `/login?redirect=assessment`
       return
     }
 

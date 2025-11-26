@@ -34,15 +34,40 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
         }
 
         try {
-          const email = (credentials.email as string).trim().toLowerCase()
-          console.log("[Auth] Attempting to authorize user with email:", email)
+          const emailInput = (credentials.email as string).trim()
+          const normalizedEmail = emailInput.toLowerCase()
+          console.log("[Auth] Attempting to authorize user with email:", normalizedEmail)
           
-          const user = await prisma.user.findUnique({
-            where: { email }
+          // Try normalized email first (new standard)
+          let user = await prisma.user.findUnique({
+            where: { email: normalizedEmail }
           })
 
+          // If not found, try original email (for existing users created before normalization)
           if (!user) {
-            console.error("[Auth] User not found with email:", email)
+            console.log("[Auth] User not found with normalized email, trying original:", emailInput)
+            user = await prisma.user.findUnique({
+              where: { email: emailInput }
+            })
+            
+            // If found with original email, update to normalized for consistency
+            if (user && user.email !== normalizedEmail) {
+              console.log("[Auth] Updating user email to normalized format:", user.id)
+              try {
+                await prisma.user.update({
+                  where: { id: user.id },
+                  data: { email: normalizedEmail }
+                })
+                user.email = normalizedEmail
+              } catch (updateError) {
+                console.error("[Auth] Failed to normalize email (might be duplicate):", updateError)
+                // Continue with original email if update fails
+              }
+            }
+          }
+
+          if (!user) {
+            console.error("[Auth] User not found with email:", emailInput, "or", normalizedEmail)
             return null
           }
 

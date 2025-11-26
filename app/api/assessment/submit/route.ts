@@ -15,7 +15,17 @@ export async function POST(request: NextRequest) {
   try {
     // Check if user is authenticated
     // Note: This endpoint should be accessible, but we check auth inside
-    const session = await getAuthSession()
+    let session
+    try {
+      session = await getAuthSession()
+    } catch (error) {
+      console.error("[Assessment Submit] Auth check error:", error)
+      return NextResponse.json(
+        { error: "Authentication required. Please sign in to continue." },
+        { status: 401 }
+      )
+    }
+    
     if (!session || !session.user) {
       return NextResponse.json(
         { error: "Authentication required. Please sign in to continue." },
