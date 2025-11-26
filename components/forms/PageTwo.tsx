@@ -107,13 +107,7 @@ export default function PageTwo({
         <div className="mt-2 h-px bg-white/10"></div>
       </div>
 
-      <form
-        onSubmit={(e) => {
-          e.preventDefault()
-          onSubmit()
-        }}
-        className="space-y-4"
-      >
+      <div className="space-y-4">
         {/* Activity Level */}
         <div className="space-y-2">
           <Label className="text-xs uppercase tracking-wide text-white/60 font-medium">
@@ -308,7 +302,15 @@ export default function PageTwo({
           >
             Back
           </ShimmerButton>
-          <ShimmerButton type="submit" className="flex-1 h-11 rounded-xl text-sm font-medium">
+          <ShimmerButton 
+            type="button"
+            onClick={(e) => {
+              e.preventDefault()
+              e.stopPropagation()
+              onSubmit()
+            }}
+            className="flex-1 h-11 rounded-xl text-sm font-medium"
+          >
             Submit Assessment
           </ShimmerButton>
         </div>

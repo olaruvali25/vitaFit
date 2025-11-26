@@ -1,6 +1,6 @@
 "use client"
 
-import { useState, useEffect, Suspense } from "react"
+import { useState, useEffect, Suspense, useRef } from "react"
 import { useSession } from "next-auth/react"
 import { useRouter, useSearchParams } from "next/navigation"
 import AssessmentForm from "@/components/forms/AssessmentForm"
@@ -19,6 +19,9 @@ function AssessmentPageContent() {
   const [assessmentData, setAssessmentData] = useState<AssessmentFormData | null>(null)
   const [error, setError] = useState<string | null>(null)
   const [planId, setPlanId] = useState<string | null>(null)
+  
+  // Track if redirect is in progress to prevent double redirects
+  const redirectingRef = useRef(false)
 
   // Check if we're returning from pricing/trial activation
   useEffect(() => {
@@ -159,25 +162,46 @@ function AssessmentPageContent() {
   }
 
   const handleFormSubmit = async (data: AssessmentFormData) => {
-    // ALWAYS save assessment data FIRST, before any redirects
+    // CRITICAL: Save data IMMEDIATELY, before ANYTHING else
     try {
-      sessionStorage.setItem("assessmentData", JSON.stringify(data))
-      console.log("[Assessment] Data saved to sessionStorage")
+      const dataString = JSON.stringify(data)
+      sessionStorage.setItem("assessmentData", dataString)
+      console.log("[Assessment] Data saved to sessionStorage:", dataString.substring(0, 100))
+      
+      // Verify it was saved
+      const saved = sessionStorage.getItem("assessmentData")
+      if (!saved) {
+        console.error("[Assessment] CRITICAL: Data was not saved to sessionStorage!")
+        alert("Error saving your data. Please try again.")
+        return
+      }
     } catch (err) {
-      console.error("[Assessment] Failed to save to sessionStorage:", err)
+      console.error("[Assessment] CRITICAL ERROR saving to sessionStorage:", err)
+      alert("Error saving your data. Please try again.")
+      return
     }
 
-    // Check if user is authenticated
+    // Check if user is authenticated - do this AFTER saving data
     if (status === "unauthenticated") {
-      // Store assessment data and redirect to LOGIN (not signup)
-      // Data already saved above, but ensure it's there
-      sessionStorage.setItem("assessmentData", JSON.stringify(data))
-      // Use window.location for hard redirect to preserve data
-      window.location.href = `/login?redirect=assessment`
+      console.log("[Assessment] User not authenticated, redirecting to login")
+      
+      // Prevent double redirects
+      if (redirectingRef.current) {
+        console.log("[Assessment] Redirect already in progress, skipping")
+        return
+      }
+      redirectingRef.current = true
+      
+      // IMMEDIATE redirect - no async, no waiting, no state updates
+      // Use setTimeout(0) to ensure it happens after current execution
+      setTimeout(() => {
+        window.location.href = `/login?redirect=assessment`
+      }, 0)
       return
     }
 
     if (status === "loading") {
+      console.log("[Assessment] Session loading, waiting...")
       // Wait for session to load, but data is already saved
       return
     }

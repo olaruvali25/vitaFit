@@ -7,6 +7,7 @@ export async function middleware(request: NextRequest) {
   
   // ALWAYS skip middleware for NextAuth routes - they handle their own auth
   if (pathname.startsWith("/api/auth/")) {
+    console.log(`[Middleware] Skipping auth for NextAuth route: ${pathname}`)
     return NextResponse.next()
   }
   
@@ -19,6 +20,7 @@ export async function middleware(request: NextRequest) {
     pathname === "/api/auth/signup" ||
     pathname.startsWith("/api/test/")
   ) {
+    console.log(`[Middleware] Skipping auth for public API route: ${pathname}`)
     return NextResponse.next()
   }
   

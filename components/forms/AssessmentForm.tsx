@@ -96,23 +96,46 @@ export default function AssessmentForm({ onSubmit }: AssessmentFormProps) {
     }
   }
 
-  const handleSubmit = () => {
-    if (validatePage2()) {
-      // ALWAYS save to sessionStorage FIRST, before any redirects
-      try {
-        sessionStorage.setItem("assessmentData", JSON.stringify(formData))
-        console.log("[AssessmentForm] Data saved to sessionStorage before submit")
-      } catch (err) {
-        console.error("[AssessmentForm] Failed to save to sessionStorage:", err)
-      }
+  const handleSubmit = (e?: React.FormEvent) => {
+    // Prevent any default form submission
+    if (e) {
+      e.preventDefault()
+      e.stopPropagation()
+    }
+    
+    if (!validatePage2()) {
+      console.error("[AssessmentForm] Validation failed")
+      return
+    }
+
+    // CRITICAL: Save to sessionStorage IMMEDIATELY, synchronously
+    const dataString = JSON.stringify(formData)
+    try {
+      sessionStorage.setItem("assessmentData", dataString)
+      console.log("[AssessmentForm] Data saved to sessionStorage:", dataString.substring(0, 100))
       
-      if (onSubmit) {
-        onSubmit(formData)
-      } else {
-        // Default behavior - log to console for now
-        console.log("Form submitted:", formData)
-        alert("Assessment submitted! Your personalized plan will be generated shortly.")
+      // Verify it was saved
+      const saved = sessionStorage.getItem("assessmentData")
+      if (!saved || saved !== dataString) {
+        console.error("[AssessmentForm] CRITICAL: Data verification failed!")
+        alert("Error saving your data. Please try again.")
+        return
       }
+      console.log("[AssessmentForm] Data verified in sessionStorage")
+    } catch (err) {
+      console.error("[AssessmentForm] CRITICAL ERROR saving to sessionStorage:", err)
+      alert("Error saving your data. Please try again.")
+      return
+    }
+    
+    // Now call onSubmit (which will check auth and redirect)
+    if (onSubmit) {
+      console.log("[AssessmentForm] Calling onSubmit handler")
+      onSubmit(formData)
+    } else {
+      // Default behavior - log to console for now
+      console.log("Form submitted:", formData)
+      alert("Assessment submitted! Your personalized plan will be generated shortly.")
     }
   }
 

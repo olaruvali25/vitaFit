@@ -8,7 +8,11 @@ export const dynamic = "force-dynamic"
 export const runtime = "nodejs"
 
 export async function POST(request: NextRequest) {
-  console.log("[Signup] Endpoint called")
+  console.log("[Signup] ====== SIGNUP REQUEST RECEIVED ======")
+  console.log("[Signup] URL:", request.url)
+  console.log("[Signup] Method:", request.method)
+  console.log("[Signup] Headers:", Object.fromEntries(request.headers.entries()))
+  
   try {
     let body
     try {
