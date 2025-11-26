@@ -1,6 +1,6 @@
 "use client"
 
-import { useState, useEffect } from "react"
+import { useState, useEffect, Suspense } from "react"
 import { useSession } from "next-auth/react"
 import { useRouter, useSearchParams } from "next/navigation"
 import AssessmentForm from "@/components/forms/AssessmentForm"
@@ -10,7 +10,7 @@ import { ShootingStars } from "@/components/ui/shooting-stars"
 import { StarsBackground } from "@/components/ui/stars-background"
 import { Loader2 } from "lucide-react"
 
-export default function AssessmentPage() {
+function AssessmentPageContent() {
   const { data: session, status } = useSession()
   const router = useRouter()
   const searchParams = useSearchParams()
@@ -317,6 +317,18 @@ export default function AssessmentPage() {
         </div>
       </section>
     </main>
+  )
+}
+
+export default function AssessmentPage() {
+  return (
+    <Suspense fallback={
+      <main className="overflow-hidden min-h-screen bg-gradient-to-br from-slate-900 via-emerald-950/30 to-slate-900 flex items-center justify-center">
+        <Loader2 className="h-8 w-8 animate-spin text-emerald-400" />
+      </main>
+    }>
+      <AssessmentPageContent />
+    </Suspense>
   )
 }
 
