@@ -98,6 +98,14 @@ export default function AssessmentForm({ onSubmit }: AssessmentFormProps) {
 
   const handleSubmit = () => {
     if (validatePage2()) {
+      // ALWAYS save to sessionStorage FIRST, before any redirects
+      try {
+        sessionStorage.setItem("assessmentData", JSON.stringify(formData))
+        console.log("[AssessmentForm] Data saved to sessionStorage before submit")
+      } catch (err) {
+        console.error("[AssessmentForm] Failed to save to sessionStorage:", err)
+      }
+      
       if (onSubmit) {
         onSubmit(formData)
       } else {

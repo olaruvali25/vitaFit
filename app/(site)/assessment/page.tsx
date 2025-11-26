@@ -159,16 +159,27 @@ function AssessmentPageContent() {
   }
 
   const handleFormSubmit = async (data: AssessmentFormData) => {
+    // ALWAYS save assessment data FIRST, before any redirects
+    try {
+      sessionStorage.setItem("assessmentData", JSON.stringify(data))
+      console.log("[Assessment] Data saved to sessionStorage")
+    } catch (err) {
+      console.error("[Assessment] Failed to save to sessionStorage:", err)
+    }
+
     // Check if user is authenticated
     if (status === "unauthenticated") {
       // Store assessment data and redirect to signup/login
+      // Data already saved above, but ensure it's there
       sessionStorage.setItem("assessmentData", JSON.stringify(data))
-      router.push(`/signup?redirect=assessment`)
+      // Use window.location for hard redirect to preserve data
+      window.location.href = `/signup?redirect=assessment`
       return
     }
 
     if (status === "loading") {
-      return // Wait for session to load
+      // Wait for session to load, but data is already saved
+      return
     }
 
     try {

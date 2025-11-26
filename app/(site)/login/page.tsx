@@ -22,22 +22,32 @@ export default function LoginPage() {
     setLoading(true)
 
     try {
+      console.log("[Login] Attempting to sign in with email:", email)
       const result = await signIn("credentials", {
-        email,
+        email: email.trim(),
         password,
         redirect: false,
       })
 
+      console.log("[Login] Sign in result:", { ok: result?.ok, error: result?.error })
+
       if (result?.error) {
         // Handle specific error messages
-        if (result.error === "CredentialsSignin") {
-          setError("Invalid email or password")
+        console.error("[Login] Sign in error:", result.error)
+        if (result.error === "CredentialsSignin" || result.error.includes("Credentials")) {
+          setError("Invalid email or password. Please check your credentials and try again.")
         } else {
           setError(result.error || "Invalid email or password")
         }
         setLoading(false)
       } else if (result?.ok) {
-        // Success - check if there's assessment data to submit
+        // Success - refresh session first
+        await router.refresh()
+        
+        // Wait a moment for session to update
+        await new Promise(resolve => setTimeout(resolve, 500))
+        
+        // Check if there's assessment data to submit
         const assessmentData = sessionStorage.getItem("assessmentData")
         const redirectTo = new URLSearchParams(window.location.search).get("redirect")
         
@@ -53,29 +63,33 @@ export default function LoginPage() {
 
             if (assessmentResponse.ok) {
               const assessmentResult = await assessmentResponse.json()
-              sessionStorage.removeItem("assessmentData")
               
               // Check membership and redirect accordingly
               const hasActiveMembership = assessmentResult.membership?.hasActiveMembership || false
               const membershipStatus = assessmentResult.membership?.status || "INACTIVE"
               
               if (!hasActiveMembership && membershipStatus === "INACTIVE") {
+                // Keep assessment data for after membership activation
                 window.location.href = `/pricing?profileId=${assessmentResult.profileId}&assessment=completed`
               } else {
+                // User has membership, remove assessment data and go to account
+                sessionStorage.removeItem("assessmentData")
                 window.location.href = "/account?tab=plans"
               }
             } else {
-              // Assessment failed, but logged in
+              // Assessment failed, but logged in - keep data for retry
+              const errorData = await assessmentResponse.json().catch(() => ({}))
+              console.error("Assessment submit failed:", errorData)
               window.location.href = "/account"
             }
           } catch (err) {
             console.error("Error submitting assessment after login:", err)
+            // Keep assessment data for retry
             window.location.href = "/account"
           }
         } else {
           // No assessment data, normal redirect
-          router.push("/account")
-          router.refresh()
+          window.location.href = "/account"
         }
       } else {
         setError("Something went wrong. Please try again.")
