@@ -100,10 +100,13 @@ function AssessmentPageContent() {
               )
               
               if (hasMeals) {
-                console.log(`Plan is complete with meals! Redirecting...`)
+                console.log(`Plan is complete with meals! Plan ID: ${latestPlan.id}`)
                 setPlanId(latestPlan.id)
                 sessionStorage.removeItem("assessmentData")
-                // Redirect will happen in PersonalizedLoading component
+                // Wait a moment for UI to update, then redirect
+                setTimeout(() => {
+                  window.location.href = `/plans/${latestPlan.id}`
+                }, 2000)
                 return
               } else {
                 console.log(`Plan found but no meals yet, continuing to poll...`)
@@ -138,6 +141,9 @@ function AssessmentPageContent() {
           console.log(`Found plan on final check:`, latestPlan.id)
           setPlanId(latestPlan.id)
           sessionStorage.removeItem("assessmentData")
+          setTimeout(() => {
+            window.location.href = `/plans/${latestPlan.id}`
+          }, 2000)
           return
         }
       }
@@ -214,10 +220,11 @@ function AssessmentPageContent() {
         return
       }
 
-      // User has active membership or trial - show loading and generate plan
+      // User has active membership or trial - show loading immediately and generate plan
       setShowLoading(true)
       setError(null)
-      // Start polling - don't await, let it run in background
+      // Submit assessment to Make.com (already done, but ensure webhook is triggered)
+      // Start polling immediately - don't await, let it run in background
       pollForPlan(result.profileId)
 
     } catch (err: any) {
@@ -241,9 +248,11 @@ function AssessmentPageContent() {
         planReady={!!planId}
         onComplete={() => {
           if (planId) {
-            router.push(`/plans/${planId}`)
+            // Redirect to plan page
+            window.location.href = `/plans/${planId}`
           } else {
-            router.push("/account?tab=plans")
+            // Fallback to account page if no plan ID
+            window.location.href = "/account?tab=plans"
           }
         }}
       />
