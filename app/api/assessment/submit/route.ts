@@ -4,7 +4,12 @@ import { prisma } from "@/lib/prisma"
 import type { AssessmentFormData } from "@/components/forms/AssessmentForm"
 
 const MAKE_WEBHOOK_URL = "https://hook.eu2.make.com/6gf31px9yw2lv6voo7oun6h7lfym3xqa"
-const VITAFIT_API_BASE_URL = process.env.NEXT_PUBLIC_APP_URL || "http://localhost:3000"
+// Vercel automatically sets VERCEL_URL in production
+// Use NEXT_PUBLIC_APP_URL if set, otherwise VERCEL_URL, otherwise localhost
+const VITAFIT_API_BASE_URL = 
+  process.env.NEXT_PUBLIC_APP_URL || 
+  (process.env.VERCEL_URL ? `https://${process.env.VERCEL_URL}` : null) ||
+  "http://localhost:3000"
 
 export async function POST(request: NextRequest) {
   try {
@@ -130,6 +135,13 @@ export async function POST(request: NextRequest) {
 
     // Send data to Make.com webhook
     // Make.com will process the data and call /api/plans/from-make with the calculated macros
+    console.log("=".repeat(80))
+    console.log("[Assessment Submit] Sending data to Make.com webhook...")
+    console.log("[Assessment Submit] Webhook URL:", MAKE_WEBHOOK_URL)
+    console.log("[Assessment Submit] Payload:", JSON.stringify(makePayload, null, 2))
+    console.log("[Assessment Submit] Callback URL:", makePayload.callbackUrl)
+    console.log("=".repeat(80))
+    
     try {
       const makeResponse = await fetch(MAKE_WEBHOOK_URL, {
         method: "POST",
@@ -139,16 +151,22 @@ export async function POST(request: NextRequest) {
         body: JSON.stringify(makePayload),
       })
 
+      console.log("[Assessment Submit] Make.com response status:", makeResponse.status)
+      console.log("[Assessment Submit] Make.com response headers:", Object.fromEntries(makeResponse.headers.entries()))
+
       if (!makeResponse.ok) {
         const errorText = await makeResponse.text()
-        console.error("Make.com webhook error:", errorText)
+        console.error("[Assessment Submit] Make.com webhook error (status:", makeResponse.status, "):", errorText)
         // Don't fail the request - Make.com will retry or we can handle it later
       } else {
-        console.log("Assessment data sent to Make.com successfully")
+        const responseText = await makeResponse.text()
+        console.log("[Assessment Submit] Make.com webhook success!")
+        console.log("[Assessment Submit] Make.com response:", responseText.substring(0, 500))
         // Make.com will process and call /api/plans/from-make with calculated macros
       }
-    } catch (error) {
-      console.error("Error calling Make.com webhook:", error)
+    } catch (error: any) {
+      console.error("[Assessment Submit] Error calling Make.com webhook:", error.message)
+      console.error("[Assessment Submit] Error stack:", error.stack)
       // Continue anyway - Make.com might process it asynchronously
     }
 

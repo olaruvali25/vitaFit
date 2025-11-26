@@ -57,5 +57,7 @@ export const config = {
     "/api/plans/:path*",
     "/api/profiles/:path*/progress/:path*",
     "/api/membership/:path*",
+    // Explicitly include from-make endpoint to ensure it's processed
+    "/api/plans/from-make",
   ],
 }
