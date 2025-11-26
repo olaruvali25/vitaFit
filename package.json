@@ -9,6 +9,7 @@
     "start": "next start",
     "lint": "eslint",
     "create-admin": "tsx scripts/create-admin.ts",
+    "normalize-emails": "tsx scripts/normalize-emails.ts",
     "postinstall": "prisma generate"
   },
   "dependencies": {
