@@ -83,8 +83,17 @@ function SignupPageContent() {
       const data = await response.json()
 
       if (!response.ok) {
-        console.error("Signup API error:", data)
-        setError(data.error || "Failed to create account")
+        console.error("[Signup] API error:", data)
+        console.error("[Signup] Response status:", response.status)
+        
+        // Handle specific error cases
+        if (response.status === 401) {
+          setError("Authentication error. Please try again or contact support.")
+        } else if (response.status === 400 && data.error) {
+          setError(data.error)
+        } else {
+          setError(data.error || `Failed to create account (Status: ${response.status})`)
+        }
         setLoading(false)
         return
       }

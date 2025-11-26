@@ -3,8 +3,12 @@ import { prisma } from "@/lib/prisma"
 import bcrypt from "bcryptjs"
 import { initializeFreeTrial } from "@/lib/membership"
 
+// Ensure this route is public (no auth required)
+export const dynamic = "force-dynamic"
+export const runtime = "nodejs"
+
 export async function POST(request: NextRequest) {
-  console.log("Signup endpoint called")
+  console.log("[Signup] Endpoint called")
   try {
     let body
     try {
