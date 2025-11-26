@@ -24,8 +24,9 @@ export async function POST(request: NextRequest) {
 
     // Validate request payload
     let body
+    let rawBody = ""
     try {
-      const rawBody = await request.text()
+      rawBody = await request.text()
       console.log("[Make.com Webhook] Raw body received (length):", rawBody.length)
       console.log("[Make.com Webhook] Raw body (full):", rawBody)
       
