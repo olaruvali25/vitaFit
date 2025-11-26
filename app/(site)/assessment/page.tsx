@@ -192,11 +192,9 @@ function AssessmentPageContent() {
       }
       redirectingRef.current = true
       
-      // IMMEDIATE redirect - no async, no waiting, no state updates
-      // Use setTimeout(0) to ensure it happens after current execution
-      setTimeout(() => {
-        window.location.href = `/login?redirect=assessment`
-      }, 0)
+      // IMMEDIATE redirect - use window.location.replace for hard redirect
+      // This prevents back button and ensures clean redirect
+      window.location.replace(`/login?redirect=assessment`)
       return
     }
 
