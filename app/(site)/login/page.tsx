@@ -24,6 +24,10 @@ export default function LoginPage() {
     try {
       // Normalize email (trim and lowercase) to match signup and auth
       const normalizedEmail = email.trim().toLowerCase()
+      console.log("[Login] ====== LOGIN ATTEMPT ======")
+      console.log("[Login] Email input:", email)
+      console.log("[Login] Normalized email:", normalizedEmail)
+      console.log("[Login] Password provided:", password ? "YES (length: " + password.length + ")" : "NO")
       console.log("[Login] Attempting to sign in with email:", normalizedEmail)
       const result = await signIn("credentials", {
         email: normalizedEmail,
