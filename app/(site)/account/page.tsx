@@ -3,10 +3,12 @@
 import { useEffect, useState } from "react"
 import { useSession } from "next-auth/react"
 import { redirect } from "next/navigation"
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
+import { Tabs, TabsContent } from "@/components/ui/tabs"
+import { ButtonColorful } from "@/components/ui/button-colorful"
 import { ProfilesTab } from "@/components/account/ProfilesTab"
 import { PlansTab } from "@/components/account/PlansTab"
 import { SubscriptionTab } from "@/components/account/SubscriptionTab"
+import { cn } from "@/lib/utils"
 
 export default function AccountPage() {
   const { data: session, status } = useSession()
@@ -43,11 +45,30 @@ export default function AccountPage() {
         </div>
 
         <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
-          <TabsList className="grid w-full grid-cols-3">
-            <TabsTrigger value="profiles">Profiles</TabsTrigger>
-            <TabsTrigger value="plans">My Plans</TabsTrigger>
-            <TabsTrigger value="subscription">Subscription</TabsTrigger>
-          </TabsList>
+          {/* Modern button navigation */}
+          <div className="flex flex-wrap gap-4 mb-8">
+            <ButtonColorful
+              label="Profiles"
+              onClick={() => setActiveTab("profiles")}
+              className={cn(
+                activeTab === "profiles" && "border-emerald-400 bg-emerald-500/10"
+              )}
+            />
+            <ButtonColorful
+              label="My Plans"
+              onClick={() => setActiveTab("plans")}
+              className={cn(
+                activeTab === "plans" && "border-emerald-400 bg-emerald-500/10"
+              )}
+            />
+            <ButtonColorful
+              label="Subscription"
+              onClick={() => setActiveTab("subscription")}
+              className={cn(
+                activeTab === "subscription" && "border-emerald-400 bg-emerald-500/10"
+              )}
+            />
+          </div>
 
           <TabsContent value="profiles" className="mt-6">
             <ProfilesTab />
