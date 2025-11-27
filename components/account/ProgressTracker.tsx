@@ -2,7 +2,6 @@
 
 import { useState, useEffect } from "react"
 import { useSession } from "next-auth/react"
-import { Card, CardContent } from "@/components/ui/card"
 import { Droplet, Target, Flame, Dumbbell, TrendingUp } from "lucide-react"
 import { cn } from "@/lib/utils"
 
@@ -64,11 +63,11 @@ export function ProgressTracker() {
 
   if (loading) {
     return (
-      <Card className="bg-slate-900/90 border-2 border-emerald-500/50 backdrop-blur-xl shadow-2xl">
-        <CardContent className="p-8">
+      <div className="w-full min-h-[400px]">
+        <div className="bg-slate-900/95 border-2 border-emerald-500/60 rounded-lg backdrop-blur-xl shadow-2xl p-8">
           <div className="text-white text-center text-lg">Loading tracker...</div>
-        </CardContent>
-      </Card>
+        </div>
+      </div>
     )
   }
 
@@ -135,15 +134,14 @@ export function ProgressTracker() {
   ]
 
   return (
-    <div className="w-full">
-      <Card className="bg-slate-900/95 border-2 border-emerald-500/60 backdrop-blur-xl shadow-2xl" enableGlow={false}>
-        <CardContent className="p-8">
-          <div className="mb-6">
-            <h2 className="text-2xl font-bold text-white mb-1">
-              {userName}'s Personal Tracker
-            </h2>
-            <p className="text-white/60 text-sm">Your fitness journey at a glance</p>
-          </div>
+    <div className="w-full min-h-[400px]">
+      <div className="bg-slate-900/95 border-2 border-emerald-500/60 rounded-lg backdrop-blur-xl shadow-2xl p-8">
+        <div className="mb-6">
+          <h2 className="text-2xl font-bold text-white mb-1">
+            {userName}'s Personal Tracker
+          </h2>
+          <p className="text-white/60 text-sm">Your fitness journey at a glance</p>
+        </div>
 
         {/* Progress Bar */}
         <div className="mb-6">
@@ -154,7 +152,7 @@ export function ProgressTracker() {
           <div className="w-full h-3 bg-white/10 rounded-full overflow-hidden">
             <div
               className="h-full bg-gradient-to-r from-emerald-500 to-green-500 transition-all duration-500"
-              style={{ width: `${progressPercentage}%` }}
+              style={{ width: `${Math.max(progressPercentage, 10)}%` }}
             />
           </div>
         </div>
@@ -185,8 +183,7 @@ export function ProgressTracker() {
             )
           })}
         </div>
-      </CardContent>
-    </Card>
+      </div>
     </div>
   )
 }
