@@ -7,6 +7,15 @@ import { initializeFreeTrial } from "@/lib/membership"
 export const dynamic = "force-dynamic"
 export const runtime = "nodejs"
 
+// Handle OPTIONS for CORS preflight
+export async function OPTIONS(request: NextRequest) {
+  const headers = new Headers()
+  headers.set("Access-Control-Allow-Origin", "*")
+  headers.set("Access-Control-Allow-Methods", "POST, OPTIONS")
+  headers.set("Access-Control-Allow-Headers", "Content-Type")
+  return new NextResponse(null, { status: 200, headers })
+}
+
 export async function POST(request: NextRequest) {
   console.log("[Signup] ====== SIGNUP REQUEST RECEIVED ======")
   console.log("[Signup] URL:", request.url)
@@ -65,9 +74,10 @@ export async function POST(request: NextRequest) {
     })
 
     if (existingUser) {
+      console.error("[Signup] User already exists:", normalizedEmail)
       return NextResponse.json(
         { error: "User with this email already exists" },
-        { status: 400 }
+        { status: 400, headers }
       )
     }
 
