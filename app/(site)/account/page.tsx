@@ -8,6 +8,7 @@ import { ButtonColorful } from "@/components/ui/button-colorful"
 import { ProfilesTab } from "@/components/account/ProfilesTab"
 import { PlansTab } from "@/components/account/PlansTab"
 import { SubscriptionTab } from "@/components/account/SubscriptionTab"
+import { ProgressTracker } from "@/components/account/ProgressTracker"
 import { cn } from "@/lib/utils"
 
 export default function AccountPage() {
@@ -42,6 +43,11 @@ export default function AccountPage() {
           <p className="text-white/70">
             Manage your profiles, plans, and subscription
           </p>
+        </div>
+
+        {/* Progress Tracker */}
+        <div className="mb-8">
+          <ProgressTracker />
         </div>
 
         <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
