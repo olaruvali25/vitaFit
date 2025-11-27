@@ -1,11 +1,12 @@
 'use client'
 import Link from 'next/link'
 import { Logo } from '@/components/logo'
-import { Menu, X } from 'lucide-react'
+import { Menu, X, ChevronDown, LogOut, User } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import React from 'react'
 import { cn } from '@/lib/utils'
 import { useSession, signOut } from 'next-auth/react'
+import { useRouter } from 'next/navigation'
 
 const menuItems = [
     { name: 'Pricing', href: '/pricing' },
@@ -16,7 +17,9 @@ const menuItems = [
 export const HeroHeader = () => {
     const [menuState, setMenuState] = React.useState(false)
     const [isScrolled, setIsScrolled] = React.useState(false)
+    const [accountDropdownOpen, setAccountDropdownOpen] = React.useState(false)
     const { data: session } = useSession()
+    const router = useRouter()
 
     React.useEffect(() => {
         const handleScroll = () => {
@@ -101,15 +104,45 @@ export const HeroHeader = () => {
                             <div className="flex w-full flex-col space-y-3 sm:flex-row sm:gap-3 sm:space-y-0 md:w-fit">
                                 {session ? (
                                     <>
-                                        <Button
-                                            asChild
-                                            variant="ghost"
-                                            size="sm"
-                                            className="text-white hover:text-white/80 hover:bg-white/10">
-                                            <Link href="/account" onClick={() => setMenuState(false)}>
+                                        <div className="relative">
+                                            <Button
+                                                variant="ghost"
+                                                size="sm"
+                                                className="text-white hover:text-white/80 hover:bg-white/10"
+                                                onClick={() => setAccountDropdownOpen(!accountDropdownOpen)}
+                                                onBlur={() => setTimeout(() => setAccountDropdownOpen(false), 200)}>
                                                 <span>My Account</span>
-                                            </Link>
-                                        </Button>
+                                                <ChevronDown className={cn("ml-1 h-4 w-4 transition-transform", accountDropdownOpen && "rotate-180")} />
+                                            </Button>
+                                            {accountDropdownOpen && (
+                                                <div className="absolute right-0 top-full mt-1 w-48 rounded-md border border-white/20 bg-slate-900/95 backdrop-blur-lg shadow-lg z-50">
+                                                    <div className="py-1">
+                                                        <Link
+                                                            href="/account"
+                                                            onClick={() => {
+                                                                setAccountDropdownOpen(false)
+                                                                setMenuState(false)
+                                                            }}
+                                                            className="flex items-center gap-2 px-4 py-2 text-sm text-white hover:bg-white/10 transition-colors">
+                                                            <User className="h-4 w-4" />
+                                                            <span>My Account</span>
+                                                        </Link>
+                                                        <button
+                                                            onClick={async () => {
+                                                                setAccountDropdownOpen(false)
+                                                                setMenuState(false)
+                                                                await signOut({ redirect: false })
+                                                                router.push('/')
+                                                                router.refresh()
+                                                            }}
+                                                            className="flex w-full items-center gap-2 px-4 py-2 text-sm text-white hover:bg-white/10 transition-colors">
+                                                            <LogOut className="h-4 w-4" />
+                                                            <span>Logout</span>
+                                                        </button>
+                                                    </div>
+                                                </div>
+                                            )}
+                                        </div>
                                         <Button
                                             asChild
                                             size="sm"
