@@ -18,6 +18,7 @@ interface Plan {
   id: string
   caloriesTarget: number | null
   workoutsPerWeek: number | null
+  createdAt?: string
 }
 
 export function ProgressTracker() {
@@ -46,11 +47,8 @@ export function ProgressTracker() {
           if (plansRes.ok) {
             const plans = await plansRes.json()
             if (plans.length > 0) {
-              // Get the most recent plan
-              const activePlan = plans.sort((a: Plan, b: Plan) => 
-                new Date(b.createdAt || 0).getTime() - new Date(a.createdAt || 0).getTime()
-              )[0]
-              setPlan(activePlan)
+              // Get the most recent plan (first one since API returns desc order)
+              setPlan(plans[0])
             }
           }
         }
