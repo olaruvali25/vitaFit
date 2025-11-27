@@ -24,7 +24,7 @@ export function ProgressTracker() {
   const { data: session } = useSession()
   const [profile, setProfile] = useState<Profile | null>(null)
   const [plan, setPlan] = useState<Plan | null>(null)
-  const [loading, setLoading] = useState(true)
+  const [loading, setLoading] = useState(false) // Start as false to show immediately
 
   useEffect(() => {
     // Always fetch, even if no session (will show default values)
@@ -61,15 +61,7 @@ export function ProgressTracker() {
     }
   }
 
-  if (loading) {
-    return (
-      <div className="w-full min-h-[400px]">
-        <div className="bg-slate-900/95 border-2 border-emerald-500/60 rounded-lg backdrop-blur-xl shadow-2xl p-8">
-          <div className="text-white text-center text-lg">Loading tracker...</div>
-        </div>
-      </div>
-    )
-  }
+  // Don't show loading state - always render content
 
   // Always show tracker, even if no profile exists yet
   const userName = session?.user?.name || "User"
@@ -134,8 +126,8 @@ export function ProgressTracker() {
   ]
 
   return (
-    <div className="w-full min-h-[400px]">
-      <div className="bg-slate-900/95 border-2 border-emerald-500/60 rounded-lg backdrop-blur-xl shadow-2xl p-8">
+    <div className="w-full min-h-[500px] relative z-10">
+      <div className="bg-slate-900 border-4 border-emerald-500 rounded-xl backdrop-blur-xl shadow-2xl p-8 w-full">
         <div className="mb-6">
           <h2 className="text-2xl font-bold text-white mb-1">
             {userName}'s Personal Tracker
