@@ -85,7 +85,7 @@ export default function AccountPage() {
         </Tabs>
 
         {/* Progress Tracker - After all tabs, before footer */}
-        <div className="mt-12">
+        <div className="mt-16 mb-16">
           <ProgressTracker />
         </div>
       </div>

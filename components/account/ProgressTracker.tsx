@@ -28,9 +28,8 @@ export function ProgressTracker() {
   const [loading, setLoading] = useState(true)
 
   useEffect(() => {
-    if (session?.user) {
-      fetchProgressData()
-    }
+    // Always fetch, even if no session (will show default values)
+    fetchProgressData()
   }, [session])
 
   const fetchProgressData = async () => {
@@ -56,15 +55,18 @@ export function ProgressTracker() {
     } catch (error) {
       console.error("Error fetching progress data:", error)
     } finally {
-      setLoading(false)
+      // Always set loading to false after a short delay to ensure component renders
+      setTimeout(() => {
+        setLoading(false)
+      }, 100)
     }
   }
 
   if (loading) {
     return (
-      <Card className="bg-white/5 border-white/20 backdrop-blur-xl">
-        <CardContent className="p-6">
-          <div className="text-white/70 text-center">Loading tracker...</div>
+      <Card className="bg-slate-900/90 border-2 border-emerald-500/50 backdrop-blur-xl shadow-2xl">
+        <CardContent className="p-8">
+          <div className="text-white text-center text-lg">Loading tracker...</div>
         </CardContent>
       </Card>
     )
@@ -133,14 +135,15 @@ export function ProgressTracker() {
   ]
 
   return (
-    <Card className="bg-white/5 border-white/20 backdrop-blur-xl">
-      <CardContent className="p-6">
-        <div className="mb-6">
-          <h2 className="text-2xl font-bold text-white mb-1">
-            {userName}'s Personal Tracker
-          </h2>
-          <p className="text-white/60 text-sm">Your fitness journey at a glance</p>
-        </div>
+    <div className="w-full">
+      <Card className="bg-slate-900/95 border-2 border-emerald-500/60 backdrop-blur-xl shadow-2xl" enableGlow={false}>
+        <CardContent className="p-8">
+          <div className="mb-6">
+            <h2 className="text-2xl font-bold text-white mb-1">
+              {userName}'s Personal Tracker
+            </h2>
+            <p className="text-white/60 text-sm">Your fitness journey at a glance</p>
+          </div>
 
         {/* Progress Bar */}
         <div className="mb-6">
@@ -184,6 +187,7 @@ export function ProgressTracker() {
         </div>
       </CardContent>
     </Card>
+    </div>
   )
 }
 
