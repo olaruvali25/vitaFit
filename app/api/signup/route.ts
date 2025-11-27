@@ -29,11 +29,6 @@ export async function POST(request: NextRequest) {
   headers.set("Access-Control-Allow-Methods", "POST, OPTIONS")
   headers.set("Access-Control-Allow-Headers", "Content-Type")
   
-  // Handle OPTIONS request for CORS
-  if (request.method === "OPTIONS") {
-    return new NextResponse(null, { status: 200, headers })
-  }
-  
   try {
     let body
     try {
