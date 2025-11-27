@@ -24,28 +24,22 @@ export function ProgressTracker() {
   const { data: session } = useSession()
   const [profile, setProfile] = useState<Profile | null>(null)
   const [plan, setPlan] = useState<Plan | null>(null)
-  const [loading, setLoading] = useState(false) // Start as false to show immediately
 
   useEffect(() => {
-    // Always fetch, even if no session (will show default values)
     fetchProgressData()
   }, [session])
 
   const fetchProgressData = async () => {
     try {
-      // Fetch user's first profile
       const profilesRes = await fetch("/api/profiles")
       if (profilesRes.ok) {
         const profiles = await profilesRes.json()
         if (profiles.length > 0) {
           setProfile(profiles[0])
-          
-          // Fetch active plan for this profile
           const plansRes = await fetch(`/api/plans?profileId=${profiles[0].id}`)
           if (plansRes.ok) {
             const plans = await plansRes.json()
             if (plans.length > 0) {
-              // Get the most recent plan (first one since API returns desc order)
               setPlan(plans[0])
             }
           }
@@ -53,15 +47,8 @@ export function ProgressTracker() {
       }
     } catch (error) {
       console.error("Error fetching progress data:", error)
-    } finally {
-      // Always set loading to false after a short delay to ensure component renders
-      setTimeout(() => {
-        setLoading(false)
-      }, 100)
     }
   }
-
-  // Don't show loading state - always render content
 
   // Always show tracker, even if no profile exists yet
   const userName = session?.user?.name || "User"
@@ -69,23 +56,19 @@ export function ProgressTracker() {
   const goalWeight = profile?.goalWeight || currentWeight || 0
   const dailyCalories = plan?.caloriesTarget || 0
   const workoutsPerWeek = plan?.workoutsPerWeek || 0
-  const dailyWaterGlasses = 8 // Default water intake
+  const dailyWaterGlasses = 8
   
   // Calculate progress percentage
   let progressPercentage = 0
   if (currentWeight > 0 && goalWeight > 0) {
     if (goalWeight < currentWeight) {
-      // Weight loss goal
-      const totalToLose = currentWeight - goalWeight
-      progressPercentage = Math.max(0, Math.min(100, 50)) // Default to 50% if no progress data
+      progressPercentage = 50
     } else if (goalWeight > currentWeight) {
-      // Weight gain goal
       progressPercentage = Math.max(0, Math.min(100, (currentWeight / goalWeight) * 100))
     } else {
       progressPercentage = 100
     }
   }
-
 
   const stats = [
     {
@@ -126,7 +109,7 @@ export function ProgressTracker() {
   ]
 
   return (
-    <div className="w-full min-h-[500px] relative z-10">
+    <div className="w-full min-h-[500px] relative z-10" style={{ display: 'block', visibility: 'visible' }}>
       <div className="bg-slate-900 border-4 border-emerald-500 rounded-xl backdrop-blur-xl shadow-2xl p-8 w-full">
         <div className="mb-6">
           <h2 className="text-2xl font-bold text-white mb-1">
@@ -179,4 +162,3 @@ export function ProgressTracker() {
     </div>
   )
 }
-
