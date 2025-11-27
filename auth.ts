@@ -84,7 +84,11 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
           }
 
           console.log("[Auth] Password hash exists, length:", user.passwordHash.length)
+          console.log("[Auth] Password hash preview:", user.passwordHash.substring(0, 20) + "...")
           console.log("[Auth] Comparing password...")
+          console.log("[Auth] Password input type:", typeof passwordInput)
+          console.log("[Auth] Password input length:", passwordInput.length)
+          console.log("[Auth] Password input preview (first 3 chars):", passwordInput.substring(0, 3) + "...")
           
           const isPasswordValid = await bcrypt.compare(
             passwordInput,
@@ -92,6 +96,16 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
           )
 
           console.log("[Auth] Password comparison result:", isPasswordValid)
+          
+          if (!isPasswordValid) {
+            // Try with trimmed password in case there are whitespace issues
+            const trimmedPassword = passwordInput.trim()
+            if (trimmedPassword !== passwordInput) {
+              console.log("[Auth] Password had whitespace, trying trimmed version...")
+              const isTrimmedValid = await bcrypt.compare(trimmedPassword, user.passwordHash)
+              console.log("[Auth] Trimmed password comparison result:", isTrimmedValid)
+            }
+          }
 
           if (!isPasswordValid) {
             console.error("[Auth] ❌ Invalid password for user:", user.id)
