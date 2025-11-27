@@ -45,11 +45,6 @@ export default function AccountPage() {
           </p>
         </div>
 
-        {/* Progress Tracker */}
-        <div className="mb-8">
-          <ProgressTracker />
-        </div>
-
         <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
           {/* Modern button navigation */}
           <div className="flex flex-wrap gap-4 mb-8">
@@ -88,6 +83,11 @@ export default function AccountPage() {
             <SubscriptionTab />
           </TabsContent>
         </Tabs>
+
+        {/* Progress Tracker - After all tabs, before footer */}
+        <div className="mt-12">
+          <ProgressTracker />
+        </div>
       </div>
     </div>
   )
