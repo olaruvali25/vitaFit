@@ -17,9 +17,9 @@ export async function POST(request: NextRequest) {
     let body
     try {
       body = await request.json()
-      console.log("Request body parsed:", { hasName: !!body.name, hasEmail: !!body.email, hasPassword: !!body.password })
+      console.log("[Signup] Request body parsed:", { hasName: !!body.name, hasEmail: !!body.email, hasPassword: !!body.password })
     } catch (error) {
-      console.error("Failed to parse request body:", error)
+      console.error("[Signup] Failed to parse request body:", error)
       return NextResponse.json(
         { error: "Invalid request body" },
         { status: 400 }
@@ -72,21 +72,21 @@ export async function POST(request: NextRequest) {
     // Initialize free trial
     try {
       await initializeFreeTrial(user.id)
-      console.log("Free trial initialized for user:", user.id)
+      console.log("[Signup] Free trial initialized for user:", user.id)
     } catch (trialError) {
-      console.error("Failed to initialize free trial:", trialError)
+      console.error("[Signup] Failed to initialize free trial:", trialError)
       // Don't fail the signup if trial initialization fails
     }
 
-    console.log("User created successfully:", user.id)
+    console.log("[Signup] User created successfully:", user.id)
 
     return NextResponse.json(
       { message: "User created successfully", userId: user.id },
       { status: 201 }
     )
   } catch (error: any) {
-    console.error("Signup error:", error)
-    console.error("Error details:", {
+    console.error("[Signup] Signup error:", error)
+    console.error("[Signup] Error details:", {
       message: error?.message,
       stack: error?.stack,
       name: error?.name,
@@ -100,4 +100,3 @@ export async function POST(request: NextRequest) {
     )
   }
 }
-

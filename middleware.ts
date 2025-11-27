@@ -16,8 +16,8 @@ export async function middleware(request: NextRequest) {
     pathname.startsWith("/api/assessment/") ||
     pathname.startsWith("/api/plans/from-make") ||
     pathname === "/api/plans/from-make" ||
-    pathname.startsWith("/api/auth/signup") ||
-    pathname === "/api/auth/signup" ||
+    pathname.startsWith("/api/signup") ||
+    pathname === "/api/signup" ||
     pathname.startsWith("/api/test/")
   ) {
     console.log(`[Middleware] Skipping auth for public API route: ${pathname}`)

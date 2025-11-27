@@ -64,7 +64,7 @@ DATABASE_URL="file:./dev.db"
 
 2. **Signup Flow:**
    - User enters details on `/signup`
-   - POST to `/api/auth/signup` creates user in database
+   - POST to `/api/signup` creates user in database
    - Password is hashed with bcrypt
    - Auto-login attempts with `signIn("credentials", ...)`
    - If successful, redirects to `/account`

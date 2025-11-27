@@ -64,7 +64,7 @@ function SignupPageContent() {
       const normalizedEmail = email.trim().toLowerCase()
       console.log("[Signup] Attempting to create account with email:", normalizedEmail)
       
-      const response = await fetch("/api/auth/signup", {
+      const response = await fetch("/api/signup", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ name, email: normalizedEmail, password }),
