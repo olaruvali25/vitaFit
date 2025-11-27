@@ -70,40 +70,48 @@ export function ProgressTracker() {
     )
   }
 
-  if (!profile) {
-    return null
-  }
-
+  // Always show tracker, even if no profile exists yet
   const userName = session?.user?.name || "User"
-  const currentWeight = profile.weightKg || 0
-  const goalWeight = profile.goalWeight || currentWeight
+  const currentWeight = profile?.weightKg || 0
+  const goalWeight = profile?.goalWeight || currentWeight || 0
   const dailyCalories = plan?.caloriesTarget || 0
   const workoutsPerWeek = plan?.workoutsPerWeek || 0
   const dailyWaterGlasses = 8 // Default water intake
-  const progressPercentage = goalWeight < currentWeight 
-    ? Math.max(0, Math.min(100, ((currentWeight - goalWeight) / (currentWeight - goalWeight + 1)) * 100))
-    : goalWeight > currentWeight
-    ? Math.max(0, Math.min(100, ((currentWeight / goalWeight) * 100)))
-    : 100
+  
+  // Calculate progress percentage
+  let progressPercentage = 0
+  if (currentWeight > 0 && goalWeight > 0) {
+    if (goalWeight < currentWeight) {
+      // Weight loss goal
+      const totalToLose = currentWeight - goalWeight
+      progressPercentage = Math.max(0, Math.min(100, 50)) // Default to 50% if no progress data
+    } else if (goalWeight > currentWeight) {
+      // Weight gain goal
+      progressPercentage = Math.max(0, Math.min(100, (currentWeight / goalWeight) * 100))
+    } else {
+      progressPercentage = 100
+    }
+  }
+
 
   const stats = [
     {
       label: "Current Weight",
-      value: `${currentWeight.toFixed(1)} kg`,
+      value: currentWeight > 0 ? `${currentWeight.toFixed(1)} kg` : "Not set",
       icon: TrendingUp,
       color: "text-emerald-400",
       bgColor: "bg-emerald-500/10",
     },
     {
       label: "Goal Weight",
-      value: `${goalWeight.toFixed(1)} kg`,
+      value: goalWeight > 0 ? `${goalWeight.toFixed(1)} kg` : "Not set",
       icon: Target,
       color: "text-blue-400",
       bgColor: "bg-blue-500/10",
     },
     {
       label: "Daily Calories",
-      value: `${Math.round(dailyCalories)} kcal`,
+      value: dailyCalories > 0 ? `${Math.round(dailyCalories)} kcal` : "No plan yet",
       icon: Flame,
       color: "text-orange-400",
       bgColor: "bg-orange-500/10",
@@ -117,7 +125,7 @@ export function ProgressTracker() {
     },
     {
       label: "Workouts/Week",
-      value: `${workoutsPerWeek} sessions`,
+      value: workoutsPerWeek > 0 ? `${workoutsPerWeek} sessions` : "No plan yet",
       icon: Dumbbell,
       color: "text-purple-400",
       bgColor: "bg-purple-500/10",
