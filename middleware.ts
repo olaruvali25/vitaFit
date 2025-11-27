@@ -18,7 +18,8 @@ export async function middleware(request: NextRequest) {
     pathname === "/api/plans/from-make" ||
     pathname.startsWith("/api/signup") ||
     pathname === "/api/signup" ||
-    pathname.startsWith("/api/test/")
+    pathname.startsWith("/api/test/") ||
+    pathname === "/api/auth/signup" // Legacy signup route
   ) {
     console.log(`[Middleware] Skipping auth for public API route: ${pathname}`)
     return NextResponse.next()

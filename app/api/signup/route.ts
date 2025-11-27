@@ -13,6 +13,18 @@ export async function POST(request: NextRequest) {
   console.log("[Signup] Method:", request.method)
   console.log("[Signup] Headers:", Object.fromEntries(request.headers.entries()))
   
+  // CORS headers for development
+  const headers = new Headers()
+  headers.set("Content-Type", "application/json")
+  headers.set("Access-Control-Allow-Origin", "*")
+  headers.set("Access-Control-Allow-Methods", "POST, OPTIONS")
+  headers.set("Access-Control-Allow-Headers", "Content-Type")
+  
+  // Handle OPTIONS request for CORS
+  if (request.method === "OPTIONS") {
+    return new NextResponse(null, { status: 200, headers })
+  }
+  
   try {
     let body
     try {
@@ -22,23 +34,25 @@ export async function POST(request: NextRequest) {
       console.error("[Signup] Failed to parse request body:", error)
       return NextResponse.json(
         { error: "Invalid request body" },
-        { status: 400 }
+        { status: 400, headers }
       )
     }
 
     const { name, email, password } = body
 
     if (!name || !email || !password) {
+      console.error("[Signup] Missing required fields:", { hasName: !!name, hasEmail: !!email, hasPassword: !!password })
       return NextResponse.json(
         { error: "Name, email, and password are required" },
-        { status: 400 }
+        { status: 400, headers }
       )
     }
 
     if (password.length < 8) {
+      console.error("[Signup] Password too short:", password.length)
       return NextResponse.json(
         { error: "Password must be at least 8 characters" },
-        { status: 400 }
+        { status: 400, headers }
       )
     }
 
@@ -82,7 +96,7 @@ export async function POST(request: NextRequest) {
 
     return NextResponse.json(
       { message: "User created successfully", userId: user.id },
-      { status: 201 }
+      { status: 201, headers }
     )
   } catch (error: any) {
     console.error("[Signup] Signup error:", error)
@@ -90,13 +104,14 @@ export async function POST(request: NextRequest) {
       message: error?.message,
       stack: error?.stack,
       name: error?.name,
+      code: error?.code,
     })
     return NextResponse.json(
       { 
         error: error?.message || "Failed to create account",
         details: process.env.NODE_ENV === "development" ? error?.stack : undefined
       },
-      { status: 500 }
+      { status: 500, headers }
     )
   }
 }
