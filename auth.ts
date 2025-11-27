@@ -36,7 +36,12 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
         try {
           const emailInput = (credentials.email as string).trim()
           const normalizedEmail = emailInput.toLowerCase()
-          console.log("[Auth] Attempting to authorize user with email:", normalizedEmail)
+          const passwordInput = credentials.password as string
+          
+          console.log("[Auth] ====== AUTHORIZATION ATTEMPT ======")
+          console.log("[Auth] Email input:", emailInput)
+          console.log("[Auth] Normalized email:", normalizedEmail)
+          console.log("[Auth] Password provided:", passwordInput ? "YES (length: " + passwordInput.length + ")" : "NO")
           
           // Try normalized email first (new standard)
           let user = await prisma.user.findUnique({
@@ -67,26 +72,36 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
           }
 
           if (!user) {
-            console.error("[Auth] User not found with email:", emailInput, "or", normalizedEmail)
+            console.error("[Auth] ❌ User not found with email:", emailInput, "or", normalizedEmail)
             return null
           }
+
+          console.log("[Auth] ✅ User found:", { id: user.id, email: user.email, name: user.name })
 
           if (!user.passwordHash) {
-            console.error("[Auth] User has no password hash:", user.id)
+            console.error("[Auth] ❌ User has no password hash:", user.id)
             return null
           }
 
+          console.log("[Auth] Password hash exists, length:", user.passwordHash.length)
+          console.log("[Auth] Comparing password...")
+          
           const isPasswordValid = await bcrypt.compare(
-            credentials.password as string,
+            passwordInput,
             user.passwordHash
           )
 
+          console.log("[Auth] Password comparison result:", isPasswordValid)
+
           if (!isPasswordValid) {
-            console.error("[Auth] Invalid password for user:", user.id)
+            console.error("[Auth] ❌ Invalid password for user:", user.id)
+            console.error("[Auth] Password provided length:", passwordInput.length)
+            console.error("[Auth] Password hash length:", user.passwordHash.length)
             return null
           }
 
-          console.log("[Auth] User authorized successfully:", user.id)
+          console.log("[Auth] ✅ User authorized successfully:", user.id)
+          console.log("[Auth] ====== AUTHORIZATION SUCCESS ======")
           return {
             id: user.id,
             email: user.email,
