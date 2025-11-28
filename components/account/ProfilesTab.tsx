@@ -171,7 +171,7 @@ export function ProfilesTab() {
   return (
     <div className="w-full relative">
       <ProfileSelector
-        title="Select a Profile"
+        title=""
         profiles={profileItems}
         onProfileSelect={(id) => {
           if (id === "add-profile") {
@@ -180,7 +180,7 @@ export function ProfilesTab() {
             handleProfileSelect(id)
           }
         }}
-        className="min-h-[60vh] bg-transparent py-8"
+        className="min-h-[40vh] bg-transparent py-4"
       />
 
       {/* Add Profile Modal */}
