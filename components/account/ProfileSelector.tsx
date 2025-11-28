@@ -48,23 +48,32 @@ export const ProfileSelector = ({
               <button
                 onClick={() => onProfileSelect(profile.id)}
                 aria-label={`Select profile: ${profile.label}`}
-                className="group relative h-28 w-28 rounded-full transition-transform duration-300 ease-in-out hover:-translate-y-2 focus:outline-none focus-visible:ring-2 focus-visible:ring-emerald-500 focus-visible:ring-offset-2 focus-visible:ring-offset-slate-900 md:h-36 md:w-36"
+                className="group relative h-28 w-28 rounded-full transition-all duration-300 ease-in-out hover:-translate-y-2 hover:scale-105 focus:outline-none focus-visible:ring-2 focus-visible:ring-emerald-500 focus-visible:ring-offset-2 focus-visible:ring-offset-slate-900 md:h-36 md:w-36"
               >
-                <div className="absolute inset-0 rounded-full bg-white/10 border-2 border-emerald-500/30 transition-all duration-300 group-hover:shadow-lg group-hover:shadow-emerald-500/20 group-hover:border-emerald-500/50"></div>
-                <div className="relative flex h-full w-full items-center justify-center overflow-hidden rounded-full">
-                  {/* Conditionally render an image or a React node */}
+                {/* Green outline with glow effect */}
+                <div className="absolute inset-0 rounded-full bg-gradient-to-br from-emerald-500/20 to-emerald-600/10 border-2 border-emerald-500/30 transition-all duration-300 group-hover:shadow-lg group-hover:shadow-emerald-500/30 group-hover:border-emerald-500/60 group-hover:bg-gradient-to-br group-hover:from-emerald-500/30 group-hover:to-emerald-600/20"></div>
+                
+                {/* Animated glow ring on hover */}
+                <div className="absolute inset-0 rounded-full opacity-0 group-hover:opacity-100 transition-opacity duration-300">
+                  <div className="absolute inset-0 rounded-full bg-emerald-500/20 blur-xl animate-pulse"></div>
+                </div>
+                
+                {/* Profile name text */}
+                <div className="relative flex h-full w-full items-center justify-center overflow-hidden rounded-full z-10">
                   {typeof profile.icon === 'string' ? (
-                    <img
-                      src={profile.icon}
-                      alt={`${profile.label} profile`}
-                      className="h-full w-full object-cover rounded-full"
-                    />
+                    // Display first letter or initials of the name
+                    <span className="text-3xl md:text-4xl font-bold text-emerald-400 group-hover:text-emerald-300 transition-colors duration-300">
+                      {profile.label.charAt(0).toUpperCase()}
+                    </span>
                   ) : (
+                    // For "Add Profile" button, show the icon
                     profile.icon
                   )}
                 </div>
               </button>
-              <p className="text-lg text-white/70 transition-colors group-hover:text-white text-center">
+              
+              {/* Profile name label below */}
+              <p className="text-lg font-semibold text-white/80 transition-all duration-300 group-hover:text-white group-hover:scale-105 text-center">
                 {profile.label}
               </p>
             </div>

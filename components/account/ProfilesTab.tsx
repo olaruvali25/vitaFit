@@ -123,11 +123,11 @@ export function ProfilesTab() {
     )
   }
 
-  // Convert profiles to ProfileSelector format
+  // Convert profiles to ProfileSelector format - use name as icon identifier
   const profileItems = profiles.map((profile) => ({
     id: profile.id,
     label: profile.name,
-    icon: profile.profilePicture || "https://api.dicebear.com/7.x/avataaars/svg?seed=" + profile.name,
+    icon: profile.name, // Use name instead of image URL
   }))
 
   // Determine if we should show the "+" button
