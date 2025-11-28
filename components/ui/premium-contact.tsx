@@ -18,7 +18,7 @@ import {
   Shield,
   Zap
 } from 'lucide-react';
-import { Logo } from '@/components/logo';
+import { LogoLarge } from '@/components/logo';
 
 const contactMethods = [
   {
