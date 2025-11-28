@@ -1,54 +1,49 @@
+import Image from 'next/image'
 import { cn } from '@/lib/utils'
 
-export const Logo = ({ className, uniColor }: { className?: string; uniColor?: boolean }) => {
+type LogoProps = {
+    className?: string
+    size?: 'sm' | 'lg'
+    priority?: boolean
+}
+
+const sizeConfig = {
+    sm: {
+        width: 140,
+        height: 40,
+        className: 'h-8',
+        sizes: '(max-width: 768px) 120px, 140px',
+    },
+    lg: {
+        width: 220,
+        height: 80,
+        className: 'h-14 md:h-16',
+        sizes: '(max-width: 768px) 180px, 220px',
+    },
+}
+
+export const Logo = ({ className, size = 'sm', priority = false }: LogoProps) => {
+    const cfg = sizeConfig[size]
+
     return (
-        <div className={cn('flex items-center', className)}>
-            {/* Custom logo SVG - place your logo.svg file in the public folder */}
-            <img
+        <div className={cn('flex items-center justify-center', className)}>
+            <Image
                 src="/logo.svg"
-                alt="VitaFit Logo"
-                className="h-8 w-auto object-contain"
-                onError={(e) => {
-                    // Fallback to text if logo.svg doesn't exist
-                    const target = e.target as HTMLImageElement
-                    target.style.display = 'none'
-                    const parent = target.parentElement
-                    if (parent && !parent.querySelector('.logo-fallback')) {
-                        const fallback = document.createElement('span')
-                        fallback.className = 'logo-fallback text-2xl font-bold text-white'
-                        fallback.textContent = 'VitaFit'
-                        parent.appendChild(fallback)
-                    }
-                }}
+                alt="VitaFit logo"
+                width={cfg.width}
+                height={cfg.height}
+                priority={priority}
+                className={cn('w-auto object-contain', cfg.className)}
+                sizes={cfg.sizes}
             />
+            <span className="sr-only">VitaFit</span>
         </div>
     )
 }
 
-// Logo component for footer/contact sections (larger size)
-export const LogoLarge = ({ className }: { className?: string }) => {
-    return (
-        <div className={cn('flex items-center justify-center', className)}>
-            <img
-                src="/logo.svg"
-                alt="VitaFit Logo"
-                className="h-12 md:h-16 w-auto object-contain"
-                onError={(e) => {
-                    // Fallback to text if logo.svg doesn't exist
-                    const target = e.target as HTMLImageElement
-                    target.style.display = 'none'
-                    const parent = target.parentElement
-                    if (parent && !parent.querySelector('.logo-fallback')) {
-                        const fallback = document.createElement('span')
-                        fallback.className = 'logo-fallback text-3xl md:text-4xl font-bold text-white'
-                        fallback.textContent = 'VitaFit'
-                        parent.appendChild(fallback)
-                    }
-                }}
-            />
-        </div>
-    )
-}
+export const LogoLarge = ({ className }: { className?: string }) => (
+    <Logo className={cn(className)} size="lg" priority />
+)
 
 export const LogoIcon = ({ className, uniColor }: { className?: string; uniColor?: boolean }) => {
     return (

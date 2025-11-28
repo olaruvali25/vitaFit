@@ -18,7 +18,7 @@ import {
   Shield,
   Zap
 } from 'lucide-react';
-import { LogoLarge } from '@/components/logo';
+import { Logo } from '@/components/logo';
 
 const contactMethods = [
   {
@@ -506,169 +506,29 @@ export function PremiumContact() {
                     ease: "linear",
                   }}
                 />
-
-                {/* Center Content - Leaf + Plate Concept */}
+                {/* Center Content */}
                 <div className="relative z-10 flex flex-col items-center justify-center gap-6">
-                  {/* Static Running Man Icon */}
-                  <div className="relative">
-                    <svg
-                      width="140"
-                      height="140"
-                      viewBox="0 0 140 140"
-                      fill="none"
-                      xmlns="http://www.w3.org/2000/svg"
-                    >
-                      <defs>
-                        <linearGradient id="runnerGradient" x1="0%" y1="0%" x2="100%" y2="100%">
-                          <stop offset="0%" stopColor="#18c260" />
-                          <stop offset="50%" stopColor="#1FCC5F" />
-                          <stop offset="100%" stopColor="#18c260" />
-                        </linearGradient>
-                      </defs>
-                      
-                      {/* Head */}
-                      <circle
-                        cx="75"
-                        cy="35"
-                        r="8"
-                        stroke="url(#runnerGradient)"
-                        strokeWidth="3"
-                        fill="none"
-                      />
-                      
-                      {/* Body/Torso - leaning forward */}
-                      <line
-                        x1="75"
-                        y1="43"
-                        x2="65"
-                        y2="70"
-                        stroke="url(#runnerGradient)"
-                        strokeWidth="3"
-                        strokeLinecap="round"
-                      />
-                      
-                      {/* Front arm (extended forward) */}
-                      <line
-                        x1="72"
-                        y1="50"
-                        x2="85"
-                        y2="45"
-                        stroke="url(#runnerGradient)"
-                        strokeWidth="3"
-                        strokeLinecap="round"
-                      />
-                      <line
-                        x1="85"
-                        y1="45"
-                        x2="95"
-                        y2="50"
-                        stroke="url(#runnerGradient)"
-                        strokeWidth="3"
-                        strokeLinecap="round"
-                      />
-                      
-                      {/* Back arm (swinging back) */}
-                      <line
-                        x1="70"
-                        y1="52"
-                        x2="55"
-                        y2="60"
-                        stroke="url(#runnerGradient)"
-                        strokeWidth="3"
-                        strokeLinecap="round"
-                      />
-                      <line
-                        x1="55"
-                        y1="60"
-                        x2="50"
-                        y2="70"
-                        stroke="url(#runnerGradient)"
-                        strokeWidth="3"
-                        strokeLinecap="round"
-                      />
-                      
-                      {/* Front leg (lifted, bent) */}
-                      <line
-                        x1="65"
-                        y1="70"
-                        x2="68"
-                        y2="85"
-                        stroke="url(#runnerGradient)"
-                        strokeWidth="3"
-                        strokeLinecap="round"
-                      />
-                      <line
-                        x1="68"
-                        y1="85"
-                        x2="75"
-                        y2="90"
-                        stroke="url(#runnerGradient)"
-                        strokeWidth="3"
-                        strokeLinecap="round"
-                      />
-                      
-                      {/* Back leg (extended back, pushing off) */}
-                      <line
-                        x1="65"
-                        y1="70"
-                        x2="55"
-                        y2="90"
-                        stroke="url(#runnerGradient)"
-                        strokeWidth="3"
-                        strokeLinecap="round"
-                      />
-                      <line
-                        x1="55"
-                        y1="90"
-                        x2="45"
-                        y2="105"
-                        stroke="url(#runnerGradient)"
-                        strokeWidth="3"
-                        strokeLinecap="round"
-                      />
-                      
-                      {/* Motion lines for speed effect */}
-                      <line
-                        x1="35"
-                        y1="50"
-                        x2="45"
-                        y2="50"
-                        stroke="#18c260"
-                        strokeWidth="2"
-                        strokeLinecap="round"
-                        opacity="0.4"
-                      />
-                      <line
-                        x1="30"
-                        y1="65"
-                        x2="42"
-                        y2="65"
-                        stroke="#18c260"
-                        strokeWidth="2"
-                        strokeLinecap="round"
-                        opacity="0.4"
-                      />
-                      <line
-                        x1="25"
-                        y1="80"
-                        x2="38"
-                        y2="80"
-                        stroke="#18c260"
-                        strokeWidth="2"
-                        strokeLinecap="round"
-                        opacity="0.4"
-                      />
-                    </svg>
+                  <div className="relative flex items-center justify-center">
+                    <Logo size="lg" className="h-24 md:h-28" priority />
                   </div>
 
-                  {/* Logo */}
+                  {/* Slogan Text */}
                   <motion.div
                     className="text-center"
                     initial={{ opacity: 0, y: 20 }}
                     animate={{ opacity: 1, y: 0 }}
                     transition={{ delay: 1.5, duration: 0.8 }}
                   >
-                    <LogoLarge />
+                    <h3
+                      className="text-3xl md:text-4xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-[#18c260] via-green-300 to-[#1FCC5F]"
+                      style={{
+                        filter: 'drop-shadow(0 0 10px rgba(24, 194, 96, 0.6))',
+                        WebkitBackgroundClip: 'text',
+                        WebkitTextFillColor: 'transparent',
+                      }}
+                    >
+                      Look Better. Feel Better. Live Better.
+                    </h3>
                   </motion.div>
 
                   {/* Floating Particles */}
