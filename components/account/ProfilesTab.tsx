@@ -70,11 +70,16 @@ export function ProfilesTab() {
     }
   }
 
-  const handleProfileSelect = (profileId: string) => {
+  const handleProfileSelect = (profileId: string, profileName?: string) => {
     // Update URL to include profileId so PlansTab can read it
     if (typeof window !== 'undefined') {
       const currentPath = window.location.pathname
-      const newUrl = `${currentPath}?profileId=${profileId}`
+      const params = new URLSearchParams()
+      params.set('profileId', profileId)
+      if (profileName) {
+        params.set('profileName', profileName)
+      }
+      const newUrl = `${currentPath}?${params.toString()}`
       router.push(newUrl)
     }
   }

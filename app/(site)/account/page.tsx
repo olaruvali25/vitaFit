@@ -15,6 +15,15 @@ export default function AccountPage() {
   const { data: session, status } = useSession()
   const searchParams = useSearchParams()
   const [activeTab, setActiveTab] = useState("profiles")
+  const [selectedProfileName, setSelectedProfileName] = useState<string | null>(null)
+  
+  // Get profile name from URL params
+  useEffect(() => {
+    const profileName = searchParams.get("profileName")
+    if (profileName) {
+      setSelectedProfileName(profileName)
+    }
+  }, [searchParams])
   
   // If profileId is in URL and we're on profiles tab, switch to plans tab
   useEffect(() => {
@@ -48,7 +57,9 @@ export default function AccountPage() {
     <div className="container px-4 py-16 md:py-24">
       <div className="mx-auto max-w-4xl">
         <div className="mb-8">
-          <h1 className="text-3xl font-bold mb-2 text-white">My Account</h1>
+          <h1 className="text-3xl font-bold mb-2 text-white">
+            {selectedProfileName ? `${selectedProfileName}'s Account` : "My Account"}
+          </h1>
           <p className="text-white/70">
             Manage your profiles, plans, and subscription
           </p>

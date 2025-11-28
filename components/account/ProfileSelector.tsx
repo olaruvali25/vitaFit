@@ -53,7 +53,7 @@ export const ProfileSelector = ({
           {profiles.map((profile) => (
             <div key={profile.id} className="flex flex-col items-center gap-1 group">
               <button
-                onClick={() => onProfileSelect(profile.id)}
+                onClick={() => onProfileSelect(profile.id, profile.label)}
                 aria-label={`Select profile: ${profile.label}`}
                 className="group relative h-16 w-16 rounded-full transition-all duration-300 ease-in-out hover:-translate-y-1 hover:scale-105 focus:outline-none focus-visible:ring-2 focus-visible:ring-emerald-500 focus-visible:ring-offset-2 focus-visible:ring-offset-slate-900 md:h-20 md:w-20"
               >
@@ -85,9 +85,20 @@ export const ProfileSelector = ({
                   {profile.label}
                 </p>
                 {profile.isMain && (
-                  <span className="text-xs" title="Main profile (holds subscription)">
-                    👑
-                  </span>
+                  <svg
+                    width="10"
+                    height="10"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="white"
+                    strokeWidth="2"
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    className="opacity-70"
+                    title="Main profile (holds subscription)"
+                  >
+                    <path d="M12 2L15.09 8.26L22 9.27L17 14.14L18.18 21.02L12 17.77L5.82 21.02L7 14.14L2 9.27L8.91 8.26L12 2Z" />
+                  </svg>
                 )}
               </div>
               
