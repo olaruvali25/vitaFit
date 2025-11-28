@@ -304,7 +304,7 @@ export function PremiumContact() {
             <div>
               <h3 className="text-3xl font-bold text-white mb-4">Send us a message</h3>
               <p className="text-white/60 text-lg">
-                Tell us about your project and we'll get back to you within 24 hours.
+                Have any questions? We're here to help.
               </p>
             </div>
 
