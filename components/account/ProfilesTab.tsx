@@ -213,7 +213,7 @@ export function ProfilesTab() {
           }
         }}
         onDelete={handleDeleteClick}
-        className="min-h-[40vh] bg-transparent py-0"
+        className="min-h-[30vh] bg-transparent py-0 -mt-2"
       />
 
       {/* Add Profile Modal */}

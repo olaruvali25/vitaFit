@@ -38,19 +38,19 @@ export const ProfileSelector = ({
   return (
     <div
       className={cn(
-        "flex w-full flex-col items-center justify-center p-2",
+        "flex w-full flex-col items-center justify-center p-0",
         className
       )}
     >
       <div className="flex flex-col items-center w-full">
         {title && (
-          <h1 className="mb-4 text-2xl font-medium text-white md:text-3xl">
+          <h1 className="mb-2 text-2xl font-medium text-white md:text-3xl">
             {title}
           </h1>
         )}
-        <div className="grid grid-cols-3 gap-3 sm:grid-cols-4 md:gap-4 lg:grid-cols-5 xl:grid-cols-6 w-full max-w-5xl">
+        <div className="grid grid-cols-3 gap-2 sm:grid-cols-4 md:gap-3 lg:grid-cols-5 xl:grid-cols-6 w-full max-w-5xl">
           {profiles.map((profile) => (
-            <div key={profile.id} className="flex flex-col items-center gap-1.5 group">
+            <div key={profile.id} className="flex flex-col items-center gap-1 group">
               <button
                 onClick={() => onProfileSelect(profile.id)}
                 aria-label={`Select profile: ${profile.label}`}
@@ -79,7 +79,7 @@ export const ProfileSelector = ({
               </button>
               
               {/* Profile name label below */}
-              <p className="text-sm font-medium text-white/80 transition-all duration-300 group-hover:text-white group-hover:scale-105 text-center">
+              <p className="text-xs font-medium text-white/80 transition-all duration-300 group-hover:text-white text-center leading-tight">
                 {profile.label}
               </p>
               
@@ -90,20 +90,20 @@ export const ProfileSelector = ({
                     e.stopPropagation()
                     onDelete(profile.id)
                   }}
-                  className="mt-0.5 text-white/60 hover:text-red-500 transition-colors duration-200"
+                  className="mt-0 text-white/60 hover:text-red-500 transition-colors duration-200"
                   aria-label={`Delete profile: ${profile.label}`}
                 >
                   <svg
                     xmlns="http://www.w3.org/2000/svg"
-                    width="16"
-                    height="16"
+                    width="14"
+                    height="14"
                     viewBox="0 0 24 24"
                     fill="none"
                     stroke="currentColor"
                     strokeWidth="2"
                     strokeLinecap="round"
                     strokeLinejoin="round"
-                    className="w-4 h-4"
+                    className="w-3.5 h-3.5"
                   >
                     <path d="M3 6h18" />
                     <path d="M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6" />

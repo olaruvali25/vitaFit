@@ -47,7 +47,7 @@ export default function AccountPage() {
 
         <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
           {/* Modern button navigation */}
-          <div className="flex flex-wrap gap-4 mb-8">
+          <div className="flex flex-wrap gap-4 mb-2">
             <ButtonColorful
               label="Profiles"
               onClick={() => setActiveTab("profiles")}
