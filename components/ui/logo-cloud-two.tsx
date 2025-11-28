@@ -13,52 +13,10 @@ const logos = [
 
 export default function LogoCloudTwo() {
     return (
-        <section className="relative overflow-hidden bg-gradient-to-b from-slate-900 via-slate-900 to-black py-16">
-            {/* Blending gradient layers for smooth transition */}
+        <section className="relative overflow-hidden bg-gradient-to-br from-black via-green-950/20 to-black py-16">
+            {/* Green gradient background - matches other sections for smooth blending */}
             <div className="absolute inset-0 pointer-events-none z-[1]">
-                {/* Base gradient transitioning to match reviews section */}
-                <div 
-                    className="absolute inset-0"
-                    style={{
-                        background: `
-                            linear-gradient(to bottom, 
-                                rgba(15, 23, 42, 1) 0%,
-                                rgba(15, 23, 42, 0.98) 30%,
-                                rgba(0, 0, 0, 0.95) 70%,
-                                rgba(0, 0, 0, 1) 100%
-                            )
-                        `
-                    }}
-                />
-                {/* Green gradient overlay - stronger at bottom to blend with reviews section */}
-                <div 
-                    className="absolute inset-0"
-                    style={{
-                        background: `
-                            linear-gradient(to bottom,
-                                transparent 0%,
-                                rgba(24, 194, 96, 0.02) 50%,
-                                rgba(24, 194, 96, 0.05) 80%,
-                                rgba(24, 194, 96, 0.08) 100%
-                            ),
-                            linear-gradient(135deg,
-                                rgba(24, 194, 96, 0.03) 0%,
-                                rgba(34, 197, 94, 0.025) 50%,
-                                rgba(24, 194, 96, 0.05) 100%
-                            )
-                        `
-                    }}
-                />
-                {/* Subtle nature tones - reduced opacity */}
-                <div 
-                    className="absolute inset-0 opacity-40"
-                    style={{
-                        background: `
-                            radial-gradient(circle at 20% 30%, rgba(24, 194, 96, 0.08) 0%, transparent 50%),
-                            radial-gradient(circle at 80% 70%, rgba(16, 185, 129, 0.06) 0%, transparent 55%)
-                        `
-                    }}
-                />
+                <div className="absolute inset-0 bg-gradient-to-br from-[#18c260]/[0.08] via-green-500/[0.05] to-[#18c260]/[0.08]"></div>
             </div>
             
             <div className="relative z-10 mx-auto max-w-6xl px-6">
