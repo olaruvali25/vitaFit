@@ -22,16 +22,11 @@ export default function AccountPage() {
     const profileName = searchParams.get("profileName")
     if (profileName) {
       setSelectedProfileName(profileName)
+    } else {
+      // Clear profile name if not in URL
+      setSelectedProfileName(null)
     }
   }, [searchParams])
-  
-  // If profileId is in URL and we're on profiles tab, switch to plans tab
-  useEffect(() => {
-    const profileId = searchParams.get("profileId")
-    if (profileId && activeTab === "profiles") {
-      setActiveTab("plans")
-    }
-  }, [searchParams, activeTab])
 
   useEffect(() => {
     if (status === "unauthenticated") {

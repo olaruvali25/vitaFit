@@ -72,15 +72,16 @@ export function ProfilesTab() {
 
   const handleProfileSelect = (profileId: string, profileName?: string) => {
     // Update URL to include profileId so PlansTab can read it
+    // But DON'T switch tabs - let user stay on Profiles tab if they want
     if (typeof window !== 'undefined') {
       const currentPath = window.location.pathname
-      const params = new URLSearchParams()
+      const params = new URLSearchParams(window.location.search)
       params.set('profileId', profileId)
       if (profileName) {
         params.set('profileName', profileName)
       }
       const newUrl = `${currentPath}?${params.toString()}`
-      router.push(newUrl)
+      router.push(newUrl, { scroll: false })
     }
   }
 
