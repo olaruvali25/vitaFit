@@ -158,7 +158,12 @@ export function ProfilesTab() {
   }
 
   // Convert profiles to ProfileSelector format - use name as icon identifier
-  const profileItems = profiles.map((profile) => ({
+  const profileItems: Array<{
+    id: string
+    label: string
+    icon: string | React.ReactNode
+    canDelete: boolean
+  }> = profiles.map((profile) => ({
     id: profile.id,
     label: profile.name,
     icon: profile.name, // Use name instead of image URL
