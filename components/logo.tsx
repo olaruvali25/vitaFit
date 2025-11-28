@@ -7,9 +7,9 @@ export const Logo = ({ className }: { className?: string }) => {
             <Image
                 src="/logo.svg"
                 alt="VitaFit logo"
-                width={140}
-                height={40}
-                className="w-auto object-contain h-8"
+                width={200}
+                height={60}
+                className="w-auto object-contain h-12 md:h-14"
             />
             <span className="sr-only">VitaFit</span>
         </div>
@@ -22,9 +22,9 @@ export const LogoLarge = ({ className }: { className?: string }) => {
             <Image
                 src="/logo.svg"
                 alt="VitaFit logo"
-                width={220}
-                height={80}
-                className="w-auto object-contain h-14 md:h-16"
+                width={320}
+                height={120}
+                className="w-auto object-contain h-24 md:h-32"
             />
             <span className="sr-only">VitaFit</span>
         </div>
