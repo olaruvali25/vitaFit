@@ -138,11 +138,6 @@ export function FeatureShowcase({
             </div>
           )}
 
-          {/* Mini heading that introduces the accordion steps */}
-          <p className="mt-6 text-base md:text-lg font-semibold text-emerald-100">
-            Our mission is simple:
-          </p>
-
           {/* Steps (Accordion) */}
           <div className="mt-4 max-w-xl">
             <Accordion type="single" className="w-full">
