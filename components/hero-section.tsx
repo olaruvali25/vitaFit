@@ -33,7 +33,7 @@ const transitionVariants = {
             transition: {
                 type: 'spring' as const,
                 bounce: 0.3,
-                duration: 1.5,
+                duration: 0.8,
             },
         },
     },
@@ -137,8 +137,8 @@ export default function HeroSection() {
                                     container: {
                                         visible: {
                                             transition: {
-                                                staggerChildren: 0.05,
-                                                delayChildren: 0.75,
+                                                staggerChildren: 0.03,
+                                                delayChildren: 0.3,
                                             },
                                         },
                                     },
