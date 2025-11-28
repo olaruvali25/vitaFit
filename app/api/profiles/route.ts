@@ -18,34 +18,7 @@ export async function GET(request: NextRequest) {
           select: { plans: true },
         },
       },
-      // Include createdAt in the response
-      select: {
-        id: true,
-        name: true,
-        age: true,
-        gender: true,
-        heightCm: true,
-        weightKg: true,
-        goal: true,
-        goalWeight: true,
-        activityLevel: true,
-        timeline: true,
-        dietaryRestrictions: true,
-        workoutDays: true,
-        workoutDuration: true,
-        mealPrepDuration: true,
-        profilePicture: true,
-        createdAt: true,
-        updatedAt: true,
-        userId: true,
-        plans: {
-          orderBy: { createdAt: "desc" },
-          take: 1,
-        },
-        _count: {
-          select: { plans: true },
-        },
-      },
+      // createdAt is included by default when using include
     })
 
     return NextResponse.json(profiles)
