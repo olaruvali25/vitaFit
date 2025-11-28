@@ -5,7 +5,7 @@ export const Logo = ({ className }: { className?: string }) => {
     return (
         <div className={cn('flex items-center justify-center', className)}>
             <Image
-                src="/logo.svg"
+                src="/images/logo%231.svg"
                 alt="VitaFit logo"
                 width={200}
                 height={60}
@@ -20,7 +20,7 @@ export const LogoLarge = ({ className }: { className?: string }) => {
     return (
         <div className={cn('flex items-center justify-center', className)}>
             <Image
-                src="/logo.svg"
+                src="/images/logo%231.svg"
                 alt="VitaFit logo"
                 width={320}
                 height={120}
