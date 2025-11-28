@@ -49,16 +49,22 @@ export default function AccountPage() {
   }
 
   return (
-    <div className="container px-4 py-16 md:py-24">
-      <div className="mx-auto max-w-4xl">
-        <div className="mb-8">
-          <h1 className="text-3xl font-bold mb-2 text-white">
-            {selectedProfileName ? `${selectedProfileName}'s Account` : "My Account"}
-          </h1>
-          <p className="text-white/70">
-            Manage your profiles, plans, and subscription
-          </p>
-        </div>
+    <section className="relative overflow-hidden bg-gradient-to-br from-black via-green-950/20 to-black min-h-screen">
+      {/* Green gradient background layers */}
+      <div className="absolute inset-0 pointer-events-none z-[1]">
+        <div className="absolute inset-0 bg-gradient-to-br from-[#18c260]/[0.08] via-green-500/[0.05] to-[#18c260]/[0.08]"></div>
+      </div>
+      
+      <div className="container px-4 py-16 md:py-24 relative z-10">
+        <div className="mx-auto max-w-4xl">
+          <div className="mb-8">
+            <h1 className="text-3xl font-bold mb-2 text-white">
+              {selectedProfileName ? `${selectedProfileName}'s Account` : "My Account"}
+            </h1>
+            <p className="text-white/70">
+              Manage your profiles, plans, and subscription
+            </p>
+          </div>
 
         <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
           {/* Modern button navigation */}
@@ -102,8 +108,9 @@ export default function AccountPage() {
             <SubscriptionTab />
           </TabsContent>
         </Tabs>
+        </div>
       </div>
-    </div>
+    </section>
   )
 }
 

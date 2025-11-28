@@ -16,7 +16,7 @@ export default function SiteLayout({
     <>
       {/* Use the same animated hero navbar on all non-home pages */}
       {!isHomePage && <HeroHeader />}
-      <main className="flex-1">{children}</main>
+      <main className="flex-1 bg-gradient-to-br from-black via-green-950/20 to-black">{children}</main>
       <Footer />
     </>
   )
