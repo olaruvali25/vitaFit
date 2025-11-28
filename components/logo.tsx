@@ -5,11 +5,11 @@ export const Logo = ({ className }: { className?: string }) => {
     return (
         <div className={cn('flex items-center justify-center', className)}>
             <Image
-                src="/images/VitaFit.png"
+                src="/logo.svg"
                 alt="VitaFit logo"
-                width={200}
-                height={60}
-                className="w-auto object-contain h-12 md:h-14"
+                width={140}
+                height={40}
+                className="w-auto object-contain h-8"
             />
             <span className="sr-only">VitaFit</span>
         </div>
@@ -20,11 +20,11 @@ export const LogoLarge = ({ className }: { className?: string }) => {
     return (
         <div className={cn('flex items-center justify-center', className)}>
             <Image
-                src="/images/VitaFit.png"
+                src="/logo.svg"
                 alt="VitaFit logo"
-                width={320}
-                height={120}
-                className="w-auto object-contain h-24 md:h-32"
+                width={220}
+                height={80}
+                className="w-auto object-contain h-14 md:h-16"
             />
             <span className="sr-only">VitaFit</span>
         </div>
