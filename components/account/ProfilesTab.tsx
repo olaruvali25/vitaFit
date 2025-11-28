@@ -4,7 +4,7 @@ import { useState, useEffect } from "react"
 import { useSession } from "next-auth/react"
 import { useRouter } from "next/navigation"
 import { ProfileSelector, ProfileIcon } from "./ProfileSelector"
-import { Plus, X } from "lucide-react"
+import { Plus, X, Trash2 } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
@@ -33,6 +33,8 @@ export function ProfilesTab() {
   const [showAddModal, setShowAddModal] = useState(false)
   const [newProfileName, setNewProfileName] = useState("")
   const [error, setError] = useState("")
+  const [deleteConfirmId, setDeleteConfirmId] = useState<string | null>(null)
+  const [isDeleting, setIsDeleting] = useState(false)
 
   useEffect(() => {
     fetchData()
@@ -115,6 +117,34 @@ export function ProfilesTab() {
     }
   }
 
+  const handleDeleteClick = (profileId: string) => {
+    setDeleteConfirmId(profileId)
+  }
+
+  const handleConfirmDelete = async () => {
+    if (!deleteConfirmId) return
+
+    setIsDeleting(true)
+    try {
+      const response = await fetch(`/api/profiles/${deleteConfirmId}`, {
+        method: "DELETE",
+      })
+
+      if (response.ok) {
+        setDeleteConfirmId(null)
+        fetchData()
+      } else {
+        const data = await response.json()
+        alert(data.error || "Failed to delete profile")
+      }
+    } catch (err) {
+      console.error("Failed to delete profile:", err)
+      alert("Failed to delete profile")
+    } finally {
+      setIsDeleting(false)
+    }
+  }
+
   if (loading) {
     return (
       <div className="flex items-center justify-center min-h-[400px]">
@@ -128,6 +158,7 @@ export function ProfilesTab() {
     id: profile.id,
     label: profile.name,
     icon: profile.name, // Use name instead of image URL
+    canDelete: true, // All actual profiles can be deleted
   }))
 
   // Determine if we should show the "+" button
@@ -149,6 +180,7 @@ export function ProfilesTab() {
           <Plus className="w-12 h-12 md:w-16 md:h-16" />
         </ProfileIcon>
       ),
+      canDelete: false, // "Add Profile" button cannot be deleted
     })
   }
 
@@ -180,6 +212,7 @@ export function ProfilesTab() {
             handleProfileSelect(id)
           }
         }}
+        onDelete={handleDeleteClick}
         className="min-h-[40vh] bg-transparent py-0"
       />
 
@@ -240,6 +273,51 @@ export function ProfilesTab() {
                     setNewProfileName("")
                     setError("")
                   }}
+                  className="border-white/20 text-white hover:bg-white/10"
+                >
+                  Cancel
+                </Button>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Delete Confirmation Modal */}
+      {deleteConfirmId && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm">
+          <div className="bg-slate-900 border border-white/20 rounded-2xl p-6 max-w-md w-full mx-4">
+            <div className="flex items-center justify-between mb-4">
+              <h2 className="text-2xl font-semibold text-white">Delete Profile</h2>
+              <button
+                onClick={() => setDeleteConfirmId(null)}
+                className="text-white/70 hover:text-white"
+                disabled={isDeleting}
+              >
+                <X className="w-5 h-5" />
+              </button>
+            </div>
+
+            <div className="space-y-4">
+              <p className="text-white/80 text-base">
+                Are you sure you want to delete this profile?
+              </p>
+              <p className="text-white/60 text-sm">
+                This action cannot be undone. All plans and progress data associated with this profile will be permanently deleted.
+              </p>
+
+              <div className="flex gap-3 pt-2">
+                <Button
+                  onClick={handleConfirmDelete}
+                  disabled={isDeleting}
+                  className="flex-1 bg-red-500 hover:bg-red-600 text-white"
+                >
+                  {isDeleting ? "Deleting..." : "Yes, Delete"}
+                </Button>
+                <Button
+                  variant="outline"
+                  onClick={() => setDeleteConfirmId(null)}
+                  disabled={isDeleting}
                   className="border-white/20 text-white hover:bg-white/10"
                 >
                   Cancel
