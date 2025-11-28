@@ -4,24 +4,14 @@ import { cn } from '@/lib/utils'
 export const Logo = ({ className }: { className?: string }) => {
     return (
         <div className={cn('flex items-center justify-center', className)}>
-            <img
-                src="/images/logoo"
+            <Image
+                src="/images/VitaFit.png"
                 alt="VitaFit logo"
-                className={cn('w-auto object-contain h-12 md:h-14', className)}
-                onError={(e) => {
-                    const target = e.target as HTMLImageElement
-                    target.src = '/images/logoo.svg'
-                    target.onerror = () => {
-                        target.src = '/images/logo.svg'
-                        target.onerror = () => {
-                            target.src = '/logo.svg'
-                            target.onerror = () => {
-                                target.style.display = 'none'
-                            }
-                        }
-                    }
-                }}
+                width={200}
+                height={60}
+                className="w-auto object-contain h-12 md:h-14"
             />
+            <span className="sr-only">VitaFit</span>
         </div>
     )
 }
@@ -29,24 +19,14 @@ export const Logo = ({ className }: { className?: string }) => {
 export const LogoLarge = ({ className }: { className?: string }) => {
     return (
         <div className={cn('flex items-center justify-center', className)}>
-            <img
-                src="/images/logoo"
+            <Image
+                src="/images/VitaFit.png"
                 alt="VitaFit logo"
-                className={cn('w-auto object-contain h-24 md:h-32', className)}
-                onError={(e) => {
-                    const target = e.target as HTMLImageElement
-                    target.src = '/images/logoo.svg'
-                    target.onerror = () => {
-                        target.src = '/images/logo.svg'
-                        target.onerror = () => {
-                            target.src = '/logo.svg'
-                            target.onerror = () => {
-                                target.style.display = 'none'
-                            }
-                        }
-                    }
-                }}
+                width={320}
+                height={120}
+                className="w-auto object-contain h-24 md:h-32"
             />
+            <span className="sr-only">VitaFit</span>
         </div>
     )
 }
