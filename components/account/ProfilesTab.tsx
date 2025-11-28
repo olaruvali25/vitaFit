@@ -14,6 +14,7 @@ interface Profile {
   id: string
   name: string
   profilePicture: string | null
+  createdAt?: string
 }
 
 interface MembershipInfo {
@@ -157,17 +158,29 @@ export function ProfilesTab() {
     )
   }
 
+  // Sort profiles by createdAt ASC to find the main profile (first created)
+  const sortedProfiles = [...profiles].sort((a, b) => {
+    const dateA = new Date(a.createdAt || 0).getTime()
+    const dateB = new Date(b.createdAt || 0).getTime()
+    return dateA - dateB
+  })
+  
+  // The first profile (oldest) is the main profile
+  const mainProfileId = sortedProfiles.length > 0 ? sortedProfiles[0].id : null
+
   // Convert profiles to ProfileSelector format - use name as icon identifier
   const profileItems: Array<{
     id: string
     label: string
     icon: string | React.ReactNode
     canDelete: boolean
+    isMain?: boolean
   }> = profiles.map((profile) => ({
     id: profile.id,
     label: profile.name,
     icon: profile.name, // Use name instead of image URL
     canDelete: true, // All actual profiles can be deleted
+    isMain: profile.id === mainProfileId, // Mark the main profile
   }))
 
   // Determine if we should show the "+" button

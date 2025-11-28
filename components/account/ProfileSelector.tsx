@@ -8,6 +8,7 @@ interface Profile {
   label: string
   icon: string | React.ReactNode
   canDelete?: boolean // Whether this profile can be deleted (not the "Add Profile" button)
+  isMain?: boolean // Whether this is the main profile (holds subscription)
 }
 
 // Define the props for the main ProfileSelector component
@@ -78,10 +79,17 @@ export const ProfileSelector = ({
                 </div>
               </button>
               
-              {/* Profile name label below */}
-              <p className="text-xs font-medium text-white/80 transition-all duration-300 group-hover:text-white text-center leading-tight">
-                {profile.label}
-              </p>
+              {/* Profile name label below with crown for main profile */}
+              <div className="flex items-center justify-center gap-1">
+                <p className="text-xs font-medium text-white/80 transition-all duration-300 group-hover:text-white text-center leading-tight">
+                  {profile.label}
+                </p>
+                {profile.isMain && (
+                  <span className="text-xs" title="Main profile (holds subscription)">
+                    👑
+                  </span>
+                )}
+              </div>
               
               {/* Delete button - only show for actual profiles, not "Add Profile" */}
               {profile.canDelete && onDelete && (

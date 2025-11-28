@@ -82,6 +82,10 @@ export default function AccountPage() {
 
           <TabsContent value="profiles" className="mt-0">
             <ProfilesTab />
+            {/* Progress Tracker - Only on Profiles tab */}
+            <div className="mt-16 mb-16 w-full">
+              <ProgressTracker />
+            </div>
           </TabsContent>
 
           <TabsContent value="plans" className="mt-6">
@@ -92,11 +96,6 @@ export default function AccountPage() {
             <SubscriptionTab />
           </TabsContent>
         </Tabs>
-
-        {/* Progress Tracker - After all tabs, before footer */}
-        <div className="mt-16 mb-16 w-full">
-          <ProgressTracker />
-        </div>
       </div>
     </div>
   )
