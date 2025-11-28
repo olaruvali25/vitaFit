@@ -138,36 +138,6 @@ export function FeatureShowcase({
             </div>
           )}
 
-          {/* Steps (Accordion) */}
-          <div className="mt-4 max-w-xl">
-            <Accordion type="single" className="w-full">
-              {steps.map((step) => (
-                <AccordionItem key={step.id} value={step.id}>
-                  <AccordionTrigger className="text-left text-base font-medium text-white data-[state=open]:text-emerald-200">
-                    {step.title}
-                  </AccordionTrigger>
-                  <AccordionContent className="text-sm text-white">
-                    {step.text}
-                  </AccordionContent>
-                </AccordionItem>
-              ))}
-            </Accordion>
-
-            {/* CTAs */}
-            <div className="mt-8 flex flex-wrap gap-3">
-              <Button asChild size="lg">
-              <Link href="/assessment">Try FREE NOW!</Link>
-              </Button>
-              <Button
-                asChild
-                size="lg"
-                variant="secondary"
-                className="border border-white/30 bg-white/5 text-white hover:bg-white/10 hover:text-white"
-              >
-              <Link href="/reviews">See Some Results</Link>
-              </Button>
-            </div>
-          </div>
         </div>
 
         {/* Right column */}
