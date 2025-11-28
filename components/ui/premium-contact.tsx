@@ -18,6 +18,7 @@ import {
   Shield,
   Zap
 } from 'lucide-react';
+import { LogoLarge } from '@/components/logo';
 
 const contactMethods = [
   {
@@ -660,21 +661,14 @@ export function PremiumContact() {
                     </svg>
                   </div>
 
-                  {/* Slogan Text */}
+                  {/* Logo */}
                   <motion.div
                     className="text-center"
                     initial={{ opacity: 0, y: 20 }}
                     animate={{ opacity: 1, y: 0 }}
                     transition={{ delay: 1.5, duration: 0.8 }}
                   >
-                    <h3 className="text-3xl md:text-4xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-[#18c260] via-green-300 to-[#1FCC5F]"
-                        style={{
-                          filter: 'drop-shadow(0 0 10px rgba(24, 194, 96, 0.6))',
-                          WebkitBackgroundClip: 'text',
-                          WebkitTextFillColor: 'transparent'
-                        }}>
-                      Look Better. Feel Better. Live Better.
-                    </h3>
+                    <LogoLarge />
                   </motion.div>
 
                   {/* Floating Particles */}

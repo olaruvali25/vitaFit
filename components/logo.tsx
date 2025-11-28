@@ -2,9 +2,51 @@ import { cn } from '@/lib/utils'
 
 export const Logo = ({ className, uniColor }: { className?: string; uniColor?: boolean }) => {
     return (
-        <span className={cn('text-2xl font-bold text-white', className)}>
-            VitaFit
-        </span>
+        <div className={cn('flex items-center', className)}>
+            {/* Custom logo SVG - place your logo.svg file in the public folder */}
+            <img
+                src="/logo.svg"
+                alt="VitaFit Logo"
+                className="h-8 w-auto object-contain"
+                onError={(e) => {
+                    // Fallback to text if logo.svg doesn't exist
+                    const target = e.target as HTMLImageElement
+                    target.style.display = 'none'
+                    const parent = target.parentElement
+                    if (parent && !parent.querySelector('.logo-fallback')) {
+                        const fallback = document.createElement('span')
+                        fallback.className = 'logo-fallback text-2xl font-bold text-white'
+                        fallback.textContent = 'VitaFit'
+                        parent.appendChild(fallback)
+                    }
+                }}
+            />
+        </div>
+    )
+}
+
+// Logo component for footer/contact sections (larger size)
+export const LogoLarge = ({ className }: { className?: string }) => {
+    return (
+        <div className={cn('flex items-center justify-center', className)}>
+            <img
+                src="/logo.svg"
+                alt="VitaFit Logo"
+                className="h-12 md:h-16 w-auto object-contain"
+                onError={(e) => {
+                    // Fallback to text if logo.svg doesn't exist
+                    const target = e.target as HTMLImageElement
+                    target.style.display = 'none'
+                    const parent = target.parentElement
+                    if (parent && !parent.querySelector('.logo-fallback')) {
+                        const fallback = document.createElement('span')
+                        fallback.className = 'logo-fallback text-3xl md:text-4xl font-bold text-white'
+                        fallback.textContent = 'VitaFit'
+                        parent.appendChild(fallback)
+                    }
+                }}
+            />
+        </div>
     )
 }
 
