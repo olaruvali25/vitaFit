@@ -509,7 +509,7 @@ export function PremiumContact() {
                 {/* Center Content */}
                 <div className="relative z-10 flex flex-col items-center justify-center gap-6">
                   <div className="relative flex items-center justify-center">
-                    <Logo size="lg" className="h-24 md:h-28" priority />
+                    <LogoLarge />
                   </div>
 
                   {/* Slogan Text */}
