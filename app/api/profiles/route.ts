@@ -61,6 +61,9 @@ export async function POST(request: NextRequest) {
       )
     }
 
+    // Default profile picture URL - can be customized later
+    const defaultProfilePicture = "https://api.dicebear.com/7.x/avataaars/svg?seed=" + name
+
     const profile = await prisma.profile.create({
       data: {
         userId,
@@ -71,6 +74,7 @@ export async function POST(request: NextRequest) {
         weightKg: weightKg ? parseFloat(weightKg) : null,
         goal: goal || null,
         goalWeight: goalWeight ? parseFloat(goalWeight) : null,
+        profilePicture: defaultProfilePicture,
       },
     })
 

@@ -68,6 +68,9 @@ export async function POST(request: NextRequest) {
     })
 
     if (!profile) {
+      // Default profile picture URL
+      const defaultProfilePicture = "https://api.dicebear.com/7.x/avataaars/svg?seed=" + formData.fullName
+      
       // Create new profile
       profile = await prisma.profile.create({
         data: {
@@ -85,6 +88,7 @@ export async function POST(request: NextRequest) {
           workoutDays: formData.workoutDays || null,
           workoutDuration: formData.workoutDuration || null,
           mealPrepDuration: formData.mealPrepDuration || null,
+          profilePicture: defaultProfilePicture,
         },
       })
     } else {

@@ -18,7 +18,7 @@ import {
   Shield,
   Zap
 } from 'lucide-react';
-import { LogoLarge } from '@/components/logo';
+import { Logo } from '@/components/logo';
 
 const contactMethods = [
   {
@@ -509,7 +509,7 @@ export function PremiumContact() {
                 {/* Center Content */}
                 <div className="relative z-10 flex flex-col items-center justify-center gap-6">
                   <div className="relative flex items-center justify-center">
-                    <LogoLarge />
+                    <Logo size="lg" className="h-24 md:h-28" priority />
                   </div>
 
                   {/* Slogan Text */}

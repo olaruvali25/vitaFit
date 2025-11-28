@@ -162,6 +162,7 @@ function PricingSection1Content() {
   const profileId = searchParams.get("profileId")
   const assessmentCompleted = searchParams.get("assessment") === "completed"
   const trialAvailable = searchParams.get("trial") === "available"
+  const upgradePlan = searchParams.get("upgrade") // "PLUS" or "FAMILY"
 
   const revealVariants = {
     visible: (i: number) => ({
@@ -257,6 +258,8 @@ function PricingSection1Content() {
             {plans.map((plan, index) => {
               const isFreeTrial = (plan as any).isFreeTrial;
               const isPopular = (plan as any).isPopular;
+              // Highlight the plan if it matches the upgrade parameter
+              const isUpgradeTarget = upgradePlan && plan.name === upgradePlan;
               
               return (
                 <TimelineContent
@@ -267,20 +270,20 @@ function PricingSection1Content() {
                   customVariants={revealVariants}
                   className={cn(
                     "relative",
-                    isPopular && "md:col-span-2 lg:col-span-1 lg:scale-105 lg:z-10"
+                    (isPopular || isUpgradeTarget) && "md:col-span-2 lg:col-span-1 lg:scale-105 lg:z-10"
                   )}
                 >
                   <GlowingEffect spread={50} blur={25} borderWidth={isPopular ? 3 : 2} />
                   <div className={cn(
                     "relative bg-white/10 backdrop-blur-xl rounded-xl border shadow-xl p-6 h-full flex flex-col",
-                    isPopular 
+                    (isPopular || isUpgradeTarget)
                       ? "border-[#18c260]/50 shadow-[#18c260]/20 shadow-2xl" 
                       : "border-white/30"
                   )}>
-                    {isPopular && (
+                    {(isPopular || isUpgradeTarget) && (
                       <div className="absolute -top-4 left-1/2 -translate-x-1/2">
                         <span className="inline-block px-4 py-1 bg-gradient-to-r from-[#18c260] to-[#1FCC5F] text-white text-xs font-bold rounded-full shadow-lg">
-                          MOST POPULAR
+                          {isUpgradeTarget ? "UPGRADE TO THIS PLAN" : "MOST POPULAR"}
                         </span>
                       </div>
                     )}
@@ -288,7 +291,7 @@ function PricingSection1Content() {
                     <div className="mb-6">
                       <h3 className={cn(
                         "text-2xl font-bold mb-2",
-                        isPopular ? "text-[#18c260]" : "text-white"
+                        (isPopular || isUpgradeTarget) ? "text-[#18c260]" : "text-white"
                       )}>
                         {plan.name}
                       </h3>

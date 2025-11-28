@@ -116,6 +116,7 @@ model Profile {
   workoutDays     String?
   workoutDuration String?
   mealPrepDuration String?
+  profilePicture  String?  // URL to profile picture, defaults to a default avatar
   createdAt       DateTime @default(now())
   updatedAt       DateTime @updatedAt
 

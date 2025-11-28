@@ -4,6 +4,8 @@ import { useState } from "react"
 import Link from "next/link"
 import { Button } from "@/components/ui/button"
 import { Menu, X } from "lucide-react"
+import Image from "next/image";
+import logo from "/public/images/VitaFit.png";
 
 export function Navbar() {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false)
@@ -12,9 +14,19 @@ export function Navbar() {
     <nav className="sticky top-0 z-50 w-full border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
       <div className="container flex h-16 items-center justify-between px-4">
         <Link href="/" className="flex items-center space-x-2">
-          <span className="text-2xl font-bold text-primary">VitaFit</span>
+        <Link href="/" className="flex items-center space-x-2">
+  <Image
+     src={logo}
+     alt="VitaFit Logo"
+     width={140}
+     height={40}
+     priority = {true} 
+     className="h-8 w-auto"
+  />
+</Link>
+
         </Link>
-        
+
         <div className="hidden md:flex items-center space-x-6">
           <Link href="/pricing" className="text-sm font-medium text-foreground hover:text-primary transition-colors">
             Pricing

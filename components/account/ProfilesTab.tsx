@@ -2,52 +2,43 @@
 
 import { useState, useEffect } from "react"
 import { useSession } from "next-auth/react"
+import { useRouter } from "next/navigation"
+import { ProfileSelector, ProfileIcon } from "./ProfileSelector"
+import { Plus, X } from "lucide-react"
 import { Button } from "@/components/ui/button"
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
-import { Plus, Trash2, Edit2, User } from "lucide-react"
 import { cn } from "@/lib/utils"
 
 interface Profile {
   id: string
   name: string
-  age: number | null
-  gender: string | null
-  heightCm: number | null
-  weightKg: number | null
-  goal: string | null
-  _count: {
-    plans: number
-  }
+  profilePicture: string | null
+}
+
+interface MembershipInfo {
+  plan: "BASIC" | "PLUS" | "FAMILY"
+  status: string
+  currentCount: number
+  limit: number
+  canCreate: boolean
 }
 
 export function ProfilesTab() {
   const { data: session } = useSession()
+  const router = useRouter()
   const [profiles, setProfiles] = useState<Profile[]>([])
   const [loading, setLoading] = useState(true)
-  const [showCreateForm, setShowCreateForm] = useState(false)
-  const [editingId, setEditingId] = useState<string | null>(null)
-  const [formData, setFormData] = useState({
-    name: "",
-    age: "",
-    gender: "",
-    heightCm: "",
-    weightKg: "",
-    goal: "",
-  })
+  const [membershipInfo, setMembershipInfo] = useState<MembershipInfo | null>(null)
+  const [showAddModal, setShowAddModal] = useState(false)
+  const [newProfileName, setNewProfileName] = useState("")
   const [error, setError] = useState("")
-  const [membershipInfo, setMembershipInfo] = useState<{
-    currentCount: number
-    limit: number
-    canCreate: boolean
-  } | null>(null)
 
   useEffect(() => {
-    fetchProfiles()
+    fetchData()
   }, [])
 
-  const fetchProfiles = async () => {
+  const fetchData = async () => {
     try {
       const [profilesRes, membershipRes] = await Promise.all([
         fetch("/api/profiles"),
@@ -55,314 +46,209 @@ export function ProfilesTab() {
       ])
 
       if (profilesRes.ok) {
-        const data = await profilesRes.json()
-        setProfiles(data)
-        
-        // Update membership info after profiles are loaded
-        if (membershipRes.ok) {
-          const membership = await membershipRes.json()
-          setMembershipInfo({
-            currentCount: data.length,
-            limit: membership.profileLimit || membership.profilesLimit,
-            canCreate: membership.canCreateMore !== false,
-          })
-        }
-      } else if (membershipRes.ok) {
+        const profilesData = await profilesRes.json()
+        setProfiles(profilesData)
+      }
+
+      if (membershipRes.ok) {
         const membership = await membershipRes.json()
         setMembershipInfo({
-          currentCount: 0,
-          limit: membership.profileLimit || membership.profilesLimit,
+          plan: membership.plan || "BASIC",
+          status: membership.status || "INACTIVE",
+          currentCount: membership.currentProfileCount || 0,
+          limit: membership.profileLimit || 1,
           canCreate: membership.canCreateMore !== false,
         })
       }
     } catch (err) {
-      console.error("Failed to fetch profiles:", err)
+      console.error("Failed to fetch data:", err)
     } finally {
       setLoading(false)
     }
   }
 
-  const handleCreate = async () => {
+  const handleProfileSelect = (profileId: string) => {
+    // Navigate to profile details or plan page
+    router.push(`/profiles/${profileId}/progress`)
+  }
+
+  const handleAddProfileClick = () => {
+    if (!membershipInfo) return
+
+    const { plan, currentCount } = membershipInfo
+
+    // BASIC/FREE TRIAL users with 1 profile: redirect to upgrade page
+    if (plan === "BASIC" && currentCount >= 1) {
+      router.push("/pricing?upgrade=PLUS")
+      return
+    }
+
+    // Show modal for PLUS/FAMILY users or BASIC users with 0 profiles
+    setShowAddModal(true)
+  }
+
+  const handleCreateProfile = async () => {
+    if (!newProfileName.trim()) {
+      setError("Profile name is required")
+      return
+    }
+
     setError("")
     try {
       const response = await fetch("/api/profiles", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(formData),
+        body: JSON.stringify({ name: newProfileName.trim() }),
       })
 
-      const data = await response.json()
-
-      if (!response.ok) {
+      if (response.ok) {
+        setShowAddModal(false)
+        setNewProfileName("")
+        fetchData()
+      } else {
+        const data = await response.json()
         setError(data.error || "Failed to create profile")
-        return
       }
-
-      setShowCreateForm(false)
-      setFormData({
-        name: "",
-        age: "",
-        gender: "",
-        heightCm: "",
-        weightKg: "",
-        goal: "",
-      })
-      fetchProfiles()
     } catch (err) {
+      console.error("Failed to create profile:", err)
       setError("Failed to create profile")
     }
   }
 
-  const handleUpdate = async (id: string) => {
-    setError("")
-    try {
-      const response = await fetch(`/api/profiles/${id}`, {
-        method: "PATCH",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(formData),
-      })
-
-      if (!response.ok) {
-        const data = await response.json()
-        setError(data.error || "Failed to update profile")
-        return
-      }
-
-      setEditingId(null)
-      setFormData({
-        name: "",
-        age: "",
-        gender: "",
-        heightCm: "",
-        weightKg: "",
-        goal: "",
-      })
-      fetchProfiles()
-    } catch (err) {
-      setError("Failed to update profile")
-    }
+  if (loading) {
+    return (
+      <div className="flex items-center justify-center min-h-[400px]">
+        <div className="text-white">Loading profiles...</div>
+      </div>
+    )
   }
 
-  const handleDelete = async (id: string) => {
-    if (!confirm("Are you sure you want to delete this profile?")) return
+  // Convert profiles to ProfileSelector format
+  const profileItems = profiles.map((profile) => ({
+    id: profile.id,
+    label: profile.name,
+    icon: profile.profilePicture || "https://api.dicebear.com/7.x/avataaars/svg?seed=" + profile.name,
+  }))
 
-    try {
-      const response = await fetch(`/api/profiles/${id}`, {
-        method: "DELETE",
-      })
+  // Determine if we should show the "+" button
+  const showAddButton = membershipInfo && (
+    (membershipInfo.plan === "BASIC" && membershipInfo.currentCount < 1) || // BASIC can have 1
+    (membershipInfo.plan === "BASIC" && membershipInfo.currentCount >= 1) || // BASIC with 1 profile shows button to upgrade
+    (membershipInfo.plan === "PLUS" && membershipInfo.currentCount < 2) || // PLUS can have 2
+    (membershipInfo.plan === "FAMILY" && membershipInfo.currentCount < 4) // FAMILY can have 4
+  )
 
-      if (response.ok) {
-        fetchProfiles()
-      }
-    } catch (err) {
-      console.error("Failed to delete profile:", err)
-    }
-  }
-
-  const startEdit = (profile: Profile) => {
-    setEditingId(profile.id)
-    setFormData({
-      name: profile.name,
-      age: profile.age?.toString() || "",
-      gender: profile.gender || "",
-      heightCm: profile.heightCm?.toString() || "",
-      weightKg: profile.weightKg?.toString() || "",
-      goal: profile.goal || "",
+  if (showAddButton) {
+    profileItems.push({
+      id: "add-profile",
+      label: membershipInfo?.plan === "BASIC" && membershipInfo.currentCount >= 1 
+        ? "Upgrade to Add" 
+        : "Add Profile",
+      icon: (
+        <ProfileIcon>
+          <Plus className="w-12 h-12 md:w-16 md:h-16" />
+        </ProfileIcon>
+      ),
     })
   }
 
-  if (loading) {
-    return <div className="text-center py-8 text-white">Loading profiles...</div>
+  // Show empty state if no profiles
+  if (profiles.length === 0 && !showAddButton) {
+    return (
+      <div className="flex flex-col items-center justify-center min-h-[400px] space-y-4">
+        <p className="text-white/70 text-lg">No profiles yet. Create your first profile to get started.</p>
+        <Button
+          onClick={handleAddProfileClick}
+          className="bg-emerald-500 hover:bg-emerald-600 text-white"
+        >
+          <Plus className="mr-2 h-4 w-4" />
+          Create First Profile
+        </Button>
+      </div>
+    )
   }
 
   return (
-    <div className="space-y-6">
-      <div className="flex items-center justify-between">
-        <div>
-          <h2 className="text-2xl font-semibold text-white">Profiles</h2>
-          <p className="text-sm text-white/70 mt-1">
-            {membershipInfo && (
-              <>
-                {membershipInfo.currentCount} / {membershipInfo.limit === Infinity ? "∞" : membershipInfo.limit} profiles
-                {membershipInfo.limit !== Infinity && ` (${membershipInfo.limit - membershipInfo.currentCount} remaining)`}
-              </>
+    <div className="w-full relative">
+      <ProfileSelector
+        title="Select a Profile"
+        profiles={profileItems}
+        onProfileSelect={(id) => {
+          if (id === "add-profile") {
+            handleAddProfileClick()
+          } else {
+            handleProfileSelect(id)
+          }
+        }}
+        className="min-h-[60vh] bg-transparent py-8"
+      />
+
+      {/* Add Profile Modal */}
+      {showAddModal && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm">
+          <div className="bg-slate-900 border border-white/20 rounded-2xl p-6 max-w-md w-full mx-4">
+            <div className="flex items-center justify-between mb-4">
+              <h2 className="text-2xl font-semibold text-white">Add New Profile</h2>
+              <button
+                onClick={() => {
+                  setShowAddModal(false)
+                  setNewProfileName("")
+                  setError("")
+                }}
+                className="text-white/70 hover:text-white"
+              >
+                <X className="w-5 h-5" />
+              </button>
+            </div>
+
+            {error && (
+              <div className="mb-4 rounded-lg bg-red-500/10 border border-red-500/20 p-3 text-sm text-red-400">
+                {error}
+              </div>
             )}
-          </p>
-        </div>
-        {membershipInfo?.canCreate && (
-          <Button onClick={() => setShowCreateForm(true)}>
-            <Plus className="mr-2 h-4 w-4" />
-            Add Profile
-          </Button>
-        )}
-      </div>
 
-      {error && (
-        <div className="rounded-lg bg-red-500/10 border border-red-500/20 p-3 text-sm text-red-500">
-          {error}
-        </div>
-      )}
+            <div className="space-y-4">
+              <div>
+                <Label htmlFor="profile-name" className="text-white">
+                  Profile Name
+                </Label>
+                <Input
+                  id="profile-name"
+                  value={newProfileName}
+                  onChange={(e) => setNewProfileName(e.target.value)}
+                  placeholder="Enter profile name"
+                  className="mt-2 bg-white/5 border-white/20 text-white"
+                  onKeyDown={(e) => {
+                    if (e.key === "Enter") {
+                      handleCreateProfile()
+                    }
+                  }}
+                />
+              </div>
 
-      {showCreateForm && (
-        <Card>
-          <CardHeader>
-            <CardTitle>Create New Profile</CardTitle>
-            <CardDescription>Add a new profile to your account</CardDescription>
-          </CardHeader>
-          <CardContent className="space-y-4">
-            <div className="grid gap-4 md:grid-cols-2">
-              <div className="space-y-2">
-                <Label htmlFor="name">Name *</Label>
-                <Input
-                  id="name"
-                  value={formData.name}
-                  onChange={(e) => setFormData({ ...formData, name: e.target.value })}
-                  placeholder="e.g., John, Me"
-                />
-              </div>
-              <div className="space-y-2">
-                <Label htmlFor="age">Age</Label>
-                <Input
-                  id="age"
-                  type="number"
-                  value={formData.age}
-                  onChange={(e) => setFormData({ ...formData, age: e.target.value })}
-                />
-              </div>
-              <div className="space-y-2">
-                <Label htmlFor="gender">Gender</Label>
-                <Input
-                  id="gender"
-                  value={formData.gender}
-                  onChange={(e) => setFormData({ ...formData, gender: e.target.value })}
-                  placeholder="Male, Female, Other"
-                />
-              </div>
-              <div className="space-y-2">
-                <Label htmlFor="heightCm">Height (cm)</Label>
-                <Input
-                  id="heightCm"
-                  type="number"
-                  value={formData.heightCm}
-                  onChange={(e) => setFormData({ ...formData, heightCm: e.target.value })}
-                />
-              </div>
-              <div className="space-y-2">
-                <Label htmlFor="weightKg">Weight (kg)</Label>
-                <Input
-                  id="weightKg"
-                  type="number"
-                  value={formData.weightKg}
-                  onChange={(e) => setFormData({ ...formData, weightKg: e.target.value })}
-                />
-              </div>
-              <div className="space-y-2">
-                <Label htmlFor="goal">Goal</Label>
-                <Input
-                  id="goal"
-                  value={formData.goal}
-                  onChange={(e) => setFormData({ ...formData, goal: e.target.value })}
-                  placeholder="Weight loss, Muscle gain"
-                />
+              <div className="flex gap-3">
+                <Button
+                  onClick={handleCreateProfile}
+                  className="flex-1 bg-emerald-500 hover:bg-emerald-600 text-white"
+                >
+                  Create Profile
+                </Button>
+                <Button
+                  variant="outline"
+                  onClick={() => {
+                    setShowAddModal(false)
+                    setNewProfileName("")
+                    setError("")
+                  }}
+                  className="border-white/20 text-white hover:bg-white/10"
+                >
+                  Cancel
+                </Button>
               </div>
             </div>
-            <div className="flex gap-2">
-              <Button onClick={handleCreate}>Create</Button>
-              <Button variant="outline" onClick={() => setShowCreateForm(false)}>
-                Cancel
-              </Button>
-            </div>
-          </CardContent>
-        </Card>
-      )}
-
-      <div className="grid gap-4 md:grid-cols-2">
-        {profiles.map((profile) => (
-          <Card key={profile.id}>
-            <CardHeader>
-              <div className="flex items-start justify-between">
-                <div className="flex items-center gap-2">
-                  <User className="h-5 w-5 text-white/70" />
-                  <CardTitle className="text-lg text-white">{profile.name}</CardTitle>
-                </div>
-                <div className="flex gap-1">
-                  <Button
-                    variant="ghost"
-                    size="sm"
-                    onClick={() => startEdit(profile)}
-                  >
-                    <Edit2 className="h-4 w-4" />
-                  </Button>
-                  <Button
-                    variant="ghost"
-                    size="sm"
-                    onClick={() => handleDelete(profile.id)}
-                  >
-                    <Trash2 className="h-4 w-4" />
-                  </Button>
-                </div>
-              </div>
-            </CardHeader>
-            <CardContent>
-              {editingId === profile.id ? (
-                <div className="space-y-4">
-                  <div className="grid gap-2">
-                    <Label htmlFor={`edit-name-${profile.id}`}>Name</Label>
-                    <Input
-                      id={`edit-name-${profile.id}`}
-                      value={formData.name}
-                      onChange={(e) => setFormData({ ...formData, name: e.target.value })}
-                    />
-                  </div>
-                  <div className="flex gap-2">
-                    <Button size="sm" onClick={() => handleUpdate(profile.id)}>
-                      Save
-                    </Button>
-                    <Button
-                      size="sm"
-                      variant="outline"
-                      onClick={() => {
-                        setEditingId(null)
-                        setFormData({
-                          name: "",
-                          age: "",
-                          gender: "",
-                          heightCm: "",
-                          weightKg: "",
-                          goal: "",
-                        })
-                      }}
-                    >
-                      Cancel
-                    </Button>
-                  </div>
-                </div>
-              ) : (
-                <div className="space-y-2 text-sm text-white">
-                  {profile.age && <p>Age: {profile.age}</p>}
-                  {profile.gender && <p>Gender: {profile.gender}</p>}
-                  {profile.heightCm && <p>Height: {profile.heightCm} cm</p>}
-                  {profile.weightKg && <p>Weight: {profile.weightKg} kg</p>}
-                  {profile.goal && <p>Goal: {profile.goal}</p>}
-                  <p className="text-white/70 mt-2">
-                    {profile._count.plans} plan{profile._count.plans !== 1 ? "s" : ""}
-                  </p>
-                </div>
-              )}
-            </CardContent>
-          </Card>
-        ))}
-      </div>
-
-      {profiles.length === 0 && !showCreateForm && (
-        <Card>
-          <CardContent className="py-12 text-center">
-            <User className="h-12 w-12 mx-auto text-white/70 mb-4" />
-            <p className="text-white/70">No profiles yet. Create your first profile to get started.</p>
-          </CardContent>
-        </Card>
+          </div>
+        </div>
       )}
     </div>
   )
 }
-
