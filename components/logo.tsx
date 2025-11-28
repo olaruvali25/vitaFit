@@ -1,49 +1,35 @@
 import Image from 'next/image'
 import { cn } from '@/lib/utils'
 
-type LogoProps = {
-    className?: string
-    size?: 'sm' | 'lg'
-    priority?: boolean
-}
-
-const sizeConfig = {
-    sm: {
-        width: 140,
-        height: 40,
-        className: 'h-8',
-        sizes: '(max-width: 768px) 120px, 140px',
-    },
-    lg: {
-        width: 220,
-        height: 80,
-        className: 'h-14 md:h-16',
-        sizes: '(max-width: 768px) 180px, 220px',
-    },
-}
-
-export const Logo = ({ className, size = 'sm', priority = false }: LogoProps) => {
-    const cfg = sizeConfig[size]
-
+export const Logo = ({ className }: { className?: string }) => {
     return (
         <div className={cn('flex items-center justify-center', className)}>
             <Image
                 src="/logo.svg"
                 alt="VitaFit logo"
-                width={cfg.width}
-                height={cfg.height}
-                priority={priority}
-                className={cn('w-auto object-contain', cfg.className)}
-                sizes={cfg.sizes}
+                width={140}
+                height={40}
+                className="w-auto object-contain h-8"
             />
             <span className="sr-only">VitaFit</span>
         </div>
     )
 }
 
-export const LogoLarge = ({ className }: { className?: string }) => (
-    <Logo className={cn(className)} size="lg" priority />
-)
+export const LogoLarge = ({ className }: { className?: string }) => {
+    return (
+        <div className={cn('flex items-center justify-center', className)}>
+            <Image
+                src="/logo.svg"
+                alt="VitaFit logo"
+                width={220}
+                height={80}
+                className="w-auto object-contain h-14 md:h-16"
+            />
+            <span className="sr-only">VitaFit</span>
+        </div>
+    )
+}
 
 export const LogoIcon = ({ className, uniColor }: { className?: string; uniColor?: boolean }) => {
     return (
