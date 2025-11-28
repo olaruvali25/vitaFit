@@ -47,7 +47,7 @@ const AnimatedFeatureCard = React.forwardRef<
       ref={ref}
       style={cardStyle}
       className={cn(
-        "relative flex h-[380px] w-full max-w-sm flex-col justify-end overflow-hidden rounded-2xl border bg-card p-6 shadow-sm",
+        "relative flex h-[380px] w-full max-w-sm flex-col justify-end overflow-hidden rounded-2xl border border-white/20 bg-white/5 backdrop-blur-xl p-6 shadow-sm",
         className
       )}
       whileHover="hover"
@@ -80,15 +80,17 @@ const AnimatedFeatureCard = React.forwardRef<
         }}
         transition={{ type: "spring", stiffness: 200, damping: 15 }}
       >
-        <img
-          src={imageSrc}
-          alt={tag}
-          className="w-40 h-40 object-contain"
-        />
+        {imageSrc && (
+          <img
+            src={imageSrc}
+            alt={tag}
+            className="w-40 h-40 object-contain"
+          />
+        )}
       </motion.div>
       
       {/* Content */}
-      <div className="relative z-20 rounded-lg border bg-background/80 p-4 backdrop-blur-sm dark:bg-background/60">
+      <div className="relative z-20 rounded-lg border border-white/20 bg-white/10 p-4 backdrop-blur-sm">
         <span
           className="mb-2 inline-block rounded-full px-3 py-1 text-xs font-semibold"
           style={{ 

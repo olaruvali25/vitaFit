@@ -99,21 +99,21 @@ export default function AboutPage() {
                 index="001"
                 tag="Nutrition"
                 title="Personalized meal plans tailored to your goals and preferences"
-                imageSrc="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160' viewBox='0 0 160 160'%3E%3Cpath fill='%2318c260' d='M80 20 L100 60 L140 60 L110 85 L120 125 L80 105 L40 125 L50 85 L20 60 L60 60 Z'/%3E%3Ccircle fill='%2318c260' cx='80' cy='80' r='15'/%3E%3C/svg%3E"
+                imageSrc=""
                 color="orange"
               />
               <AnimatedFeatureCard
                 index="002"
                 tag="Fitness"
                 title="Workout routines that fit your schedule and fitness level"
-                imageSrc="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160' viewBox='0 0 160 160'%3E%3Cpath fill='%2318c260' d='M80 30 L90 50 L110 50 L95 65 L105 95 L80 80 L55 95 L65 65 L50 50 L70 50 Z'/%3E%3Crect fill='%2318c260' x='75' y='70' width='10' height='40'/%3E%3Crect fill='%2318c260' x='60' y='85' width='40' height='10'/%3E%3C/svg%3E"
+                imageSrc=""
                 color="purple"
               />
               <AnimatedFeatureCard
                 index="003"
                 tag="Progress"
                 title="Track your journey with detailed analytics and insights"
-                imageSrc="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160' viewBox='0 0 160 160'%3E%3Cpath fill='%2318c260' d='M30 120 L40 100 L60 110 L80 70 L100 90 L120 50 L130 70 L130 120 L30 120 Z' stroke='%2318c260' stroke-width='3' fill='none'/%3E%3Ccircle fill='%2318c260' cx='40' cy='100' r='5'/%3E%3Ccircle fill='%2318c260' cx='60' cy='110' r='5'/%3E%3Ccircle fill='%2318c260' cx='80' cy='70' r='5'/%3E%3Ccircle fill='%2318c260' cx='100' cy='90' r='5'/%3E%3Ccircle fill='%2318c260' cx='120' cy='50' r='5'/%3E%3Ccircle fill='%2318c260' cx='130' cy='70' r='5'/%3E%3C/svg%3E"
+                imageSrc=""
                 color="blue"
               />
             </div>
