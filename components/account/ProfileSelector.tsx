@@ -95,9 +95,11 @@ export const ProfileSelector = ({
                     strokeLinecap="round"
                     strokeLinejoin="round"
                     className="opacity-70"
-                    title="Main profile (holds subscription)"
+                    aria-label="Main profile (holds subscription)"
                   >
-                    <path d="M12 2L15.09 8.26L22 9.27L17 14.14L18.18 21.02L12 17.77L5.82 21.02L7 14.14L2 9.27L8.91 8.26L12 2Z" />
+                    <title>Main profile (holds subscription)</title>
+                    <path d="M5 16L3 5l5.5 5L12 4l3.5 6L21 5l-2 11H5z" />
+                    <path d="M12 18v-4" />
                   </svg>
                 )}
               </div>
