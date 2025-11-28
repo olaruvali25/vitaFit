@@ -232,7 +232,7 @@ export function ProfilesTab() {
       <ProfileSelector
         title=""
         profiles={profileItems}
-        onProfileSelect={(id, label) => {
+        onProfileSelect={(id: string, label?: string) => {
           if (id === "add-profile") {
             handleAddProfileClick()
           } else {
