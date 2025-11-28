@@ -86,31 +86,10 @@ export default function HeroSection() {
             <HeroHeader />
 
             <main className="overflow-hidden [--color-primary-foreground:var(--color-white)] [--color-primary:var(--color-green-600)]">
-                <section id="assessment" className="relative overflow-hidden bg-gradient-to-br from-slate-900 via-emerald-950/30 to-slate-900 scroll-mt-20">
-                    {/* Nature-inspired wellness background layers */}
+                <section id="assessment" className="relative overflow-hidden bg-gradient-to-br from-black via-green-950/20 to-black scroll-mt-20">
+                    {/* Green gradient background - matches other sections for smooth blending */}
                     <div className="absolute inset-0 pointer-events-none z-[1]">
-                        {/* Base gradient - lighter nature tones */}
-                        <div 
-                            className="absolute inset-0"
-                            style={{
-                                background: `
-                                    radial-gradient(circle at 20% 30%, rgba(24, 194, 96, 0.15) 0%, rgba(24, 194, 96, 0.05) 25%, transparent 50%),
-                                    radial-gradient(circle at 80% 70%, rgba(16, 185, 129, 0.12) 0%, rgba(16, 185, 129, 0.04) 30%, transparent 55%),
-                                    radial-gradient(circle at 50% 50%, rgba(230, 247, 236, 0.08) 0%, transparent 40%),
-                                    linear-gradient(135deg, rgba(15, 23, 42, 0.95) 0%, rgba(6, 78, 59, 0.3) 50%, rgba(15, 23, 42, 0.95) 100%)
-                                `
-                            }}
-                        />
-                        {/* Soft light rays for wellness feel */}
-                        <div 
-                            className="absolute inset-0 opacity-30"
-                            style={{
-                                background: `
-                                    linear-gradient(180deg, transparent 0%, rgba(24, 194, 96, 0.03) 20%, transparent 40%),
-                                    linear-gradient(90deg, transparent 0%, rgba(16, 185, 129, 0.02) 30%, transparent 60%)
-                                `
-                            }}
-                        />
+                        <div className="absolute inset-0 bg-gradient-to-br from-[#18c260]/[0.08] via-green-500/[0.05] to-[#18c260]/[0.08]"></div>
                     </div>
                     {/* Shooting Stars - must be above gradient */}
                     <ShootingStars />
