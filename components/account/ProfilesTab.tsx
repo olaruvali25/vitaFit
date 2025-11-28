@@ -70,8 +70,13 @@ export function ProfilesTab() {
   }
 
   const handleProfileSelect = (profileId: string) => {
-    // Navigate to profile details or plan page
-    router.push(`/profiles/${profileId}/progress`)
+    // Update URL to include profileId so PlansTab can read it
+    const currentPath = window.location.pathname
+    const newUrl = `${currentPath}?profileId=${profileId}`
+    router.push(newUrl)
+    
+    // Also switch to Plans tab if we're on Profiles tab
+    // This will be handled by the parent component
   }
 
   const handleAddProfileClick = () => {
@@ -173,7 +178,7 @@ export function ProfilesTab() {
     profileItems.push({
       id: "add-profile",
       label: membershipInfo?.plan === "BASIC" && membershipInfo.currentCount >= 1 
-        ? "Upgrade to Add" 
+        ? "Add" 
         : "Add Profile",
       icon: (
         <ProfileIcon>

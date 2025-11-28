@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from "react"
 import { useSession } from "next-auth/react"
-import { redirect } from "next/navigation"
+import { redirect, useSearchParams } from "next/navigation"
 import { Tabs, TabsContent } from "@/components/ui/tabs"
 import { ButtonColorful } from "@/components/ui/button-colorful"
 import { ProfilesTab } from "@/components/account/ProfilesTab"
@@ -13,7 +13,16 @@ import { cn } from "@/lib/utils"
 
 export default function AccountPage() {
   const { data: session, status } = useSession()
+  const searchParams = useSearchParams()
   const [activeTab, setActiveTab] = useState("profiles")
+  
+  // If profileId is in URL and we're on profiles tab, switch to plans tab
+  useEffect(() => {
+    const profileId = searchParams.get("profileId")
+    if (profileId && activeTab === "profiles") {
+      setActiveTab("plans")
+    }
+  }, [searchParams, activeTab])
 
   useEffect(() => {
     if (status === "unauthenticated") {

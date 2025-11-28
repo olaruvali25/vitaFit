@@ -1,18 +1,17 @@
 "use client"
 
 import { useState, useEffect } from "react"
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
-import { Button } from "@/components/ui/button"
-import { Select } from "@/components/ui/select"
-import { Calendar, FileText, ExternalLink } from "lucide-react"
+import { useRouter, useSearchParams } from "next/navigation"
 import Link from "next/link"
+import { Calendar } from "lucide-react"
+import { cn } from "@/lib/utils"
 
 interface Plan {
   id: string
   title: string
   startDate: string
   endDate: string | null
-  source: string
+  createdAt: string
   profile: {
     id: string
     name: string
@@ -25,143 +24,151 @@ interface Profile {
 }
 
 export function PlansTab() {
+  const router = useRouter()
+  const searchParams = useSearchParams()
   const [plans, setPlans] = useState<Plan[]>([])
   const [profiles, setProfiles] = useState<Profile[]>([])
-  const [selectedProfileId, setSelectedProfileId] = useState<string>("all")
+  const [selectedProfileId, setSelectedProfileId] = useState<string | null>(null)
   const [loading, setLoading] = useState(true)
-  const [error, setError] = useState<string | null>(null)
 
   useEffect(() => {
-    fetchData()
-  }, [selectedProfileId])
+    fetchProfiles()
+  }, [])
 
-  const fetchData = async () => {
+  useEffect(() => {
+    if (selectedProfileId) {
+      fetchPlans(selectedProfileId)
+    } else {
+      // Get profile ID from URL or select first profile
+      const profileIdFromUrl = searchParams.get("profileId")
+      if (profileIdFromUrl) {
+        setSelectedProfileId(profileIdFromUrl)
+      } else if (profiles.length > 0) {
+        // Auto-select first profile if none selected
+        setSelectedProfileId(profiles[0].id)
+      }
+    }
+  }, [selectedProfileId, profiles, searchParams])
+
+  const fetchProfiles = async () => {
+    try {
+      const response = await fetch("/api/profiles")
+      if (response.ok) {
+        const data = await response.json()
+        setProfiles(data)
+        // Auto-select first profile if none selected
+        if (data.length > 0 && !selectedProfileId) {
+          const profileIdFromUrl = searchParams.get("profileId")
+          setSelectedProfileId(profileIdFromUrl || data[0].id)
+        }
+      }
+    } catch (err) {
+      console.error("Failed to fetch profiles:", err)
+    }
+  }
+
+  const fetchPlans = async (profileId: string) => {
     try {
       setLoading(true)
-      const [profilesRes, plansRes] = await Promise.all([
-        fetch("/api/profiles"),
-        fetch(`/api/plans${selectedProfileId !== "all" ? `?profileId=${selectedProfileId}` : ""}`),
-      ])
-
-      if (profilesRes.ok) {
-        const profilesData = await profilesRes.json()
-        setProfiles(profilesData)
-        // Don't auto-select first profile - let user choose "all" or specific profile
+      const response = await fetch(`/api/plans?profileId=${profileId}`)
+      if (response.ok) {
+        const data = await response.json()
+        // Sort by creation date (newest first) to show Week 1, Week 2, etc.
+        const sortedPlans = Array.isArray(data) 
+          ? data.sort((a: Plan, b: Plan) => 
+              new Date(a.createdAt).getTime() - new Date(b.createdAt).getTime()
+            )
+          : []
+        setPlans(sortedPlans)
       }
-
-      if (plansRes.ok) {
-        const plansData = await plansRes.json()
-        console.log("Fetched plans:", plansData) // Debug log
-        setPlans(Array.isArray(plansData) ? plansData : [])
-        setError(null)
-      } else {
-        const errorText = await plansRes.text()
-        console.error("Failed to fetch plans:", plansRes.status, errorText)
-        setError(`Failed to load plans: ${plansRes.status}`)
-        setPlans([])
-      }
-    } catch (err: any) {
-      console.error("Failed to fetch data:", err)
-      setError(err?.message || "Failed to load plans")
+    } catch (err) {
+      console.error("Failed to fetch plans:", err)
       setPlans([])
     } finally {
       setLoading(false)
     }
   }
 
-  const formatDate = (dateString: string) => {
-    return new Date(dateString).toLocaleDateString("en-US", {
-      year: "numeric",
-      month: "short",
-      day: "numeric",
-    })
+  const getWeekNumber = (index: number) => {
+    return `Week ${index + 1}`
   }
 
-  if (loading) {
-    return <div className="text-center py-8 text-white">Loading plans...</div>
+  if (loading && !selectedProfileId) {
+    return <div className="text-center py-8 text-white">Loading...</div>
   }
+
+  if (!selectedProfileId || profiles.length === 0) {
+    return (
+      <div className="text-center py-12">
+        <p className="text-white/70 mb-4">No profiles found. Create a profile first.</p>
+      </div>
+    )
+  }
+
+  const selectedProfile = profiles.find(p => p.id === selectedProfileId)
 
   return (
-    <div className="space-y-6">
-      <div className="flex items-center justify-between">
-        <div>
-          <h2 className="text-2xl font-semibold text-white">My Plans</h2>
-          <p className="text-sm text-white/70 mt-1">
-            View and manage your meal plans
-          </p>
-        </div>
-        {profiles.length > 0 && (
-          <Select
-            value={selectedProfileId}
-            onChange={(e) => setSelectedProfileId(e.target.value)}
-            className="w-48"
-          >
-            <option value="all">All Profiles</option>
-            {profiles.map((profile) => (
-              <option key={profile.id} value={profile.id}>
-                {profile.name}
-              </option>
-            ))}
-          </Select>
-        )}
-      </div>
-
-      {error && (
-        <div className="rounded-lg bg-red-500/10 border border-red-500/20 p-3 text-sm text-red-400">
-          {error}
+    <div className="space-y-4">
+      {/* Profile selector - show which profile's plans we're viewing */}
+      {selectedProfile && (
+        <div className="mb-4">
+          <p className="text-sm text-white/60 mb-1">Viewing plans for:</p>
+          <p className="text-lg font-semibold text-white">{selectedProfile.name}</p>
         </div>
       )}
 
-      {plans.length === 0 ? (
-        <Card>
-          <CardContent className="py-12 text-center">
-            <FileText className="h-12 w-12 mx-auto text-white/70 mb-4" />
-            <p className="text-white/70 mb-4">
-              {selectedProfileId === "all" 
-                ? "No plans found for any profile." 
-                : "No plans found for this profile."}
-            </p>
-            <Button asChild>
-              <Link href="/assessment">Create Your First Plan</Link>
-            </Button>
-          </CardContent>
-        </Card>
+      {loading ? (
+        <div className="text-center py-8 text-white">Loading plans...</div>
+      ) : plans.length === 0 ? (
+        <div className="text-center py-12">
+          <p className="text-white/70 mb-4">No meal plans found for this profile.</p>
+          <Link 
+            href="/assessment"
+            className="inline-block px-4 py-2 bg-emerald-500 hover:bg-emerald-600 text-white rounded-lg transition-colors"
+          >
+            Create Your First Plan
+          </Link>
+        </div>
       ) : (
-        <div className="grid gap-4 md:grid-cols-2">
-          {plans.map((plan) => (
-            <Card key={plan.id}>
-              <CardHeader>
-                <div className="flex items-start justify-between">
-                  <div>
-                    <CardTitle className="text-lg text-white">{plan.title}</CardTitle>
-                    <CardDescription className="mt-1 text-white/70">
-                      {plan.profile?.name || "Unknown Profile"}
-                    </CardDescription>
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+          {plans.map((plan, index) => (
+            <Link
+              key={plan.id}
+              href={`/plans/${plan.id}`}
+              className="group relative bg-white/5 hover:bg-white/10 border border-white/20 hover:border-emerald-500/50 rounded-xl p-6 transition-all duration-300 hover:scale-105 hover:shadow-lg hover:shadow-emerald-500/20"
+            >
+              {/* Week number badge */}
+              <div className="absolute -top-3 -right-3 bg-gradient-to-r from-emerald-500 to-emerald-600 text-white text-xs font-bold px-3 py-1 rounded-full shadow-lg">
+                {getWeekNumber(index)}
+              </div>
+
+              <div className="space-y-3">
+                <div>
+                  <h3 className="text-xl font-semibold text-white mb-1">
+                    {plan.title || getWeekNumber(index)}
+                  </h3>
+                  <div className="flex items-center gap-2 text-sm text-white/60">
+                    <Calendar className="h-4 w-4" />
+                    <span>
+                      {new Date(plan.startDate).toLocaleDateString("en-US", {
+                        month: "short",
+                        day: "numeric",
+                        year: "numeric",
+                      })}
+                    </span>
                   </div>
                 </div>
-              </CardHeader>
-              <CardContent className="space-y-3">
-                <div className="flex items-center gap-2 text-sm text-white/70">
-                  <Calendar className="h-4 w-4" />
-                  <span>
-                    {formatDate(plan.startDate)}
-                    {plan.endDate && ` - ${formatDate(plan.endDate)}`}
-                  </span>
+
+                <div className="pt-2 border-t border-white/10">
+                  <p className="text-sm text-emerald-400 group-hover:text-emerald-300 transition-colors">
+                    Click to view full plan →
+                  </p>
                 </div>
-                <div className="flex items-center gap-2">
-                  <Button asChild variant="outline" size="sm">
-                    <Link href={`/plans/${plan.id}`}>
-                      View Plan
-                      <ExternalLink className="ml-2 h-3 w-3" />
-                    </Link>
-                  </Button>
-                </div>
-              </CardContent>
-            </Card>
+              </div>
+            </Link>
           ))}
         </div>
       )}
     </div>
   )
 }
-
