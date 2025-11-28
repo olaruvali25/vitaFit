@@ -68,9 +68,9 @@ export default function AboutPage() {
               </span>
             </h1>
 
-            <p className="text-base md:text-lg text-white/70 max-w-2xl mx-auto leading-relaxed">
+            <p className="text-base md:text-lg text-white max-w-2xl mx-auto leading-relaxed">
               VitaFit was created for anyone who wants to get in shape{" "}
-              but is tired of guesswork, guilt, and “all or nothing” plans.
+              but is tired of guesswork, guilt, and "all or nothing" plans.
             </p>
           </section>
         </FadeInView>

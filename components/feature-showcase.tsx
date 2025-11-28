@@ -151,7 +151,7 @@ export function FeatureShowcase({
                   <AccordionTrigger className="text-left text-base font-medium text-white data-[state=open]:text-emerald-200">
                     {step.title}
                   </AccordionTrigger>
-                  <AccordionContent className="text-sm text-muted-foreground">
+                  <AccordionContent className="text-sm text-white">
                     {step.text}
                   </AccordionContent>
                 </AccordionItem>
