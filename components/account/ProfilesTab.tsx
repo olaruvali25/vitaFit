@@ -180,7 +180,7 @@ export function ProfilesTab() {
             handleProfileSelect(id)
           }
         }}
-        className="min-h-[40vh] bg-transparent py-4"
+        className="min-h-[40vh] bg-transparent py-0"
       />
 
       {/* Add Profile Modal */}

@@ -39,9 +39,11 @@ export const ProfileSelector = ({
       )}
     >
       <div className="flex flex-col items-center w-full">
-        <h1 className="mb-6 text-2xl font-medium text-white md:text-3xl">
-          {title}
-        </h1>
+        {title && (
+          <h1 className="mb-6 text-2xl font-medium text-white md:text-3xl">
+            {title}
+          </h1>
+        )}
         <div className="grid grid-cols-3 gap-3 sm:grid-cols-4 md:gap-4 lg:grid-cols-5 xl:grid-cols-6 w-full max-w-5xl">
           {profiles.map((profile) => (
             <div key={profile.id} className="flex flex-col items-center gap-2 group">

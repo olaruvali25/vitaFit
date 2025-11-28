@@ -71,7 +71,7 @@ export default function AccountPage() {
             />
           </div>
 
-          <TabsContent value="profiles" className="mt-6">
+          <TabsContent value="profiles" className="mt-2">
             <ProfilesTab />
           </TabsContent>
 
