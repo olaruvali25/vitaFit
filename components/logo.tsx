@@ -5,16 +5,19 @@ export const Logo = ({ className }: { className?: string }) => {
     return (
         <div className={cn('flex items-center justify-center', className)}>
             <img
-                src="/images/logoo.svg"
+                src="/images/logoo"
                 alt="VitaFit logo"
                 className={cn('w-auto object-contain h-12 md:h-14', className)}
                 onError={(e) => {
                     const target = e.target as HTMLImageElement
-                    target.src = '/images/logoo'
+                    target.src = '/images/logoo.svg'
                     target.onerror = () => {
                         target.src = '/images/logo.svg'
                         target.onerror = () => {
-                            target.style.display = 'none'
+                            target.src = '/logo.svg'
+                            target.onerror = () => {
+                                target.style.display = 'none'
+                            }
                         }
                     }
                 }}
@@ -27,16 +30,19 @@ export const LogoLarge = ({ className }: { className?: string }) => {
     return (
         <div className={cn('flex items-center justify-center', className)}>
             <img
-                src="/images/logoo.svg"
+                src="/images/logoo"
                 alt="VitaFit logo"
                 className={cn('w-auto object-contain h-24 md:h-32', className)}
                 onError={(e) => {
                     const target = e.target as HTMLImageElement
-                    target.src = '/images/logoo'
+                    target.src = '/images/logoo.svg'
                     target.onerror = () => {
                         target.src = '/images/logo.svg'
                         target.onerror = () => {
-                            target.style.display = 'none'
+                            target.src = '/logo.svg'
+                            target.onerror = () => {
+                                target.style.display = 'none'
+                            }
                         }
                     }
                 }}
