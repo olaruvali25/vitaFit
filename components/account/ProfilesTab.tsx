@@ -71,12 +71,11 @@ export function ProfilesTab() {
 
   const handleProfileSelect = (profileId: string) => {
     // Update URL to include profileId so PlansTab can read it
-    const currentPath = window.location.pathname
-    const newUrl = `${currentPath}?profileId=${profileId}`
-    router.push(newUrl)
-    
-    // Also switch to Plans tab if we're on Profiles tab
-    // This will be handled by the parent component
+    if (typeof window !== 'undefined') {
+      const currentPath = window.location.pathname
+      const newUrl = `${currentPath}?profileId=${profileId}`
+      router.push(newUrl)
+    }
   }
 
   const handleAddProfileClick = () => {
