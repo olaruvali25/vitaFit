@@ -203,7 +203,7 @@ export default function AboutPage() {
 
         {/* 4️⃣ CTA Card with VitaFit message */}
         <FadeInView delay={0.3} duration={0.7} y={24}>
-          <section className="space-y-4">
+          <section className="flex justify-center items-center w-full">
             <CtaCard
               imageSrc=""
               title="VitaFit is ready when you are."
