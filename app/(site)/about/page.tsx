@@ -210,7 +210,7 @@ export default function AboutPage() {
               description="You don't need a perfect routine, you need something that understands your schedule, your cravings, your lifestyle, your limits and your goals! Just a plan built for your real life."
               inputPlaceholder="Email address"
               buttonText="Get Started"
-              className="mt-8 bg-white/5 backdrop-blur-xl border-white/20"
+              className="mt-8 bg-white/5 backdrop-blur-xl border-white/20 -translate-x-20"
             />
           </section>
         </FadeInView>
