@@ -97,12 +97,12 @@ export default function AboutPage() {
             <h2 className="text-3xl md:text-4xl font-bold text-white mb-8 text-center">
               Our mission is simple.
             </h2>
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-6 w-full">
               <AnimatedFeatureCard
                 index="001"
                 cardTitle="Tell us how you really live."
                 tag="Nutrition"
-                title="Personalized meal plans tailored to your goals and preferences"
+                title="To fit health into your life, not force your life around a diet. Share your work schedule, sleep, training days, and the foods you actually enjoy"
                 imageSrc=""
                 color="orange"
               />
@@ -110,7 +110,7 @@ export default function AboutPage() {
                 index="002"
                 cardTitle="Get a weekly plan that fits."
                 tag="Fitness"
-                title="Workout routines that fit your schedule and fitness level"
+                title="To make getting in shape feel clear, not confusing. VitaFit builds your meals around your time, your calories, and your preferences. Each day has a clear structure, so you always know what to eat!"
                 imageSrc=""
                 color="purple"
               />
@@ -118,7 +118,7 @@ export default function AboutPage() {
                 index="003"
                 cardTitle="Adjust as life happens."
                 tag="Progress"
-                title="Track your journey with detailed analytics and insights"
+                title="To help you build habits you’re proud of and results you can actually see. Busy week? Extra dinner out? Progress speeding up or slowing down? Update a few details and VitaFit recalculates macros, meals, and training so your plan always matches your reality."
                 imageSrc=""
                 color="blue"
               />
