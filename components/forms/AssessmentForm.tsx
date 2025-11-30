@@ -1,6 +1,7 @@
 "use client"
 
-import { useState } from "react"
+import { useState, useEffect } from "react"
+import { useSearchParams } from "next/navigation"
 import PageOne from "./PageOne"
 import PageTwo from "./PageTwo"
 import { GlowingEffect } from "@/components/ui/glowing-effect"
@@ -32,10 +33,27 @@ interface AssessmentFormProps {
 }
 
 export default function AssessmentForm({ onSubmit }: AssessmentFormProps) {
+  const searchParams = useSearchParams()
   const [currentPage, setCurrentPage] = useState(1)
+  
+  // Get initial email from URL params or sessionStorage
+  const getInitialEmail = () => {
+    if (typeof window !== "undefined") {
+      const emailFromUrl = searchParams?.get("email")
+      if (emailFromUrl) {
+        return decodeURIComponent(emailFromUrl)
+      }
+      const emailFromStorage = sessionStorage.getItem("ctaEmail")
+      if (emailFromStorage) {
+        return emailFromStorage
+      }
+    }
+    return ""
+  }
+  
   const [formData, setFormData] = useState<AssessmentFormData>({
     fullName: "",
-    email: "",
+    email: getInitialEmail(),
     age: "",
     gender: "",
     weightKg: "",
@@ -51,6 +69,18 @@ export default function AssessmentForm({ onSubmit }: AssessmentFormProps) {
     workoutDuration: "",
     mealPrepDuration: "",
   })
+  
+  // Update email if it comes from URL params after component mounts
+  useEffect(() => {
+    const emailFromUrl = searchParams?.get("email")
+    const emailFromStorage = typeof window !== "undefined" ? sessionStorage.getItem("ctaEmail") : null
+    
+    if (emailFromUrl && !formData.email) {
+      setFormData(prev => ({ ...prev, email: decodeURIComponent(emailFromUrl) }))
+    } else if (emailFromStorage && !formData.email) {
+      setFormData(prev => ({ ...prev, email: emailFromStorage }))
+    }
+  }, [searchParams])
 
   const updateFormData = (updates: Partial<AssessmentFormData>) => {
     setFormData((prev) => ({ ...prev, ...updates }))
