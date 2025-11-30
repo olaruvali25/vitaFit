@@ -94,12 +94,12 @@ const CtaCard = React.forwardRef<HTMLDivElement, CtaCardProps>(
 
         {/* Content */}
         <motion.div
-          className="relative z-10 grid h-full grid-cols-1 items-center gap-8 p-8 md:grid-cols-2 md:p-12 lg:p-16"
+          className="relative z-10 flex flex-col items-center justify-center gap-8 p-8 md:p-12 lg:p-16 text-center"
           variants={containerVariants}
           initial="hidden"
           animate="visible"
         >
-          <div className="flex flex-col items-start text-left text-white">
+          <div className="flex flex-col items-center text-center text-white max-w-3xl">
             <motion.h2
               className="text-3xl font-extrabold tracking-tight md:text-4xl lg:text-5xl"
               variants={itemVariants}
@@ -114,7 +114,7 @@ const CtaCard = React.forwardRef<HTMLDivElement, CtaCardProps>(
             </motion.p>
           </div>
 
-          <motion.div className="flex w-full max-w-md flex-col items-center justify-center" variants={itemVariants}>
+          <motion.div className="flex w-full max-w-md flex-col items-center justify-center mt-4" variants={itemVariants}>
             <form
               onSubmit={handleSubmit}
               className="flex w-full flex-col gap-3 sm:flex-row"
