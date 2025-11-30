@@ -47,7 +47,7 @@ const AnimatedFeatureCard = React.forwardRef<
       ref={ref}
       style={cardStyle}
       className={cn(
-        "relative flex h-[380px] w-full max-w-lg flex-col justify-end overflow-hidden rounded-2xl border border-white/20 bg-white/5 backdrop-blur-xl p-6 shadow-sm",
+        "relative flex h-[380px] w-full max-w-xl flex-col justify-end overflow-hidden rounded-2xl border border-white/20 bg-white/5 backdrop-blur-xl p-6 shadow-sm",
         className
       )}
       whileHover="hover"
@@ -67,9 +67,9 @@ const AnimatedFeatureCard = React.forwardRef<
         }}
       />
       
-      {/* Index Number */}
-      <div className="absolute top-6 left-6 font-mono text-lg font-bold text-muted-foreground">
-        {index}
+      {/* Title */}
+      <div className="absolute top-6 left-6 text-lg font-bold text-white">
+        text
       </div>
       {/* Main Image */}
       <motion.div 
