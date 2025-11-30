@@ -75,7 +75,7 @@ const CtaCard = React.forwardRef<HTMLDivElement, CtaCardProps>(
       <div
         ref={ref}
         className={cn(
-          "relative w-full overflow-hidden rounded-xl border bg-card text-card-foreground shadow",
+          "relative w-full min-w-[800px] overflow-hidden rounded-xl border bg-card text-card-foreground shadow",
           className
         )}
         {...props}
