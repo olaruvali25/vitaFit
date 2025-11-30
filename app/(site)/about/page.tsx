@@ -99,7 +99,8 @@ export default function AboutPage() {
             </h2>
             <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
               <AnimatedFeatureCard
-                index=""
+                index="001"
+                cardTitle="Tell us how you really live."
                 tag="Nutrition"
                 title="Personalized meal plans tailored to your goals and preferences"
                 imageSrc=""
@@ -107,6 +108,7 @@ export default function AboutPage() {
               />
               <AnimatedFeatureCard
                 index="002"
+                cardTitle="Get a weekly plan that fits."
                 tag="Fitness"
                 title="Workout routines that fit your schedule and fitness level"
                 imageSrc=""
@@ -114,6 +116,7 @@ export default function AboutPage() {
               />
               <AnimatedFeatureCard
                 index="003"
+                cardTitle="Adjust as life happens."
                 tag="Progress"
                 title="Track your journey with detailed analytics and insights"
                 imageSrc=""
