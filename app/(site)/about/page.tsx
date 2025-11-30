@@ -97,7 +97,7 @@ export default function AboutPage() {
             <h2 className="text-3xl md:text-4xl font-bold text-white mb-8 text-center">
               Our mission is simple.
             </h2>
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-6 w-full">
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-8 w-full max-w-7xl mx-auto">
               <AnimatedFeatureCard
                 index="001"
                 cardTitle="Tell us how you really live."
