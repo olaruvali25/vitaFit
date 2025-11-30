@@ -7,6 +7,7 @@ import { FadeInView } from "@/components/ui/fade-in-view"
 import { CheckCircle2, Heart, Target, Users } from "lucide-react"
 import { FeatureShowcase } from "@/components/feature-showcase"
 import { GradualSpacing, VariableFontHoverByRandomLetter } from "@/components/ui/text-effect"
+import { CtaCard } from "@/components/ui/cta-card"
 import { GradientCard } from "@/components/ui/gradient-card"
 
 export default function AboutPage() {
@@ -79,7 +80,6 @@ export default function AboutPage() {
         {/* Feature Showcase directly under hero */}
         <FadeInView delay={0.05}>
           <FeatureShowcase
-            eyebrow="How VitaFit actually fits your life"
             title="Your goals. Your lifestyle. One simple system."
             description="See how VitaFit turns your goals, schedule, and food preferences into a clear weekly structure you can actually follow, without starving, guessing, or rebuilding your life around a diet."
             stats={["3-minute setup", "100% lifestyle-based", "No generic macros"]}
@@ -87,7 +87,7 @@ export default function AboutPage() {
             tabs={showcaseTabs}
             defaultTab="week-view"
             panelMinHeight={520}
-            className="mt-4 rounded-3xl border-none bg-white/5/5 shadow-[0_18px_80px_rgba(15,23,42,0.65)]"
+            className="mt-3 mb-3  rounded-3xl border-none bg-white/5/5 shadow-[0_18px_80px_rgba(15,23,42,0.65)]"
           />
         </FadeInView>
 
@@ -97,7 +97,7 @@ export default function AboutPage() {
             <h2 className="text-3xl md:text-4xl font-bold text-white mb-8 text-center">
               Our mission is simple.
             </h2>
-            <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 w-full max-w-[2200px] mx-auto px-4">
+            <div className="grid grid-cols-1 lg:grid-cols-1 gap-2 w-2500px  max-w-[2000px] mx-auto px-6">
               <GradientCard
                 gradient="orange"
                 badgeText="Nutrition"
@@ -201,30 +201,17 @@ export default function AboutPage() {
           </section>
         </FadeInView>
 
-        {/* 4️⃣ What VitaFit actually does (clear + benefit-driven outro text) */}
+        {/* 4️⃣ CTA Card with VitaFit message */}
         <FadeInView delay={0.3} duration={0.7} y={24}>
           <section className="space-y-4">
-            <div className="max-w-3xl mx-auto text-center md:text-left">
-              <p className="text-base md:text-lg leading-relaxed text-emerald-50/90">
-                You don&apos;t need a{" "}
-                <span className="text-emerald-300 font-semibold">perfect routine</span>, you{" "}
-                need something that understands your{" "}
-                <span className="text-emerald-300 font-semibold">schedule</span>, your{" "}
-                <span className="text-emerald-300 font-semibold">cravings</span>, your{" "}
-                <span className="text-emerald-300 font-semibold">lifestyle</span>, your{" "}
-                <span className="text-emerald-300 font-semibold">limits</span> and your{" "}
-                <span className="text-emerald-300 font-semibold">goals</span>! Just a plan
-                built for your real life.
-              </p>
-              <div className="mt-6">
-                <GradualSpacing
-                  text="VitaFit is ready when you are."
-                  className="text-2xl md:text-3xl font-semibold text-emerald-200"
-                  duration={0.4}
-                  delayMultiple={0.05}
-                />
-              </div>
-            </div>
+            <CtaCard
+              imageSrc="/images/transformation-before-1.png"
+              title="VitaFit is ready when you are."
+              description="You don't need a perfect routine, you need something that understands your schedule, your cravings, your lifestyle, your limits and your goals! Just a plan built for your real life."
+              inputPlaceholder="Email address"
+              buttonText="Get Started"
+              className="mt-8"
+            />
           </section>
         </FadeInView>
 
