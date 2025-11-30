@@ -97,7 +97,7 @@ export default function AboutPage() {
             <h2 className="text-3xl md:text-4xl font-bold text-white mb-8 text-center">
               Our mission is simple.
             </h2>
-            <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 w-full max-w-[1900px] mx-auto px-4">
+            <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 w-full max-w-[2000px] mx-auto px-4">
               <GradientCard
                 gradient="orange"
                 badgeText="Nutrition"
