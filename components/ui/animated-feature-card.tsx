@@ -49,7 +49,7 @@ const AnimatedFeatureCard = React.forwardRef<
       ref={ref}
       style={cardStyle}
       className={cn(
-        "relative flex h-[380px] w-full flex-col justify-end overflow-hidden rounded-2xl border border-white/20 bg-white/5 backdrop-blur-xl p-6 shadow-sm",
+        "relative flex min-h-[450px] w-full flex-col justify-end overflow-hidden rounded-2xl border border-white/20 bg-white/5 backdrop-blur-xl p-6 shadow-sm",
         className
       )}
       whileHover="hover"
@@ -102,7 +102,7 @@ const AnimatedFeatureCard = React.forwardRef<
         >
           {tag}
         </span>
-        <p className="text-base text-card-foreground">{title}</p>
+        <p className="text-sm md:text-base text-card-foreground leading-relaxed">{title}</p>
       </div>
     </motion.div>
   );
