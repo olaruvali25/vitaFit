@@ -10,7 +10,7 @@ import { cn } from "@/lib/utils";
 
 // Define variants for the card's overall style using cva
 const cardVariants = cva(
-  "relative flex flex-col justify-between h-full w-full overflow-hidden rounded-2xl p-8 shadow-sm transition-shadow duration-300 hover:shadow-lg",
+  "relative flex flex-col justify-between h-[420px] w-full overflow-hidden rounded-2xl p-10 shadow-sm transition-shadow duration-300 hover:shadow-lg",
   {
     variants: {
       gradient: {
