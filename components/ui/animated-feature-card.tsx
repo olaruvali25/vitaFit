@@ -8,6 +8,8 @@ import { cn } from "@/lib/utils";
 interface AnimatedFeatureCardProps extends React.HTMLAttributes<HTMLDivElement> {
   /** The numerical index to display, e.g., "001" */
   index: string;
+  /** The card title displayed at the top */
+  cardTitle: string;
   /** The tag or category label */
   tag: string;
   /** The main title or description */
@@ -40,7 +42,7 @@ const colorVariants = {
 const AnimatedFeatureCard = React.forwardRef<
   HTMLDivElement,
   AnimatedFeatureCardProps
->(({ className, index, tag, title, imageSrc, color, ...props }, ref) => {
+>(({ className, index, cardTitle, tag, title, imageSrc, color, ...props }, ref) => {
   const cardStyle = colorVariants[color] as React.CSSProperties;
   return (
     <motion.div
@@ -69,7 +71,7 @@ const AnimatedFeatureCard = React.forwardRef<
       
       {/* Title */}
       <div className="absolute top-6 left-6 text-lg font-bold text-white">
-        text
+        {cardTitle}
       </div>
       {/* Main Image */}
       <motion.div 

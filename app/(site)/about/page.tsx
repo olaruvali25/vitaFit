@@ -99,7 +99,7 @@ export default function AboutPage() {
             </h2>
             <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
               <AnimatedFeatureCard
-                index="001"
+                index=""
                 tag="Nutrition"
                 title="Personalized meal plans tailored to your goals and preferences"
                 imageSrc=""
