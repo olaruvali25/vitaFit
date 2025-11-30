@@ -89,7 +89,7 @@ const GradientCard = React.forwardRef<HTMLDivElement, GradientCardProps>(
             {/* Title and Description */}
             <div className="flex-grow">
               <h3 className="text-2xl font-bold text-foreground mb-2">{title}</h3>
-              <p className="text-foreground/70 max-w-xs">{description}</p>
+              <p className="text-foreground/70">{description}</p>
             </div>
             
           </div>
