@@ -133,18 +133,13 @@ export function FeatureShowcase({
           {stats.length > 0 && (
             <div className="flex flex-wrap gap-3">
               {stats.map((s, i) => {
-                // Match badge colors to card gradients
-                const badgeColors = [
-                  "bg-gradient-to-br from-orange-100 to-amber-200/50 text-orange-900 border-orange-200/50",
-                  "bg-gradient-to-br from-purple-100 to-indigo-200/50 text-purple-900 border-purple-200/50",
-                  "bg-gradient-to-br from-emerald-100 to-teal-200/50 text-emerald-900 border-emerald-200/50",
-                ];
                 return (
                   <Badge
                     key={i}
                     variant="secondary"
-                    className={`${badgeColors[i] || "bg-white/10 text-white border-white/20"} px-4 py-2`}
+                    className="bg-white/10 text-white border-white/20 px-4 py-2 relative pl-6"
                   >
+                    <span className="absolute left-2 h-2 w-2 rounded-full bg-emerald-500"></span>
                     {s}
                   </Badge>
                 );

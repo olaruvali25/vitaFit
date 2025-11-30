@@ -97,11 +97,11 @@ export default function AboutPage() {
             <h2 className="text-3xl md:text-4xl font-bold text-white mb-8 text-center">
               Our mission is simple.
             </h2>
-            <div className="grid grid-cols-1 lg:grid-cols-1 gap-2 w-2500px  max-w-[2000px] mx-auto px-6">
+            <div className="grid grid-cols-1 lg:grid-cols-1 gap-2 w-2500px max-w-[2000px] mx-auto px-6">
               <GradientCard
                 gradient="orange"
                 badgeText="Nutrition"
-                badgeColor="#FF6B35"
+                badgeColor="#10B981"
                 title="Tell us how you really live."
                 description="To fit health into your life, not force your life around a diet. Share your work schedule, sleep, training days, and the foods you actually enjoy"
                 ctaText="Learn more"
@@ -111,7 +111,7 @@ export default function AboutPage() {
               <GradientCard
                 gradient="purple"
                 badgeText="Fitness"
-                badgeColor="#9333EA"
+                badgeColor="#10B981"
                 title="Get a weekly plan that fits."
                 description="To make getting in shape feel clear, not confusing. VitaFit builds your meals around your time, your calories, and your preferences. Each day has a clear structure, so you always know what to eat!"
                 ctaText="Learn more"
@@ -209,8 +209,8 @@ export default function AboutPage() {
               title="VitaFit is ready when you are!"    
               description="You don't need a perfect routine, you need something that understands your schedule, your cravings, your lifestyle, your limits and your goals! Just a plan built for your real life!"
               inputPlaceholder="Email address"
-              buttonText="FREE PLAN!" 
-              className="mt-8 bg-white/5 backdrop-blur-xl border-emerald-400 -translate-x-10 hover:text-white"
+              buttonText="FREE PLAN" 
+              className="mt-8 bg-white/5 backdrop-blur-xl border-emerald-400 -translate-x-75 hover:text-white"
             />
           </section>
         </FadeInView>
