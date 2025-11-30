@@ -10,14 +10,14 @@ import { cn } from "@/lib/utils";
 
 // Define variants for the card's overall style using cva
 const cardVariants = cva(
-  "relative flex flex-col justify-between h-full w-full overflow-hidden rounded-2xl p-8 shadow-sm transition-shadow duration-300 hover:shadow-lg",
+  "relative flex flex-col justify-between h-full w-full overflow-hidden rounded-2xl p-8 shadow-sm transition-shadow duration-300 hover:shadow-lg bg-white/5 backdrop-blur-xl border border-white/20",
   {
     variants: {
       gradient: {
-        orange: "bg-gradient-to-br from-orange-100 to-amber-200/50",
-        gray: "bg-gradient-to-br from-slate-100 to-slate-200/50",
-        purple: "bg-gradient-to-br from-purple-100 to-indigo-200/50",
-        green: "bg-gradient-to-br from-emerald-100 to-teal-200/50",
+        orange: "",
+        gray: "",
+        purple: "",
+        green: "",
       },
     },
     defaultVariants: {
@@ -88,8 +88,8 @@ const GradientCard = React.forwardRef<HTMLDivElement, GradientCardProps>(
 
             {/* Title and Description */}
             <div className="flex-grow">
-              <h3 className="text-2xl font-bold text-foreground mb-2">{title}</h3>
-              <p className="text-foreground/70">{description}</p>
+              <h3 className="text-2xl font-bold text-white mb-2">{title}</h3>
+              <p className="text-white">{description}</p>
             </div>
             
           </div>
