@@ -4,6 +4,8 @@ import * as React from "react";
 
 import { motion } from "framer-motion";
 
+import { useRouter } from "next/navigation";
+
 import { cn } from "@/lib/utils";
 
 import { Button } from "@/components/ui/button";
@@ -37,13 +39,25 @@ const CtaCard = React.forwardRef<HTMLDivElement, CtaCardProps>(
     ref
   ) => {
     const [email, setEmail] = React.useState("");
+    const router = useRouter();
 
     const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
       e.preventDefault();
+      
+      // Validate email
+      if (!email || !email.trim()) {
+        return;
+      }
+      
+      // Store email in sessionStorage for assessment form
+      sessionStorage.setItem("ctaEmail", email.trim());
+      
+      // Redirect to assessment page with email in URL
+      router.push(`/assessment?email=${encodeURIComponent(email.trim())}`);
+      
       if (onButtonClick) {
         onButtonClick(email);
       }
-      console.log("Email submitted:", email);
     };
 
     // Animation variants for Framer Motion
@@ -131,7 +145,7 @@ const CtaCard = React.forwardRef<HTMLDivElement, CtaCardProps>(
               <Button
                 type="submit"
                 size="lg"
-                className="h-12 bg-white text-black hover:bg-neutral-200"
+                className="h-12 bg-emerald-500 text-white hover:bg-emerald-600"
               >
                 {buttonText}
                 <ArrowRight className="ml-2 h-4 w-4" />
