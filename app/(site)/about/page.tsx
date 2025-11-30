@@ -94,6 +94,9 @@ export default function AboutPage() {
         {/* Animated Feature Cards */}
         <FadeInView delay={0.15}>
           <section className="mt-16">
+            <h2 className="text-3xl md:text-4xl font-bold text-white mb-8 text-center">
+              Our mission is simple.
+            </h2>
             <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
               <AnimatedFeatureCard
                 index="001"
