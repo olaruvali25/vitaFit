@@ -81,14 +81,16 @@ const CtaCard = React.forwardRef<HTMLDivElement, CtaCardProps>(
         {...props}
       >
         {/* Background Image */}
-        <img
-          src={imageSrc}
-          alt="Background"
-          className="absolute inset-0 h-full w-full object-cover"
-          aria-hidden="true"
-        />
+        {imageSrc && (
+          <img
+            src={imageSrc}
+            alt="Background"
+            className="absolute inset-0 h-full w-full object-cover"
+            aria-hidden="true"
+          />
+        )}
         {/* Dark Overlay */}
-        <div className="absolute inset-0 bg-black/4" />
+        {imageSrc && <div className="absolute inset-0 bg-black/4" />}
 
         {/* Content */}
         <motion.div

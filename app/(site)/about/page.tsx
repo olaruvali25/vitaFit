@@ -205,12 +205,12 @@ export default function AboutPage() {
         <FadeInView delay={0.3} duration={0.7} y={24}>
           <section className="space-y-4">
             <CtaCard
-              imageSrc="/images/transformation-before-1.png"
+              imageSrc=""
               title="VitaFit is ready when you are."
               description="You don't need a perfect routine, you need something that understands your schedule, your cravings, your lifestyle, your limits and your goals! Just a plan built for your real life."
               inputPlaceholder="Email address"
               buttonText="Get Started"
-              className="mt-8"
+              className="mt-8 bg-white/5 backdrop-blur-xl border-white/20"
             />
           </section>
         </FadeInView>
