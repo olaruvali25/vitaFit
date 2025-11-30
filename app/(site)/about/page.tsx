@@ -7,7 +7,7 @@ import { FadeInView } from "@/components/ui/fade-in-view"
 import { CheckCircle2, Heart, Target, Users } from "lucide-react"
 import { FeatureShowcase } from "@/components/feature-showcase"
 import { GradualSpacing, VariableFontHoverByRandomLetter } from "@/components/ui/text-effect"
-import { AnimatedFeatureCard } from "@/components/ui/animated-feature-card"
+import { GradientCard } from "@/components/ui/gradient-card"
 
 export default function AboutPage() {
   const showcaseTabs = [
@@ -98,29 +98,35 @@ export default function AboutPage() {
               Our mission is simple.
             </h2>
             <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 w-full max-w-[1600px] mx-auto px-4">
-              <AnimatedFeatureCard
-                index="001"
-                cardTitle="Tell us how you really live."
-                tag="Nutrition"
-                title="To fit health into your life, not force your life around a diet. Share your work schedule, sleep, training days, and the foods you actually enjoy"
-                imageSrc=""
-                color="orange"
+              <GradientCard
+                gradient="orange"
+                badgeText="Nutrition"
+                badgeColor="#FF6B35"
+                title="Tell us how you really live."
+                description="To fit health into your life, not force your life around a diet. Share your work schedule, sleep, training days, and the foods you actually enjoy"
+                ctaText="Learn more"
+                ctaHref="#"
+                imageUrl=""
               />
-              <AnimatedFeatureCard
-                index="002"
-                cardTitle="Get a weekly plan that fits."
-                tag="Fitness"
-                title="To make getting in shape feel clear, not confusing. VitaFit builds your meals around your time, your calories, and your preferences. Each day has a clear structure, so you always know what to eat!"
-                imageSrc=""
-                color="purple"
+              <GradientCard
+                gradient="purple"
+                badgeText="Fitness"
+                badgeColor="#9333EA"
+                title="Get a weekly plan that fits."
+                description="To make getting in shape feel clear, not confusing. VitaFit builds your meals around your time, your calories, and your preferences. Each day has a clear structure, so you always know what to eat!"
+                ctaText="Learn more"
+                ctaHref="#"
+                imageUrl=""
               />
-              <AnimatedFeatureCard
-                index="003"
-                cardTitle="Adjust as life happens."
-                tag="Progress"
-                title="To help you build habits you’re proud of and results you can actually see. Busy week? Extra dinner out? Progress speeding up or slowing down? Update a few details and VitaFit recalculates macros, meals, and training so your plan always matches your reality."
-                imageSrc=""
-                color="blue"
+              <GradientCard
+                gradient="green"
+                badgeText="Progress"
+                badgeColor="#10B981"
+                title="Adjust as life happens."
+                description="To help you build habits you're proud of and results you can actually see. Busy week? Extra dinner out? Progress speeding up or slowing down? Update a few details and VitaFit recalculates macros, meals, and training so your plan always matches your reality."
+                ctaText="Learn more"
+                ctaHref="#"
+                imageUrl=""
               />
             </div>
           </section>
