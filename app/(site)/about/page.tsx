@@ -55,6 +55,53 @@ export default function AboutPage() {
       {/* Page-specific green-tinted background to lean into VitaFit's emerald aesthetic */}
       <div className="pointer-events-none absolute inset-0 -z-10 bg-gradient-to-b from-emerald-950/70 via-emerald-900/50 to-transparent" />
       <div className="container mx-auto max-w-4xl space-y-16">
+        {/* 0️⃣ Mission summary + stats (top of About page) */}
+        <FadeInView>
+          <section className="space-y-8">
+            <div className="grid gap-6 md:grid-cols-[minmax(0,1.6fr)_minmax(0,1.3fr)] items-start">
+              <div className="space-y-3">
+                <span className="text-xs font-semibold uppercase tracking-[0.2em] text-emerald-300">
+                  Why we&apos;re here
+                </span>
+                <h2 className="text-2xl md:text-3xl lg:text-4xl font-semibold tracking-tight text-white">
+                  Our mission is to make staying consistent with your health feel
+                  simple, sustainable, and actually doable.
+                </h2>
+              </div>
+              <p className="text-sm md:text-base text-white/70 leading-relaxed">
+                VitaFit blends smart nutrition, realistic planning, and habit-building
+                so you can stop restarting every Monday. Whether you&apos;re juggling work,
+                family, or a packed schedule, we help you build a plan that fits the life
+                you already live.
+              </p>
+            </div>
+
+            {/* Stats strip - uses numbers inspired by the contact section */}
+            <div className="rounded-3xl bg-white/5 backdrop-blur-xl border border-white/10 px-6 py-6 md:px-10 md:py-8">
+              <div className="grid gap-6 text-center md:grid-cols-3">
+                <div className="space-y-1">
+                  <div className="text-2xl md:text-3xl font-semibold text-white">10k+</div>
+                  <p className="text-xs md:text-sm text-white/60">
+                    Personalized meals generated with VitaFit
+                  </p>
+                </div>
+                <div className="space-y-1">
+                  <div className="text-2xl md:text-3xl font-semibold text-white">96%</div>
+                  <p className="text-xs md:text-sm text-white/60">
+                    Users who stick to their plan once it matches their real life
+                  </p>
+                </div>
+                <div className="space-y-1">
+                  <div className="text-2xl md:text-3xl font-semibold text-white">&lt; 2h</div>
+                  <p className="text-xs md:text-sm text-white/60">
+                    Average response time when you reach out for help
+                  </p>
+                </div>
+              </div>
+            </div>
+          </section>
+        </FadeInView>
+
         {/* 1️⃣ Hero (top of About page) */}
         <FadeInView>
           <section className="text-center space-y-6">
