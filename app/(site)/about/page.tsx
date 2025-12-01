@@ -203,14 +203,14 @@ export default function AboutPage() {
 
         {/* 4️⃣ CTA Card with VitaFit message */}
         <FadeInView delay={0.3} duration={0.7} y={24}>
-            <section className="flex justify-center items-center w-50 mx-left-5 min-w-7xl max-w-8xl mx-auto px-4 h-70 w-400 mx-400  justify-center items-center">
+          <section className="flex justify-center items-center w-full px-4">
             <CtaCard
               imageSrc=""
               title="VitaFit is ready when you are!"    
               description="You don't need a perfect routine, you need something that understands your schedule, your cravings, your lifestyle, your limits and your goals! Just a plan built for your real life!"
               inputPlaceholder="Email address"
               buttonText="FREE PLAN" 
-              className="mt-8 bg-white/5 backdrop-blur-xl border-emerald-400 -translate-x-75 hover:text-white"
+              className="mt-8 bg-white/5 backdrop-blur-xl border-emerald-400 hover:text-white max-w-4xl w-full"
             />
           </section>
         </FadeInView>
