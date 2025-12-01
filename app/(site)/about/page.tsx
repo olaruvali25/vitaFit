@@ -3,32 +3,14 @@
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import Link from "next/link"
+import Image from "next/image"
 import { FadeInView } from "@/components/ui/fade-in-view"
-import { CheckCircle2, Heart, Target, Users } from "lucide-react"
-import { FeatureShowcase } from "@/components/feature-showcase"
+import { CheckCircle2, Heart, Target, Users, ChevronRight } from "lucide-react"
 import { GradualSpacing, VariableFontHoverByRandomLetter } from "@/components/ui/text-effect"
 import { CtaCard } from "@/components/ui/cta-card"
 import { GradientCard } from "@/components/ui/gradient-card"
 
 export default function AboutPage() {
-  const showcaseTabs = [
-    {
-      value: "week-view",
-      label: "Weekly View",
-      src: "/images/transformation-before-1.png",
-    },
-    {
-      value: "meals",
-      label: "Meals & Macros",
-      src: "/images/transformation-before-2.png",
-    },
-    {
-      value: "adjustments",
-      label: "Smart Adjustments",
-      src: "/images/transformation-before-3.png",
-    },
-  ]
-
   const showcaseSteps = [
     {
       id: "step-1",
@@ -55,7 +37,29 @@ export default function AboutPage() {
       {/* Page-specific green-tinted background to lean into VitaFit's emerald aesthetic */}
       <div className="pointer-events-none absolute inset-0 -z-10 bg-gradient-to-b from-emerald-950/70 via-emerald-900/50 to-transparent" />
       <div className="container mx-auto max-w-4xl space-y-16">
-        {/* 0️⃣ Mission summary + stats (top of About page) */}
+        {/* 1️⃣ Hero (top of About page) */}
+        <FadeInView>
+          <section className="text-center space-y-6">
+            <div className="inline-flex items-center gap-2 rounded-full border border-emerald-500/30 bg-emerald-500/10 px-4 py-1 text-xs font-medium uppercase tracking-[0.2em] text-emerald-300">
+              <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 shadow-[0_0_10px_rgba(16,185,129,0.8)]" />
+              About VitaFit
+            </div>
+
+            <h1 className="text-balance text-3xl md:text-4xl lg:text-5xl font-semibold tracking-tight text-white">
+              Built for real people with{" "}
+              <span className="bg-gradient-to-r from-emerald-400 via-lime-300 to-emerald-400 bg-clip-text text-transparent">
+                real lives.
+              </span>
+            </h1>
+
+            <p className="text-base md:text-lg text-white max-w-2xl mx-auto leading-relaxed">
+              VitaFit was created for anyone who wants to get in shape{" "}
+              but is tired of guesswork, guilt, and "all or nothing" plans.
+            </p>
+          </section>
+        </FadeInView>
+
+        {/* 2️⃣ Mission summary + stats (under hero title) */}
         <FadeInView>
           <section className="space-y-8">
             <div className="grid gap-6 md:grid-cols-[minmax(0,1.6fr)_minmax(0,1.3fr)] items-start">
@@ -102,41 +106,133 @@ export default function AboutPage() {
           </section>
         </FadeInView>
 
-        {/* 1️⃣ Hero (top of About page) */}
-        <FadeInView>
-          <section className="text-center space-y-6">
-            <div className="inline-flex items-center gap-2 rounded-full border border-emerald-500/30 bg-emerald-500/10 px-4 py-1 text-xs font-medium uppercase tracking-[0.2em] text-emerald-300">
-              <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 shadow-[0_0_10px_rgba(16,185,129,0.8)]" />
-              About VitaFit
+        {/* 3️⃣ New About layout (as provided) */}
+        <section className="py-16 md:py-28 bg-background">
+          <div className="mx-auto max-w-6xl space-y-2 px-6">
+            <Image
+              className="rounded-xl object-cover w-full h-[240px] md:h-[460px]"
+              src="https://pub-940ccf6255b54fa799a9b01050e6c227.r2.dev/ruixen_hero_gradient.jpg"
+              alt="Hero section image"
+              width={1200}
+              height={600}
+              priority
+            />
+
+            <div className="grid gap-6 md:grid-cols-2 md:gap-12">
+              <h1 className="text-3xl md:text-4xl font-semibold text-gray-900 dark:text-white leading-snug">
+                The Lyra <span className="text-primary">ecosystem</span>{" "}
+                <span className="text-gray-500 dark:text-gray-400">
+                  brings together our models, products, and platforms.
+                </span>
+              </h1>
+              <div className="space-y-6 text-muted-foreground">
+                <p>
+                  Lyra is evolving to be more than just the models. It supports an entire ecosystem — 
+                  from products to the APIs and platforms helping developers and businesses innovate.
+                </p>
+                <Button
+                  asChild
+                  variant="secondary"
+                  size="sm"
+                  className="gap-1 pr-1.5"
+                >
+                  <Link href="#">
+                    <span>Learn More</span>
+                    <ChevronRight className="size-4" />
+                  </Link>
+                </Button>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        {/* ---------------- ABOUT SECTION (provided layout) ---------------- */}
+        <section className="py-20 md:py-28">
+          <div className="mx-auto max-w-6xl space-y-16 px-6">
+            {/* Header */}
+            <div className="grid gap-6 text-center md:grid-cols-2 md:gap-12 md:text-left">
+              <h1 className="text-4xl md:text-5xl font-semibold text-gray-900 dark:text-white">
+                About Us
+              </h1>
+              <p className="text-muted-foreground">
+                Shadcnblocks is a passionate team dedicated to creating innovative solutions
+                that empower businesses to thrive in the digital age.
+              </p>
             </div>
 
-            <h1 className="text-balance text-3xl md:text-4xl lg:text-5xl font-semibold tracking-tight text-white">
-              Built for real people with{" "}
-              <span className="bg-gradient-to-r from-emerald-400 via-lime-300 to-emerald-400 bg-clip-text text-transparent">
-                real lives.
-              </span>
-            </h1>
+            {/* ---------------- LAST THREE CARDS (NEW LAYOUT) ---------------- */}
+            <div className="flex flex-col md:flex-row gap-6 mt-16">
+              {/* LEFT BIG IMAGE */}
+              <div className="md:flex-1">
+                <Image
+                  src="https://pub-940ccf6255b54fa799a9b01050e6c227.r2.dev/ruixen_chat_gradient.png"
+                  alt="Left big image"
+                  className="rounded-xl object-cover w-full h-[300px] sm:h-[360px] md:h-[100%]"
+                  width={800}
+                  height={550}
+                />
+              </div>
 
-            <p className="text-base md:text-lg text-white max-w-2xl mx-auto leading-relaxed">
-              VitaFit was created for anyone who wants to get in shape{" "}
-              but is tired of guesswork, guilt, and "all or nothing" plans.
-            </p>
-          </section>
-        </FadeInView>
+              {/* RIGHT TWO CARDS */}
+              <div className="flex flex-col gap-6 md:flex-1">
+                {/* FIRST CARD */}
+                <motion.div
+                  whileHover={{ scale: 1.03 }}
+                  transition={{ type: "spring", stiffness: 250, damping: 20 }}
+                  className="relative overflow-hidden rounded-xl bg-black text-white shadow-lg"
+                >
+                  <motion.div
+                    whileHover={{ scale: 1.05 }}
+                    transition={{ duration: 0.4 }}
+                    className="relative h-60 sm:h-64 md:h-48 w-full overflow-hidden"
+                  >
+                    <Image
+                      src="https://pub-940ccf6255b54fa799a9b01050e6c227.r2.dev/ruixen_moon.png"
+                      alt="Card Image"
+                      className="h-full w-full object-cover"
+                      width={600}
+                      height={400}
+                    />
+                    <div className="absolute bottom-0 h-32 w-full bg-gradient-to-t from-black via-black/70 to-transparent" />
+                  </motion.div>
+                  <div className="p-6">
+                    <h3 className="text-xl font-bold">Accelerate Growth</h3>
+                    <p className="mt-2 text-sm text-gray-300">
+                      Our solutions drive innovation, efficiency, and measurable impact for businesses.
+                    </p>
+                    <Button
+                      variant="outline"
+                      className="mt-4 border-white text-black dark:text-white hover:bg-white hover:text-black"
+                    >
+                      Learn More
+                    </Button>
+                  </div>
+                </motion.div>
 
-        {/* Feature Showcase directly under hero */}
-        <FadeInView delay={0.05}>
-          <FeatureShowcase
-            title="Your goals. Your lifestyle. One simple system."
-            description="See how VitaFit turns your goals, schedule, and food preferences into a clear weekly structure you can actually follow, without starving, guessing, or rebuilding your life around a diet."
-            stats={["3-minute setup", "100% lifestyle-based", "No generic macros"]}
-            steps={showcaseSteps}
-            tabs={showcaseTabs}
-            defaultTab="week-view"
-            panelMinHeight={520}
-            className="mt-3 mb-3  rounded-3xl border-none bg-white/5/5 shadow-[0_18px_80px_rgba(15,23,42,0.65)]"
-          />
-        </FadeInView>
+                {/* SECOND CARD */}
+                <motion.div
+                  whileHover={{ scale: 1.03 }}
+                  transition={{ type: "spring", stiffness: 250, damping: 20 }}
+                  className="relative overflow-hidden rounded-xl bg-muted shadow-lg"
+                >
+                  <Image
+                    src="https://pub-940ccf6255b54fa799a9b01050e6c227.r2.dev/ruixen_hero_gradient.jpg"
+                    alt="Secondary card"
+                    className="h-full w-full object-cover min-h-[220px] sm:min-h-[240px] md:min-h-[220px]"
+                    width={600}
+                    height={400}
+                  />
+                  <div className="absolute bottom-0 left-0 right-0 p-6 bg-gradient-to-t from-black/70 to-transparent text-white">
+                    <h3 className="text-xl font-bold">Future-Ready Design</h3>
+                    <p className="mt-2 text-sm text-gray-200">
+                      Intuitive, scalable designs for modern businesses combining aesthetics and functionality.
+                    </p>
+                  </div>
+                </motion.div>
+              </div>
+            </div>
+          </div>
+        </section>
 
         {/* Animated Feature Cards */}
         <FadeInView delay={0.15}>
