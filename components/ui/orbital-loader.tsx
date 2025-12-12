@@ -2,7 +2,7 @@
 
 import React from "react"
 import { cva } from "class-variance-authority"
-import { motion } from "motion/react"
+import { motion } from "framer-motion"
 import { cn } from "@/lib/utils"
 
 const orbitalLoaderVariants = cva("flex gap-2 items-center justify-center", {

@@ -9,7 +9,7 @@ import {
   useRef,
   useState,
 } from "react"
-import { AnimationOptions, motion } from "motion/react"
+import { AnimationOptions, motion } from "framer-motion"
 import { cn } from "@/lib/utils"
 
 interface TextProps {
