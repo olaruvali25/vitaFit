@@ -31,7 +31,7 @@ export interface GradientCardProps extends React.HTMLAttributes<HTMLDivElement>,
   badgeText: string;
   badgeColor: string; // Expecting a hex color string, e.g., "#FF5733"
   title: string;
-  description: string;
+  description: string | React.ReactNode;
   ctaText: string;
   ctaHref: string;
   imageUrl: string;
@@ -88,8 +88,8 @@ const GradientCard = React.forwardRef<HTMLDivElement, GradientCardProps>(
 
             {/* Title and Description */}
             <div className="flex-grow">
-              <h3 className="text-2xl font-bold mb-2" style={{ color: badgeColor }}>{title}</h3>
-              <p className="text-white">{description}</p>
+              <h3 className="text-2xl font-bold text-emerald-600 mbacce-2">{title}</h3>
+              <p className="text-gray-700">{description}</p>
             </div>
             
           </div>

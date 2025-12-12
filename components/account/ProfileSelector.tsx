@@ -53,7 +53,8 @@ export const ProfileSelector = ({
           {profiles.map((profile) => (
             <div key={profile.id} className="flex flex-col items-center gap-1 group">
               <button
-                onClick={() => onProfileSelect(profile.id, profile.label)}
+                onClick={() => onProfileSelect(profile.id)}
+
                 aria-label={`Select profile: ${profile.label}`}
                 className="group relative h-16 w-16 rounded-full transition-all duration-300 ease-in-out hover:-translate-y-1 hover:scale-105 focus:outline-none focus-visible:ring-2 focus-visible:ring-emerald-500 focus-visible:ring-offset-2 focus-visible:ring-offset-slate-900 md:h-20 md:w-20"
               >

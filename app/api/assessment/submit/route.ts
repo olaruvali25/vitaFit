@@ -132,16 +132,25 @@ export async function POST(request: NextRequest) {
       goal: formData.goal,
       goalWeight: parseFloat(formData.goalWeight),
       timeline: formData.timeline,
+      goalIntensity: formData.goalIntensity,
       
       // Activity & Lifestyle
       activityLevel: formData.activityLevel,
       workoutDays: parseInt(formData.workoutDays) || 4,
       workoutDuration: formData.workoutDuration,
       mealPrepDuration: formData.mealPrepDuration,
+      workoutDaysMulti: formData.workoutDaysMulti || [],
+      trainingTimeOfDay: formData.trainingTimeOfDay || [],
+      dailyRoutine: formData.dailyRoutine,
+      sleepQuality: formData.sleepQuality,
+      stressLevel: formData.stressLevel,
+      waterIntake: formData.waterIntake,
       
       // Dietary info
       dietaryRestrictions: dietaryRestrictions,
       foodPreferences: foodPreferences,
+      eatingSchedule: formData.eatingSchedule,
+      foodPrepPreference: formData.foodPrepPreference,
       
       // Callback URL for Make.com to send results back
       callbackUrl: `${VITAFIT_API_BASE_URL}/api/plans/from-make`,

@@ -7,9 +7,9 @@ export const Logo = ({ className }: { className?: string }) => {
             <Image
                 src="/logo.svg"
                 alt="VitaFit logo"
-                width={140}
-                height={40}
-                className="w-auto object-contain h-8"
+                width={280}
+                height={80}
+                className="w-auto object-contain h-16 md:h-20"
             />
             <span className="sr-only">VitaFit</span>
         </div>

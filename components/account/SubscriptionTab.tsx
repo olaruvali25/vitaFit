@@ -1,6 +1,7 @@
 "use client"
 
 import { useState, useEffect } from "react"
+import { useRouter } from "next/navigation"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
@@ -17,6 +18,7 @@ interface MembershipInfo {
 }
 
 export function SubscriptionTab() {
+  const router = useRouter()
   const [membership, setMembership] = useState<MembershipInfo | null>(null)
   const [loading, setLoading] = useState(true)
 
@@ -61,8 +63,6 @@ export function SubscriptionTab() {
 
   const getPlanName = (plan: string) => {
     switch (plan) {
-      case "BASIC":
-        return "Basic"
       case "PLUS":
         return "Plus"
       case "FAMILY":
@@ -86,10 +86,18 @@ export function SubscriptionTab() {
   return (
     <div className="space-y-6">
       <div>
-        <h2 className="text-2xl font-semibold mb-2 text-white">Subscription</h2>
-        <p className="text-sm text-white/70">
+        <h2 className="text-3xl font-semibold mb-1 text-white tracking-tight">Subscription</h2>
+        <p className="text-base text-white/75 mb-3">
           Manage your membership and billing
         </p>
+        <div className="inline-flex items-center gap-2 rounded-full border border-emerald-400/50 bg-emerald-500/15 px-4 py-1.5 text-sm font-semibold text-white shadow-[0_10px_40px_rgba(24,194,96,0.28)]">
+          <span className="inline-block h-2.5 w-2.5 rounded-full bg-emerald-400 shadow-[0_0_10px_rgba(24,194,96,0.6)]" />
+          {membership.status === "INACTIVE"
+            ? "No plan yet"
+            : membership.status === "TRIAL"
+            ? "Free Trial"
+            : getPlanName(membership.plan)}
+        </div>
       </div>
 
       <Card>
@@ -165,7 +173,10 @@ export function SubscriptionTab() {
 
           <div className="flex gap-2 pt-4">
             {membership.status !== "ACTIVE" && (
-              <Button className="bg-emerald-500 hover:bg-emerald-600">
+              <Button
+                className="bg-emerald-500 hover:bg-emerald-600"
+                onClick={() => router.push("/pricing")}
+              >
                 Upgrade Plan
               </Button>
             )}
@@ -182,14 +193,14 @@ export function SubscriptionTab() {
           <CardDescription className="text-white/70">Choose the plan that fits your needs</CardDescription>
         </CardHeader>
         <CardContent>
-          <div className="grid gap-4 md:grid-cols-3">
+          <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
             <div className="rounded-lg border p-4">
               <div className="flex items-center gap-2 mb-2">
                 <Zap className="h-5 w-5 text-white/70" />
-                <h3 className="font-semibold text-white">Basic</h3>
+                <h3 className="font-semibold text-white">Free Trial</h3>
               </div>
               <p className="text-2xl font-bold mb-1 text-white">Free</p>
-              <p className="text-sm text-white/70 mb-4">7-day trial</p>
+              <p className="text-sm text-white/70 mb-4">14-day trial (no auto-renew)</p>
               <ul className="space-y-2 text-sm mb-4 text-white">
                 <li className="flex items-center gap-2">
                   <Check className="h-4 w-4 text-emerald-500" />
@@ -205,10 +216,29 @@ export function SubscriptionTab() {
             <div className="rounded-lg border-2 border-emerald-500 p-4">
               <div className="flex items-center gap-2 mb-2">
                 <Crown className="h-5 w-5 text-emerald-500" />
+                <h3 className="font-semibold text-white">Pro</h3>
+              </div>
+              <p className="text-2xl font-bold mb-1 text-white">$15/mo or $10/mo yearly ($120)</p>
+              <p className="text-sm text-white/70 mb-4">For one person (1 profile)</p>
+              <ul className="space-y-2 text-sm mb-4 text-white">
+                <li className="flex items-center gap-2">
+                  <Check className="h-4 w-4 text-emerald-500" />
+                  1 profile
+                </li>
+                <li className="flex items-center gap-2">
+                  <Check className="h-4 w-4 text-emerald-500" />
+                  5 plans per profile
+                </li>
+              </ul>
+            </div>
+
+            <div className="rounded-lg border p-4">
+              <div className="flex items-center gap-2 mb-2">
+                <Crown className="h-5 w-5 text-white/70" />
                 <h3 className="font-semibold text-white">Plus</h3>
               </div>
-              <p className="text-2xl font-bold mb-1 text-white">$19/mo</p>
-              <p className="text-sm text-white/70 mb-4">Best for individuals</p>
+              <p className="text-2xl font-bold mb-1 text-white">$25/mo or $15/mo yearly ($180)</p>
+              <p className="text-sm text-white/70 mb-4">For two profiles</p>
               <ul className="space-y-2 text-sm mb-4 text-white">
                 <li className="flex items-center gap-2">
                   <Check className="h-4 w-4 text-emerald-500" />
@@ -226,8 +256,8 @@ export function SubscriptionTab() {
                 <Users className="h-5 w-5 text-white/70" />
                 <h3 className="font-semibold text-white">Family</h3>
               </div>
-              <p className="text-2xl font-bold mb-1 text-white">$39/mo</p>
-              <p className="text-sm text-white/70 mb-4">For families</p>
+              <p className="text-2xl font-bold mb-1 text-white">$35/mo or $25/mo yearly ($300)</p>
+              <p className="text-sm text-white/70 mb-4">For families (up to 4 profiles)</p>
               <ul className="space-y-2 text-sm mb-4 text-white">
                 <li className="flex items-center gap-2">
                   <Check className="h-4 w-4 text-emerald-500" />

@@ -18,7 +18,7 @@ interface Profile {
 }
 
 interface MembershipInfo {
-  plan: "BASIC" | "PLUS" | "FAMILY"
+  plan: "FREE_TRIAL" | "PRO" | "PLUS" | "FAMILY"
   status: string
   currentCount: number
   limit: number
@@ -55,8 +55,11 @@ export function ProfilesTab() {
 
       if (membershipRes.ok) {
         const membership = await membershipRes.json()
+        const normalizedPlan = (["FREE_TRIAL", "PRO", "PLUS", "FAMILY"].includes((membership.plan || "").toUpperCase())
+          ? (membership.plan as MembershipInfo["plan"])
+          : "FREE_TRIAL")
         setMembershipInfo({
-          plan: membership.plan || "BASIC",
+          plan: normalizedPlan,
           status: membership.status || "INACTIVE",
           currentCount: membership.currentProfileCount || 0,
           limit: membership.profileLimit || 1,
@@ -90,13 +93,13 @@ export function ProfilesTab() {
 
     const { plan, currentCount } = membershipInfo
 
-    // BASIC/FREE TRIAL users with 1 profile: redirect to upgrade page
-    if (plan === "BASIC" && currentCount >= 1) {
+    // FREE_TRIAL or PRO users with 1 profile: redirect to upgrade page
+    if ((plan === "FREE_TRIAL" || plan === "PRO") && currentCount >= 1) {
       router.push("/pricing?upgrade=PLUS")
       return
     }
 
-    // Show modal for PLUS/FAMILY users or BASIC users with 0 profiles
+    // Show modal for PLUS/FAMILY users or FREE_TRIAL/PRO users with 0 profiles
     setShowAddModal(true)
   }
 
@@ -107,6 +110,7 @@ export function ProfilesTab() {
     }
 
     setError("")
+    const isFirstProfile = profiles.length === 0
     try {
       const response = await fetch("/api/profiles", {
         method: "POST",
@@ -115,9 +119,13 @@ export function ProfilesTab() {
       })
 
       if (response.ok) {
+        const created = await response.json()
         setShowAddModal(false)
         setNewProfileName("")
         fetchData()
+        // Redirect straight to assessment for the newly created profile
+        const profileType = isFirstProfile ? "main" : "additional"
+        router.push(`/assessment?profileType=${profileType}&profileId=${created.id}&fullName=${encodeURIComponent(created.name)}`)
       } else {
         const data = await response.json()
         setError(data.error || "Failed to create profile")
@@ -190,18 +198,18 @@ export function ProfilesTab() {
   }))
 
   // Determine if we should show the "+" button
-  const showAddButton = membershipInfo && (
-    (membershipInfo.plan === "BASIC" && membershipInfo.currentCount < 1) || // BASIC can have 1
-    (membershipInfo.plan === "BASIC" && membershipInfo.currentCount >= 1) || // BASIC with 1 profile shows button to upgrade
-    (membershipInfo.plan === "PLUS" && membershipInfo.currentCount < 2) || // PLUS can have 2
-    (membershipInfo.plan === "FAMILY" && membershipInfo.currentCount < 4) // FAMILY can have 4
-  )
+  const showAddButton =
+    !membershipInfo ||
+    ((membershipInfo.plan === "FREE_TRIAL" || membershipInfo.plan === "PRO") && membershipInfo.currentCount < 1) || // 1 profile allowed
+    ((membershipInfo.plan === "FREE_TRIAL" || membershipInfo.plan === "PRO") && membershipInfo.currentCount >= 1) || // show button to upgrade
+    (membershipInfo?.plan === "PLUS" && membershipInfo.currentCount < 2) || // PLUS can have 2
+    (membershipInfo?.plan === "FAMILY" && membershipInfo.currentCount < 4) // FAMILY can have 4
 
   if (showAddButton) {
     profileItems.push({
       id: "add-profile",
-      label: membershipInfo?.plan === "BASIC" && membershipInfo.currentCount >= 1 
-        ? "Add" 
+      label: (membershipInfo?.plan === "FREE_TRIAL" || membershipInfo?.plan === "PRO") && membershipInfo.currentCount >= 1 
+        ? "Add"
         : "Add Profile",
       icon: (
         <ProfileIcon>
@@ -230,6 +238,36 @@ export function ProfilesTab() {
 
   return (
     <div className="w-full relative">
+      {/* If no profiles yet, prompt to create main profile automatically */}
+      {profiles.length === 0 && !showAddModal && (
+        <div className="fixed inset-0 z-40 flex items-center justify-center bg-black/50 backdrop-blur-sm">
+          <div className="bg-slate-900 border border-white/20 rounded-2xl p-6 max-w-md w-full mx-4">
+            <div className="flex items-center justify-between mb-4">
+              <h2 className="text-2xl font-semibold text-white">Create Your Profile</h2>
+              <button
+                onClick={() => {
+                  setShowAddModal(true)
+                }}
+                className="text-white/70 hover:text-white"
+              >
+                <Plus className="w-5 h-5" />
+              </button>
+            </div>
+            <p className="text-white/70 text-sm">
+              Enter your name to set up your main profile.
+            </p>
+            <div className="mt-4">
+              <Button
+                className="w-full bg-emerald-500 hover:bg-emerald-600 text-white"
+                onClick={() => setShowAddModal(true)}
+              >
+                Set Up Profile
+              </Button>
+            </div>
+          </div>
+        </div>
+      )}
+
       <ProfileSelector
         title=""
         profiles={profileItems}

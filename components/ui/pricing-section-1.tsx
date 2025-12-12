@@ -82,8 +82,21 @@ const PricingSwitch = ({
   );
 };
 
-const plans = [
+type PlanConfig = {
+  id: "FREE_TRIAL" | "PRO" | "PLUS" | "FAMILY"
+  name: string
+  monthlyPrice: number
+  yearlyPrice: number
+  yearlyTotal: number
+  discount: number
+  isFreeTrial?: boolean
+  isPopular?: boolean
+  features: string[]
+}
+
+const plans: PlanConfig[] = [
   {
+    id: "FREE_TRIAL",
     name: "FREE TRIAL",
     monthlyPrice: 0,
     yearlyPrice: 0,
@@ -100,6 +113,7 @@ const plans = [
     ],
   },
   {
+    id: "PRO",
     name: "PRO",
     monthlyPrice: 15,
     yearlyPrice: 10,
@@ -114,6 +128,7 @@ const plans = [
     ],
   },
   {
+    id: "PLUS",
     name: "PLUS",
     monthlyPrice: 25,
     yearlyPrice: 15,
@@ -134,6 +149,7 @@ const plans = [
     ],
   },
   {
+    id: "FAMILY",
     name: "FAMILY",
     monthlyPrice: 35,
     yearlyPrice: 25,
@@ -162,7 +178,7 @@ function PricingSection1Content() {
   const profileId = searchParams.get("profileId")
   const assessmentCompleted = searchParams.get("assessment") === "completed"
   const trialAvailable = searchParams.get("trial") === "available"
-  const upgradePlan = searchParams.get("upgrade") // "PLUS" or "FAMILY"
+  const upgradePlan = searchParams.get("upgrade")?.toUpperCase().replace(/\s+/g, "_") // "PLUS", "FAMILY", etc.
 
   const revealVariants = {
     visible: (i: number) => ({
@@ -184,11 +200,23 @@ function PricingSection1Content() {
   const toggleYearly = (value: string) =>
     setIsYearly(Number.parseInt(value) === 1);
 
+  const goToCheckout = (planId: string) => {
+    const billing = isYearly ? "yearly" : "monthly"
+    const target = `/checkout?plan=${planId}&billing=${billing}${profileId ? `&profileId=${profileId}` : ""}${assessmentCompleted ? `&assessment=completed` : ""}`
+
+    if (status === "unauthenticated") {
+      router.push(`/login?redirect=${encodeURIComponent(target)}`)
+      return
+    }
+
+    router.push(target)
+  }
+
   return (
-    <section id="pricing" className="relative py-32 bg-gradient-to-br from-black via-green-950/20 to-black overflow-hidden scroll-mt-20">
+    <section id="pricing" className="relative py-32 bg-gradient-to-b from-emerald-50/80 via-emerald-50/75 via-emerald-100/70 via-emerald-200/65 via-emerald-300/60 via-emerald-400/55 via-emerald-500/50 via-emerald-600/45 via-emerald-700/40 via-emerald-800/35 via-emerald-900/30 via-green-800/25 via-green-900/20 via-green-950/15 to-slate-950 overflow-hidden scroll-mt-20">
       {/* Static Background Effects */}
       <div className="absolute inset-0">
-        <div className="absolute inset-0 bg-gradient-to-br from-[#18c260]/[0.08] via-green-500/[0.05] to-[#18c260]/[0.08]" />
+        <div className="absolute inset-0 bg-gradient-to-b from-[#18c260]/[0.12] via-[#18c260]/[0.11] via-[#18c260]/[0.10] via-[#18c260]/[0.09] via-[#18c260]/[0.08] via-[#18c260]/[0.07] via-[#18c260]/[0.06] via-green-500/[0.05] to-[#18c260]/[0.08]" />
       </div>
       
       <div className="px-4 pt-10 w-full mx-auto relative z-10" ref={pricingRef} data-pricing-section>
@@ -256,10 +284,10 @@ function PricingSection1Content() {
         <div className="max-w-7xl mx-auto">
           <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6 lg:gap-8">
             {plans.map((plan, index) => {
-              const isFreeTrial = (plan as any).isFreeTrial;
-              const isPopular = (plan as any).isPopular;
+              const isFreeTrial = plan.isFreeTrial;
+              const isPopular = plan.isPopular;
               // Highlight the plan if it matches the upgrade parameter
-              const isUpgradeTarget = upgradePlan && plan.name === upgradePlan;
+              const isUpgradeTarget = upgradePlan && plan.id === upgradePlan;
               
               return (
                 <TimelineContent
@@ -355,42 +383,9 @@ function PricingSection1Content() {
                     </ul>
 
                     <button 
-                      onClick={async () => {
-                        if (isFreeTrial) {
-                          // Handle free trial activation
-                          if (status === "unauthenticated") {
-                            router.push("/signup?redirect=assessment")
-                            return
-                          }
-                          
-                          setLoadingPlan(plan.name)
-                          try {
-                            // Activate free trial
-                            const response = await fetch("/api/membership/activate-trial", {
-                              method: "POST",
-                            })
-                            
-                            if (!response.ok) {
-                              throw new Error("Failed to activate trial")
-                            }
-                            
-                            // If assessment was completed, redirect back to assessment page to show loading and generate plan
-                            if (assessmentCompleted && profileId) {
-                              // Redirect to assessment page which will handle plan generation with loading screen
-                              window.location.href = `/assessment?profileId=${profileId}&assessment=completed`
-                            } else {
-                              router.push("/account")
-                            }
-                          } catch (error) {
-                            console.error("Error activating trial:", error)
-                            alert("Failed to activate trial. Please try again.")
-                            setLoadingPlan(null)
-                          }
-                        } else {
-                          // Handle paid plan - redirect to checkout/payment
-                          // For now, redirect to account
-                          router.push("/account?tab=subscription")
-                        }
+                      onClick={() => {
+                        setLoadingPlan(plan.name)
+                        goToCheckout(plan.id)
                       }}
                       disabled={loadingPlan === plan.name}
                       className={cn(

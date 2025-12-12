@@ -15,9 +15,9 @@ import { Input } from "@/components/ui/input";
 import { ArrowRight } from "lucide-react";
 
 // Define the props for the CtaCard component
-interface CtaCardProps extends React.HTMLAttributes<HTMLDivElement> {
+interface CtaCardProps extends Omit<React.HTMLAttributes<HTMLDivElement>, "title"> {
   imageSrc: string;
-  title: string;
+  title: string | React.ReactNode;
   description: string;
   inputPlaceholder?: string;
   buttonText: string;
@@ -78,7 +78,7 @@ const CtaCard = React.forwardRef<HTMLDivElement, CtaCardProps>(
         y: 0,
         opacity: 1,
         transition: {
-          type: "spring",
+          type: "spring" as const,
           stiffness: 100,
           damping: 12,
         },
@@ -89,31 +89,20 @@ const CtaCard = React.forwardRef<HTMLDivElement, CtaCardProps>(
       <div
         ref={ref}
         className={cn(
-          "relative w-full min-w-[800px] overflow-hidden rounded-xl border bg-card text-card-foreground shadow",
+          "relative w-full min-w-[800px] overflow-hidden rounded-xl border border-white/20 bg-transparent",
           className
         )}
         {...props}
       >
-        {/* Background Image */}
-        {imageSrc && (
-          <img
-            src={imageSrc}
-            alt="Background"
-            className="absolute inset-0 h-full w-full object-cover"
-            aria-hidden="true"
-          />
-        )}
-        {/* Dark Overlay */}
-        {imageSrc && <div className="absolute inset-0 bg-black/4" />}
 
         {/* Content */}
         <motion.div
-          className="relative z-10 grid h-full grid-cols-1 items-center gap-8 p-8 md:grid-cols-2 md:p-12 lg:p-16"
+          className="relative z-10 grid h-full grid-cols-1 items-center gap-8 p-8 md:grid-cols-2 md:p-14 lg:p-20"
           variants={containerVariants}
           initial="hidden"
           animate="visible"
         >
-          <div className="flex flex-col items-start text-left text-white">
+          <div className="flex flex-col items-start text-left text-gray-900">
             <motion.h2
               className="text-3xl font-extrabold tracking-tight md:text-4xl lg:text-5xl"
               variants={itemVariants}
@@ -121,7 +110,7 @@ const CtaCard = React.forwardRef<HTMLDivElement, CtaCardProps>(
               {title}
             </motion.h2>
             <motion.p
-              className="mt-4 max-w-xl text-lg text-neutral-200"
+              className="mt-4 max-w-2xl text-xl text-gray-700"
               variants={itemVariants}
             >
               {description}

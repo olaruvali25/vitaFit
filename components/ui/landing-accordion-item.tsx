@@ -137,10 +137,10 @@ export function LandingAccordionItem() {
 
   return (
     <div className="font-sans relative z-10">
-      <section id="reviews" className="relative overflow-hidden bg-gradient-to-br from-black via-green-950/20 to-black scroll-mt-20">
+      <section id="reviews" className="relative overflow-hidden bg-gradient-to-b from-slate-950 via-green-950/20 via-green-950/15 via-green-900/20 via-green-800/25 via-emerald-900/30 via-emerald-800/35 via-emerald-700/40 via-emerald-600/45 via-emerald-500/50 via-emerald-400/55 via-emerald-300/60 via-emerald-200/65 via-emerald-100/70 via-emerald-50/75 to-emerald-50/80 scroll-mt-20">
         {/* Green gradient background - matches other sections for smooth blending */}
         <div className="absolute inset-0 pointer-events-none z-[1]">
-          <div className="absolute inset-0 bg-gradient-to-br from-[#18c260]/[0.08] via-green-500/[0.05] to-[#18c260]/[0.08]"></div>
+          <div className="absolute inset-0 bg-gradient-to-b from-[#18c260]/[0.08] via-green-500/[0.05] via-[#18c260]/[0.06] via-[#18c260]/[0.07] via-[#18c260]/[0.08] via-[#18c260]/[0.09] via-[#18c260]/[0.10] via-[#18c260]/[0.11] to-[#18c260]/[0.12]"></div>
         </div>
         <div className="container mx-auto px-4 py-12 md:py-24 relative z-10">
         <div className="flex flex-col md:flex-row items-center justify-between gap-12">

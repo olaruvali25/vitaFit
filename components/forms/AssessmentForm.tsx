@@ -1,9 +1,11 @@
 "use client"
 
 import { useState, useEffect } from "react"
+import { useSession } from "next-auth/react"
 import { useSearchParams } from "next/navigation"
 import PageOne from "./PageOne"
 import PageTwo from "./PageTwo"
+import PageThree from "./PageThree"
 import { GlowingEffect } from "@/components/ui/glowing-effect"
 
 export interface AssessmentFormData {
@@ -19,13 +21,26 @@ export interface AssessmentFormData {
   goal: string
   goalWeight: string
   
-  // Page 2 - Lifestyle & Preferences
+  // Page 2 - Activity Level and Timeline
   activityLevel: string
   timeline: string
   dietaryRestrictions: string
   workoutDays: string
   workoutDuration: string
   mealPrepDuration: string
+
+  // Page 2 - additional
+  workoutDaysMulti: string[]
+  trainingTimeOfDay: string[]
+
+  // Page 3 - Additional Preferences
+  goalIntensity: string
+  dailyRoutine: string
+  eatingSchedule: string
+  foodPrepPreference: string
+  sleepQuality: string
+  stressLevel: string
+  waterIntake: string
 }
 
 interface AssessmentFormProps {
@@ -34,7 +49,9 @@ interface AssessmentFormProps {
 
 export default function AssessmentForm({ onSubmit }: AssessmentFormProps) {
   const searchParams = useSearchParams()
+  const { data: session } = useSession()
   const [currentPage, setCurrentPage] = useState(1)
+  const profileType = searchParams?.get("profileType") || "main" // "main" | "additional"
   
   // Get initial email from URL params or sessionStorage
   const getInitialEmail = () => {
@@ -52,7 +69,7 @@ export default function AssessmentForm({ onSubmit }: AssessmentFormProps) {
   }
   
   const [formData, setFormData] = useState<AssessmentFormData>({
-    fullName: "",
+    fullName: searchParams?.get("fullName") ? decodeURIComponent(searchParams.get("fullName") as string) : "",
     email: getInitialEmail(),
     age: "",
     gender: "",
@@ -68,6 +85,15 @@ export default function AssessmentForm({ onSubmit }: AssessmentFormProps) {
     workoutDays: "",
     workoutDuration: "",
     mealPrepDuration: "",
+    workoutDaysMulti: [],
+    trainingTimeOfDay: [],
+    goalIntensity: "",
+    dailyRoutine: "",
+    eatingSchedule: "",
+    foodPrepPreference: "",
+    sleepQuality: "",
+    stressLevel: "",
+    waterIntake: "",
   })
   
   // Update email if it comes from URL params after component mounts
@@ -81,6 +107,13 @@ export default function AssessmentForm({ onSubmit }: AssessmentFormProps) {
       setFormData(prev => ({ ...prev, email: emailFromStorage }))
     }
   }, [searchParams])
+
+  // Prefill email for main profile with session email; keep blank for additional profiles
+  useEffect(() => {
+    if (profileType !== "additional" && session?.user?.email && !formData.email) {
+      setFormData(prev => ({ ...prev, email: session.user?.email || "" }))
+    }
+  }, [profileType, session?.user?.email, formData.email])
 
   const updateFormData = (updates: Partial<AssessmentFormData>) => {
     setFormData((prev) => ({ ...prev, ...updates }))
@@ -114,9 +147,39 @@ export default function AssessmentForm({ onSubmit }: AssessmentFormProps) {
     return true
   }
 
+  const validatePage3 = (): boolean => {
+    const {
+      goalIntensity,
+      dailyRoutine,
+      eatingSchedule,
+      foodPrepPreference,
+      sleepQuality,
+      stressLevel,
+      waterIntake,
+    } = formData
+
+    if (!goalIntensity) return false
+    if (!dailyRoutine) return false
+    if (!eatingSchedule) return false
+    if (!foodPrepPreference) return false
+    if (!sleepQuality) return false
+    if (!stressLevel) return false
+    if (!waterIntake) return false
+
+    return true
+  }
+
   const handleNext = () => {
     if (currentPage === 1 && validatePage1()) {
       setCurrentPage(2)
+    }
+  }
+
+  const handleNextFromPage2 = () => {
+    if (validatePage2()) {
+      setCurrentPage(3)
+    } else {
+      console.error("[AssessmentForm] Validation failed on page 2")
     }
   }
 
@@ -133,7 +196,7 @@ export default function AssessmentForm({ onSubmit }: AssessmentFormProps) {
       e.stopPropagation()
     }
     
-    if (!validatePage2()) {
+    if (!validatePage3()) {
       console.error("[AssessmentForm] Validation failed")
       return
     }
@@ -211,52 +274,59 @@ export default function AssessmentForm({ onSubmit }: AssessmentFormProps) {
   return (
     <div className="w-full max-w-2xl mx-auto">
       {/* Progress Indicator */}
-      <div className="mb-3">
+      <div className="mb-3 relative z-10">
         <div className="flex items-center justify-between mb-1.5">
-          <span className="text-xs font-medium text-white/80">
-            Step {currentPage} of 2
+          <span className="text-xs font-medium text-gray-700">
+            Step {currentPage} of 3
           </span>
-          <span className="text-xs font-medium text-white/80">
-            {Math.round((currentPage / 2) * 100)}%
+          <span className="text-xs font-medium text-gray-700">
+            {Math.round((currentPage / 3) * 100)}%
           </span>
         </div>
-        <div className="w-full h-1 bg-white/10 rounded-full overflow-hidden">
+        <div className="w-full h-1.5 bg-emerald-100/50 rounded-full overflow-hidden backdrop-blur-sm">
           <div
-            className="h-full bg-[#18c260] rounded-full transition-all duration-500 ease-out relative overflow-hidden"
-            style={{ width: `${(currentPage / 2) * 100}%` }}
+            className="h-full bg-gradient-to-r from-[#18c260] via-[#1FCC5F] to-[#18c260] rounded-full transition-all duration-500 ease-out relative overflow-hidden shadow-lg shadow-emerald-500/50"
+            style={{ width: `${(currentPage / 3) * 100}%` }}
           >
-            <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/30 to-transparent animate-shimmer"></div>
+            <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/40 to-transparent animate-shimmer"></div>
           </div>
         </div>
       </div>
 
-      {/* Modern Glass Card */}
-      <div className="relative bg-white/10 backdrop-blur-xl rounded-3xl border-[1.5px] border-white/20 shadow-[inset_0_0_30px_rgba(255,255,255,0.06)] shadow-xl shadow-black/40 p-5 md:p-6 overflow-visible">
-        {/* Subtle background accents */}
-        <div className="absolute top-0 left-0 w-full h-full pointer-events-none z-0">
+      {/* Modern Glass Card - See-through with amazing design */}
+      <div className="relative bg-white/80 backdrop-blur-2xl rounded-3xl border border-emerald-300/50 shadow-2xl shadow-emerald-500/10 p-5 md:p-6 overflow-visible group">
+        {/* Animated gradient background */}
+        <div className="absolute inset-0 rounded-3xl overflow-hidden pointer-events-none z-0">
           <div 
-            className="absolute top-0 left-0 w-1/2 h-1/2 opacity-[0.08]"
+            className="absolute top-0 left-0 w-full h-full opacity-30"
             style={{
-              background: 'radial-gradient(circle at 20% 20%, rgba(180,255,200,0.08), transparent 55%)'
+              background: 'radial-gradient(circle at 30% 20%, rgba(24,194,96,0.15), transparent 60%)'
             }}
           />
           <div 
-            className="absolute bottom-0 right-0 w-1/2 h-1/2 opacity-[0.04]"
+            className="absolute bottom-0 right-0 w-full h-full opacity-20"
             style={{
-              background: 'radial-gradient(circle at 80% 80%, rgba(180,255,200,0.04), transparent 55%)'
+              background: 'radial-gradient(circle at 70% 80%, rgba(16,185,129,0.12), transparent 60%)'
             }}
           />
+          {/* Animated shimmer effect */}
+          <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/5 to-transparent -translate-x-full group-hover:translate-x-full transition-transform duration-1000 ease-in-out"></div>
+        </div>
+        
+        {/* Glowing border effect */}
+        <div className="absolute inset-0 rounded-3xl pointer-events-none z-0">
+          <div className="absolute inset-0 rounded-3xl bg-gradient-to-r from-emerald-500/20 via-green-400/10 to-emerald-500/20 opacity-50 blur-xl"></div>
         </div>
         
         <GlowingEffect
-          spread={80}
-          blur={15}
-          borderWidth={3}
-          glow={false}
+          spread={100}
+          blur={20}
+          borderWidth={2}
+          glow={true}
           disabled={false}
-          proximity={100}
-          inactiveZone={0.5}
-          movementDuration={1.5}
+          proximity={120}
+          inactiveZone={0.4}
+          movementDuration={2}
         />
         
         <div className="relative z-10 overflow-hidden">
@@ -276,6 +346,14 @@ export default function AssessmentForm({ onSubmit }: AssessmentFormProps) {
             formData={formData}
             updateFormData={updateFormData}
             onBack={handleBack}
+            onNext={handleNextFromPage2}
+          />
+        )}
+        {currentPage === 3 && (
+          <PageThree
+            formData={formData}
+            updateFormData={updateFormData}
+            onBack={() => setCurrentPage(2)}
             onSubmit={handleSubmit}
           />
         )}

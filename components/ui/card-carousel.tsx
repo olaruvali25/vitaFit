@@ -65,24 +65,24 @@ export const CardCarousel: React.FC<CarouselProps> = ({
   const [activeIndex, setActiveIndex] = useState(0);
 
   return (
-    <section className="w-ace-y-4">
+    <section className="w-full bg-gradient-to-br from-emerald-50/60 via-teal-50/50 to-emerald-100/30 rounded-3xl">
       <style>{css}</style>
-      <div className="mx-auto w-full max-w-5xl rounded-[24px] border border-black/5 p-3 shadow-sm md:rounded-t-[44px]">
-        <div className="relative mx-auto flex w-full flex-col rounded-[24px] border border-black/5 bg-neutral-800/5 p-2 shadow-sm md:items-start md:gap-8 md:rounded-b-[20px] md:rounded-t-[40px] md:p-2">
+      <div className="mx-auto w-full max-w-5xl rounded-[24px] p-3 md:rounded-t-[44px]">
+        <div className="relative mx-auto flex w-full flex-col rounded-[24px] p-2 md:items-start md:gap-8 md:rounded-b-[20px] md:rounded-t-[40px] md:p-2">
           <Badge
             variant="outline"
-            className="absolute left-4 top-6 rounded-[14px] border border-black/10 text-base md:left-6"
+            className="absolute left-4 top-6 rounded-[14px] border border-emerald-300/50 text-base md:left-6 bg-white/5 backdrop-blur-sm"
           >
-            <SparklesIcon className="fill-[#EEBDE0] stroke-1 text-neutral-800" />{" "}
-            Here is some proof too!
+            <SparklesIcon className="fill-emerald-400 stroke-1 text-gray-900" />{" "}
+            <span className="text-gray-900">Here is some proof too!</span>
           </Badge>
           <div className="flex flex-col justify-center pb-2 pl-4 pt-14 md:items-center">
             <div className="flex gap-2">
               <div>
-                <h3 className="text-4xl opacity-85 font-bold tracking-tight">
-                  Here is some proof too!
+                <h3 className="text-4xl opacity-85 font-bold tracking-tight text-gray-900">
+                Proof That Change Is Possible!
                 </h3>
-                <p>They trusted VitaFit, You should too!</p>
+                <p className="text-gray-700">People following the same system you’re about to start.</p>
               </div>
             </div>
           </div>
@@ -158,40 +158,6 @@ export const CardCarousel: React.FC<CarouselProps> = ({
                             <div className="absolute left-1/2 top-3 -translate-x-1/2 rounded-full bg-emerald-500 px-3 py-1 text-xs font-semibold text-white">
                               After
                             </div>
-                          </div>
-                        </div>
-
-                        {/* Glassmorphism review overlay */}
-                        <div
-                          className={cn(
-                            "pointer-events-none absolute inset-x-4 bottom-4 flex items-center gap-3 rounded-2xl border border-white/15 bg-white/20 px-4 py-3 text-left backdrop-blur-md transition-all duration-300",
-                            isActive
-                              ? "opacity-100 scale-100"
-                              : "opacity-70 scale-95"
-                          )}
-                        >
-                          <div className="relative h-9 w-9 shrink-0 overflow-hidden rounded-full border border-white/40 bg-black/50">
-                            {card.profileImage ? (
-                              <Image
-                                src={card.profileImage}
-                                alt={card.reviewerName}
-                                width={36}
-                                height={36}
-                                className="h-full w-full object-cover"
-                              />
-                            ) : (
-                              <span className="flex h-full w-full items-center justify-center text-[11px] font-semibold text-emerald-100">
-                                {card.reviewerName?.charAt(0) ?? "V"}
-                              </span>
-                            )}
-                          </div>
-                          <div className="min-w-0">
-                            <p className="truncate text-xs font-semibold text-white">
-                              {card.reviewerName}
-                            </p>
-                            <p className="text-[11px] text-emerald-50/90 line-clamp-2">
-                              {card.reviewText}
-                            </p>
                           </div>
                         </div>
                       </div>

@@ -14,7 +14,7 @@ export async function GET(request: NextRequest) {
 
     if (!membership) {
       return NextResponse.json({
-        plan: "BASIC",
+        plan: "FREE_TRIAL",
         status: "INACTIVE",
         canUseFeatures: false,
         profilesLimit: 1,

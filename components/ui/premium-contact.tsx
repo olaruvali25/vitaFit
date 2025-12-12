@@ -134,12 +134,12 @@ export function PremiumContact() {
   };
 
   return (
-    <section className="relative py-32 bg-gradient-to-br from-black via-green-950/20 to-black text-white overflow-hidden">
+    <section className="relative py-32 bg-gradient-to-b from-slate-950 via-green-950/20 via-green-950/15 via-green-900/20 via-green-800/25 via-emerald-900/30 via-emerald-800/35 via-emerald-700/40 via-emerald-600/45 via-emerald-500/50 via-emerald-400/55 via-emerald-300/60 via-emerald-200/65 via-emerald-100/70 via-emerald-50/75 to-emerald-50/80 text-white overflow-hidden">
       {/* Enhanced Background Effects */}
       <div className="absolute inset-0">
         {/* Animated gradient mesh */}
         <motion.div 
-          className="absolute inset-0 bg-gradient-to-br from-[#18c260]/[0.08] via-green-500/[0.05] to-[#18c260]/[0.08]"
+          className="absolute inset-0 bg-gradient-to-b from-[#18c260]/[0.08] via-green-500/[0.05] via-[#18c260]/[0.06] via-[#18c260]/[0.07] via-[#18c260]/[0.08] via-[#18c260]/[0.09] via-[#18c260]/[0.10] via-[#18c260]/[0.11] to-[#18c260]/[0.12]"
           animate={{
             backgroundPosition: ['0% 0%', '100% 100%', '0% 0%'],
           }}
@@ -509,7 +509,7 @@ export function PremiumContact() {
                 {/* Center Content */}
                 <div className="relative z-10 flex flex-col items-center justify-center gap-6">
                   <div className="relative flex items-center justify-center">
-                    <Logo size="lg" className="h-24 md:h-28" priority />
+                    <Logo className="h-32 md:h-40 lg:h-48" />
                   </div>
 
                   {/* Slogan Text */}

@@ -2,14 +2,15 @@ import { prisma } from "./prisma"
 import { MembershipPlan, MembershipStatus, UserRole } from "@prisma/client"
 
 // Membership plan limits
-export const MEMBERSHIP_LIMITS = {
-  BASIC: { profiles: 1, plansPerProfile: 3 },
+export const MEMBERSHIP_LIMITS: Record<MembershipPlan, { profiles: number; plansPerProfile: number }> = {
+  FREE_TRIAL: { profiles: 1, plansPerProfile: 3 },
+  PRO: { profiles: 1, plansPerProfile: 5 },
   PLUS: { profiles: 2, plansPerProfile: 5 },
   FAMILY: { profiles: 4, plansPerProfile: 10 },
-} as const
+}
 
 // Free trial duration in days
-export const TRIAL_DURATION_DAYS = 7
+export const TRIAL_DURATION_DAYS = 14
 
 export interface MembershipInfo {
   plan: MembershipPlan
@@ -84,11 +85,11 @@ export async function initializeFreeTrial(userId: string): Promise<void> {
 
   // Check if user has already used free trial
   if (user.hasUsedFreeTrial) {
-    // Create inactive membership
+    // Create inactive membership placeholder
     await prisma.membership.create({
       data: {
         userId,
-        plan: "BASIC",
+        plan: "PRO",
         status: "INACTIVE",
       },
     })
@@ -102,7 +103,7 @@ export async function initializeFreeTrial(userId: string): Promise<void> {
   await prisma.membership.create({
     data: {
       userId,
-      plan: "BASIC",
+      plan: "FREE_TRIAL",
       status: "TRIAL",
       trialStartedAt: new Date(),
       trialEndsAt,

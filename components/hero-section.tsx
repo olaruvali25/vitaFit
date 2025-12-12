@@ -86,18 +86,24 @@ export default function HeroSection() {
             <HeroHeader />
 
             <main className="overflow-hidden [--color-primary-foreground:var(--color-white)] [--color-primary:var(--color-green-600)]">
-                <section id="assessment" className="relative overflow-hidden bg-gradient-to-br from-black via-green-950/20 to-black scroll-mt-20">
-                    {/* Green gradient background - matches other sections for smooth blending */}
-                    <div className="absolute inset-0 pointer-events-none z-[1]">
-                        <div className="absolute inset-0 bg-gradient-to-br from-[#18c260]/[0.08] via-green-500/[0.05] to-[#18c260]/[0.08]"></div>
-                    </div>
+                <section id="assessment" className="relative overflow-hidden bg-gradient-to-b from-emerald-100 via-emerald-50 via-teal-50 via-emerald-100/60 via-green-100/40 to-green-950/30 scroll-mt-20">
+                    {/* Page-specific light background with green/teal gradient - darker at bottom */}
+                    <div className="pointer-events-none absolute inset-0 -z-10 bg-gradient-to-b from-emerald-100/90 via-emerald-50/85 via-teal-50/70 via-emerald-100/60 via-green-100/40 to-green-950/20" />
+                    {/* Green shadows at corners - more intense */}
+                    <div className="pointer-events-none absolute top-0 left-0 w-96 h-96 bg-emerald-600/15 rounded-full blur-3xl -z-10" />
+                    <div className="pointer-events-none absolute top-0 right-0 w-96 h-96 bg-teal-600/15 rounded-full blur-3xl -z-10" />
+                    <div className="pointer-events-none absolute bottom-0 left-0 w-96 h-96 bg-emerald-800/20 rounded-full blur-3xl -z-10" />
+                    <div className="pointer-events-none absolute bottom-0 right-0 w-96 h-96 bg-teal-800/20 rounded-full blur-3xl -z-10" />
+                    {/* Additional green gradient overlay for blending */}
+                    <div className="pointer-events-none absolute inset-0 -z-10 bg-gradient-to-b from-transparent via-green-500/5 to-green-950/15" />
                     {/* Shooting Stars - must be above gradient */}
                     <ShootingStars />
                     <StarsBackground />
-                    <div className="relative mx-auto max-w-6xl px-6 pb-12 pt-20 lg:pt-28">
-                        <div className="relative z-10 mx-auto max-w-4xl text-center">
-                            <h1 className="text-balance text-4xl font-medium md:text-5xl text-white mb-4">
-                                Your Personal <span className="text-[#18c260] relative inline-block" style={{
+                    <div className="relative mx-auto max-w-7xl px-6 pb-12 pt-20 lg:pt-28">
+                        {/* Title and Description - Centered */}
+                        <div className="relative z-10 mx-auto max-w-4xl text-center mb-8">
+                            <h1 className="text-balance text-4xl font-medium md:text-5xl text-gray-900 mb-4">
+                                Your Personal <span className="text-emerald-600 relative inline-block" style={{
                                     background: 'linear-gradient(90deg, #18c260 0%, #1FCC5F 50%, #18c260 100%)',
                                     backgroundSize: '200% 100%',
                                     WebkitBackgroundClip: 'text',
@@ -106,43 +112,42 @@ export default function HeroSection() {
                                     animation: 'shimmer 3s ease-in-out infinite'
                                 }}>AI Nutritionist. The Plan That Fits YOUR Life! </span>
                             </h1>
-                            <p className="mx-auto mt-4 max-w-2xl text-pretty text-base text-white/80">
+                            <p className="mx-auto mt-4 max-w-2xl text-pretty text-base text-gray-700">
                             No more guessing. No more random diets.
                             Just a weekly plan built exactly for your body, your schedule, and your goals, so you finally stay consistent and see real results.
                             </p>
+                        </div>
 
-                            <AnimatedGroup
-                                variants={{
-                                    container: {
-                                        visible: {
-                                            transition: {
-                                                staggerChildren: 0.03,
-                                                delayChildren: 0.3,
+                        {/* Assessment Form and Video - Side by Side */}
+                        <div className="relative z-10 grid grid-cols-1 lg:grid-cols-2 gap-8 lg:gap-12 items-start">
+                            {/* Left Side - Assessment Form */}
+                            <div className="w-full">
+                                <AnimatedGroup
+                                    variants={{
+                                        container: {
+                                            visible: {
+                                                transition: {
+                                                    staggerChildren: 0.03,
+                                                    delayChildren: 0.3,
+                                                },
                                             },
                                         },
-                                    },
-                                    item: transitionVariants.item,
-                                }}
-                                className="mt-8">
-                                {/* Assessment Form */}
-                                <AssessmentForm onSubmit={handleFormSubmit} />
-
-                                <div
-                                    aria-hidden
-                                    className="bg-radial from-primary/50 dark:from-primary/25 relative mx-auto mt-16 max-w-2xl to-transparent to-55% text-left">
-                                    <div className="bg-background border-border/50 absolute inset-0 mx-auto w-80 -translate-x-3 -translate-y-12 rounded-[2rem] border p-2 [mask-image:linear-gradient(to_bottom,#000_50%,transparent_90%)] sm:-translate-x-6">
-                                        <div className="relative h-96 overflow-hidden rounded-[1.5rem] border p-2 pb-12 before:absolute before:inset-0 before:bg-[repeating-linear-gradient(-45deg,var(--color-border),var(--color-border)_1px,transparent_1px,transparent_6px)] before:opacity-50"></div>
+                                        item: transitionVariants.item,
+                                    }}
+                                    className="mt-8">
+                                    <div className="flex justify-start">
+                                        <AssessmentForm onSubmit={handleFormSubmit} />
                                     </div>
-                                    <div className="bg-muted dark:bg-background/50 border-border/50 mx-auto w-80 translate-x-4 rounded-[2rem] border p-2 backdrop-blur-3xl [mask-image:linear-gradient(to_bottom,#000_50%,transparent_90%)] sm:translate-x-8">
-                                        <div className="bg-background space-y-2 overflow-hidden rounded-[1.5rem] border p-2 shadow-xl dark:bg-white/5 dark:shadow-black dark:backdrop-blur-3xl">
-                                            <AppComponent />
 
-                                            <div className="bg-muted rounded-[1rem] p-4 pb-16 dark:bg-white/5"></div>
-                                        </div>
-                                    </div>
-                                    <div className="absolute inset-0 bg-[radial-gradient(#e5e7eb_1px,transparent_1px)] mix-blend-overlay [background-size:16px_16px] [mask-image:radial-gradient(ellipse_50%_50%_at_50%_50%,#000_70%,transparent_100%)] dark:opacity-5"></div>
+                                </AnimatedGroup>
+                            </div>
+
+                            {/* Right Side - Video Showcase */}
+                            <div className="w-full lg:flex lg:items-start lg:justify-end">
+                                <div className="w-full max-w-sm mx-auto lg:mx-0 h-[420px] bg-gray-100 rounded-lg flex items-center justify-center relative lg:mt-[120px]">
+                                    <p className="text-gray-400 text-sm">Video showcase coming soon</p>
                                 </div>
-                            </AnimatedGroup>
+                            </div>
                         </div>
                     </div>
                 </section>
@@ -151,18 +156,23 @@ export default function HeroSection() {
                 <LogoCloudTwo />
                 
                 {/* Reviews Slider */}
-                <section className="relative pb-16 md:pb-32 bg-gradient-to-br from-black via-green-950/20 to-black z-10">
-                    {/* Green gradient background */}
-                    <div className="absolute inset-0">
-                        <div className="absolute inset-0 bg-gradient-to-br from-[#18c260]/[0.08] via-green-500/[0.05] to-[#18c260]/[0.08]"></div>
-                    </div>
+                <section className="relative pb-16 md:pb-32 bg-gradient-to-br from-emerald-50 via-teal-50 to-emerald-100/40 z-10">
+                    {/* Page-specific light background with green/teal gradient */}
+                    <div className="pointer-events-none absolute inset-0 -z-10 bg-gradient-to-br from-emerald-50/80 via-teal-50/60 via-emerald-100/50 to-white/90" />
+                    {/* Green shadows at corners */}
+                    <div className="pointer-events-none absolute top-0 left-0 w-96 h-96 bg-emerald-600/10 rounded-full blur-3xl -z-10" />
+                    <div className="pointer-events-none absolute top-0 right-0 w-96 h-96 bg-teal-600/10 rounded-full blur-3xl -z-10" />
+                    <div className="pointer-events-none absolute bottom-0 left-0 w-96 h-96 bg-emerald-700/8 rounded-full blur-3xl -z-10" />
+                    <div className="pointer-events-none absolute bottom-0 right-0 w-96 h-96 bg-teal-700/8 rounded-full blur-3xl -z-10" />
+                    {/* Blending overlay at bottom to connect with FeaturesCards */}
+                    <div className="pointer-events-none absolute bottom-0 left-0 right-0 h-32 bg-gradient-to-b from-transparent via-[#18c260]/[0.06] to-[#18c260]/[0.12] -z-10"></div>
                     <div className="group relative w-full z-10">
                         <div className="relative py-6 w-full overflow-hidden">
                             <InfiniteSlider speedOnHover={15} speed={30} gap={24}>
                                 {reviews.map((review, index) => (
                                     <div key={index} className="flex">
                                         <CardContainer className="inter-var w-[340px]">
-                                            <CardBody className="bg-card relative group/card dark:hover:shadow-2xl dark:hover:shadow-[#18c260]/[0.1] dark:bg-card dark:border-white/[0.2] border-border w-full h-auto rounded-xl p-5 border shadow-sm transition-all duration-300 hover:shadow-lg hover:shadow-[#18c260]/[0.1]">
+                                            <CardBody className="bg-white relative group/card hover:shadow-2xl hover:shadow-[#18c260]/[0.1] border-gray-200 w-full h-[180px] rounded-xl p-5 border shadow-sm transition-all duration-300 hover:shadow-lg hover:shadow-[#18c260]/[0.1] flex flex-col">
                                                 <GlowingEffect
                                                     spread={20}
                                                     glow={false}
@@ -173,26 +183,21 @@ export default function HeroSection() {
                                                     blur={0}
                                                     movementDuration={2}
                                                 />
-                                                <CardItem translateZ="30" className="relative z-10">
+                                                <CardItem translateZ="30" className="relative z-10 flex flex-col h-full">
                                                     <div className="flex items-center gap-3 mb-3">
-                                                        <img
-                                                            src={review.image}
-                                                            alt={review.name}
-                                                            className="w-10 h-10 rounded-full object-cover"
-                                                        />
                                                         <div className="flex-1 min-w-0">
-                                                            <p className="font-medium text-sm text-foreground truncate">{review.name}</p>
+                                                            <p className="font-medium text-sm text-gray-900 truncate">{review.name}</p>
                                                             <div className="flex gap-0.5 mt-1">
                                                                 {Array.from({ length: 5 }).map((_, i) => (
                                                                     <Star
                                                                         key={i}
-                                                                        className={`w-3 h-3 ${i < review.rating ? 'fill-[#18c260] text-[#18c260]' : 'fill-muted text-muted-foreground'}`}
+                                                                        className={`w-3 h-3 ${i < review.rating ? 'fill-[#18c260] text-[#18c260]' : 'fill-gray-400 text-gray-400'}`}
                                                                     />
                                                                 ))}
                                                             </div>
                                                         </div>
                                                     </div>
-                                                    <p className="text-sm text-muted-foreground">
+                                                    <p className="text-sm text-gray-900 flex-1">
                                                         {review.text}
                                                     </p>
                                                 </CardItem>
@@ -213,8 +218,8 @@ export default function HeroSection() {
 
 const AppComponent = () => {
     return (
-        <div className="relative space-y-3 rounded-[1rem] bg-white/5 p-4">
-            <div className="flex items-center gap-1.5 text-primary">
+        <div className="relative space-y-3 rounded-[1rem] bg-gray-800/50 p-4">
+            <div className="flex items-center gap-1.5 text-emerald-500">
                 <svg
                     className="size-5"
                     xmlns="http://www.w3.org/2000/svg"
@@ -230,24 +235,24 @@ const AppComponent = () => {
                             d="M23 21.851c0 4.042-3.519 7.291-7.799 7.144c-4.62-.156-7.788-4.384-7.11-8.739C9.07 14.012 15.48 10 15.48 10S23 14.707 23 21.851"></path>
                     </g>
                 </svg>
-                <div className="text-sm font-medium">Progress</div>
+                <div className="text-sm font-medium text-gray-200">Progress</div>
             </div>
             <div className="space-y-3">
-                <div className="text-foreground border-b border-white/10 pb-3 text-sm font-medium">Progress Starts With One Good Week. VitaFit Makes Every Day Count.</div>
+                <div className="text-gray-200 border-b border-gray-700/50 pb-3 text-sm font-medium">Progress Starts With One Good Week. VitaFit Makes Every Day Count.</div>
                 <div className="space-y-3">
                     <div className="space-y-1">
                         <div className="space-x-1">
-                            <span className="text-foreground align-baseline text-xl font-medium">12.5</span>
-                            <span className="text-muted-foreground text-xs">kg lost</span>
+                            <span className="text-gray-200 align-baseline text-xl font-medium">12.5</span>
+                            <span className="text-gray-400 text-xs">kg lost</span>
                         </div>
-                        <div className="flex h-5 items-center rounded bg-gradient-to-l from-primary to-secondary px-2 text-xs text-white">This Month</div>
+                        <div className="flex h-5 items-center rounded bg-gradient-to-l from-emerald-600 to-teal-600 px-2 text-xs text-white">This Month</div>
                     </div>
                     <div className="space-y-1">
                         <div className="space-x-1">
-                            <span className="text-foreground align-baseline text-xl font-medium">8.2</span>
-                            <span className="text-muted-foreground text-xs">kg lost</span>
+                            <span className="text-gray-200 align-baseline text-xl font-medium">8.2</span>
+                            <span className="text-gray-400 text-xs">kg lost</span>
                         </div>
-                        <div className="text-foreground bg-muted flex h-5 w-2/3 items-center rounded px-2 text-xs dark:bg-white/20">Last Month</div>
+                        <div className="text-gray-200 bg-gray-700/50 flex h-5 w-2/3 items-center rounded px-2 text-xs">Last Month</div>
                     </div>
                 </div>
             </div>

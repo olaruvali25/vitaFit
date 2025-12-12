@@ -55,10 +55,13 @@ model User {
   name              String?
   email              String       @unique
   emailVerified     DateTime?
-  passwordHash       String? // For credentials auth
+  passwordHash       String       @default("")
   image             String?
   role              UserRole      @default(USER)
   hasUsedFreeTrial  Boolean       @default(false)
+  subscriptionTier   SubscriptionTier @default(free_trial)
+  subscriptionStatus SubscriptionStatus @default(active)
+  tokenVersion      Int           @default(0)
   createdAt         DateTime      @default(now())
   updatedAt         DateTime      @updatedAt
 
@@ -66,6 +69,7 @@ model User {
   sessions          Session[]
   membership        Membership?
   profiles          Profile[]
+  passwordResets    PasswordReset[]
 }
 
 enum UserRole {
@@ -74,21 +78,22 @@ enum UserRole {
 }
 
 model Membership {
-  id              String            @id @default(cuid())
-  userId          String            @unique
-  plan            MembershipPlan    @default(BASIC)
-  status          MembershipStatus @default(INACTIVE)
-  trialStartedAt  DateTime?
-  trialEndsAt     DateTime?
+  id               String            @id @default(cuid())
+  userId           String            @unique
+  plan             MembershipPlan    @default(FREE_TRIAL)
+  status           MembershipStatus  @default(INACTIVE)
+  trialStartedAt   DateTime?
+  trialEndsAt      DateTime?
   currentPeriodEnd DateTime?
-  createdAt       DateTime          @default(now())
-  updatedAt       DateTime          @updatedAt
+  createdAt        DateTime          @default(now())
+  updatedAt        DateTime          @updatedAt
 
-  user            User              @relation(fields: [userId], references: [id], onDelete: Cascade)
+  user             User              @relation(fields: [userId], references: [id], onDelete: Cascade)
 }
 
 enum MembershipPlan {
-  BASIC
+  FREE_TRIAL
+  PRO
   PLUS
   FAMILY
 }
@@ -121,6 +126,7 @@ model Profile {
   updatedAt       DateTime @updatedAt
 
   user            User             @relation(fields: [userId], references: [id], onDelete: Cascade)
+  tracker         Tracker?         @relation("ProfileTracker")
   plans           Plan[]
   progressEntries ProgressEntry[]
 
@@ -220,6 +226,20 @@ model ProgressEntry {
   @@unique([profileId, date])
 }
 
+model PasswordReset {
+  id        String   @id @default(cuid())
+  userId    String
+  code      String   @unique
+  expiresAt DateTime
+  usedAt    DateTime?
+
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+  @@index([code])
+}
+
+// Legacy token model (preserved)
 model PasswordResetToken {
   id        String   @id @default(cuid())
   userId    String
@@ -229,4 +249,33 @@ model PasswordResetToken {
 
   @@index([userId])
   @@index([token])
+}
+
+model Tracker {
+  id               String   @id @default(cuid())
+  profileId        String   @unique
+  dailyProgress    Json
+  weeklyOverview   Json
+  caloriesHistory  Json     @default("[]")
+  workoutHistory   Json     @default("[]")
+  hydrationHistory Json     @default("[]")
+  currentPlan      Json
+  goalWeight       Float    @default(0)
+  startWeight      Float    @default(0)
+  updatedAt        DateTime @updatedAt
+
+  profile          Profile  @relation("ProfileTracker", fields: [profileId], references: [id], onDelete: Cascade)
+}
+
+enum SubscriptionTier {
+  free_trial
+  pro
+  plus
+  family
+}
+
+enum SubscriptionStatus {
+  active
+  canceled
+  expired
 }

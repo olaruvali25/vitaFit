@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from "react"
 import { useSession } from "next-auth/react"
-import { Droplet, Target, Flame, Dumbbell, TrendingUp } from "lucide-react"
+import { Droplet, Target, Flame, Dumbbell, TrendingUp, Lock } from "lucide-react"
 import { cn } from "@/lib/utils"
 
 interface Profile {
@@ -24,6 +24,7 @@ export function ProgressTracker() {
   const { data: session } = useSession()
   const [profile, setProfile] = useState<Profile | null>(null)
   const [plan, setPlan] = useState<Plan | null>(null)
+  const [membership, setMembership] = useState<{ plan: string; status: string } | null>(null)
 
   useEffect(() => {
     fetchProgressData()
@@ -44,6 +45,12 @@ export function ProgressTracker() {
             }
           }
         }
+      }
+
+      const membershipRes = await fetch("/api/membership")
+      if (membershipRes.ok) {
+        const membershipData = await membershipRes.json()
+        setMembership({ plan: membershipData.plan, status: membershipData.status })
       }
     } catch (error) {
       console.error("Error fetching progress data:", error)
@@ -118,6 +125,21 @@ export function ProgressTracker() {
           <p className="text-white/60 text-sm">Your fitness journey at a glance</p>
         </div>
 
+        {membership?.plan === "FREE_TRIAL" || membership?.status === "INACTIVE" ? (
+          <div className="flex flex-col items-center justify-center text-center space-y-4 py-10">
+            <div className="flex items-center justify-center w-16 h-16 rounded-full bg-white/10 border border-white/20 text-white">
+              <Lock className="w-8 h-8" />
+            </div>
+            <div className="space-y-2">
+              <p className="text-lg font-semibold text-white">Unlock Progress Tracker</p>
+              <p className="text-sm text-white/70">
+                Upgrade to Pro, Plus, or Family to access personalized tracking.
+              </p>
+            </div>
+          </div>
+        ) : (
+        <>
+
         {/* Progress Bar */}
         <div className="mb-6">
           <div className="flex justify-between items-center mb-2">
@@ -158,6 +180,8 @@ export function ProgressTracker() {
             )
           })}
         </div>
+        </>
+        )}
       </div>
     </div>
   )

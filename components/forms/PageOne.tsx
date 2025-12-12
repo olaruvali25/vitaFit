@@ -144,15 +144,15 @@ export default function PageOne({
   return (
     <div className="space-y-4">
       {/* Header */}
-      <div className="text-center mb-4">
-        <h2 className="text-xl md:text-2xl font-semibold mb-1.5 text-white relative inline-block">
+      <div className="text-center mb-4 relative z-10">
+        <h2 className="text-xl md:text-2xl font-semibold mb-1.5 text-gray-900 relative inline-block">
         Your Journey Starts Here
-          <span className="absolute -bottom-1 left-0 right-0 h-0.5 bg-[#18c260] opacity-60"></span>
+          <span className="absolute -bottom-1 left-0 right-0 h-0.5 bg-gradient-to-r from-transparent via-[#18c260] to-transparent opacity-80"></span>
         </h2>
-        <p className="text-xs text-white/70 mt-1.5">
+        <p className="text-xs text-gray-600 mt-1.5">
         It takes you 60 seconds, we'll create the plan you've been missing to succeed!
         </p>
-        <div className="mt-2 h-px bg-white/10"></div>
+        <div className="mt-2 h-px bg-gradient-to-r from-transparent via-emerald-300/40 to-transparent"></div>
       </div>
 
       <form
@@ -164,7 +164,7 @@ export default function PageOne({
       >
         {/* Full Name */}
         <div className="space-y-1.5">
-          <Label htmlFor="fullName" className="text-xs text-white/80">
+          <Label htmlFor="fullName" className="text-xs text-gray-700">
             Full Name <span className="text-[#18c260]">*</span>
           </Label>
           <Input
@@ -173,14 +173,14 @@ export default function PageOne({
             required
             value={formData.fullName}
             onChange={(e) => updateFormData({ fullName: e.target.value })}
-            className="h-10 rounded-xl bg-white/5 border border-white/20 text-sm text-white placeholder:text-white/50 focus:border-[#18c260]/50 focus:shadow-[0_0_0_1px_rgba(24,194,96,0.15),0_0_12px_rgba(24,194,96,0.15)] focus:outline-none transition-all duration-300"
+            className="h-10 rounded-xl bg-white/80 backdrop-blur-sm border border-emerald-200/50 text-sm text-gray-900 placeholder:text-gray-400 focus:border-[#18c260]/70 focus:shadow-[0_0_0_2px_rgba(24,194,96,0.3),0_0_20px_rgba(24,194,96,0.2)] focus:outline-none transition-all duration-300 hover:bg-white/90"
             placeholder="Enter your full name"
           />
         </div>
 
         {/* Email */}
         <div className="space-y-1.5">
-          <Label htmlFor="email" className="text-xs text-white/80">
+          <Label htmlFor="email" className="text-xs text-gray-700">
             Email <span className="text-[#18c260]">*</span>
           </Label>
           <Input
@@ -189,7 +189,7 @@ export default function PageOne({
             required
             value={formData.email}
             onChange={(e) => updateFormData({ email: e.target.value })}
-            className="h-10 rounded-xl bg-white/5 border border-white/20 text-sm text-white placeholder:text-white/50 focus:border-[#18c260]/50 focus:shadow-[0_0_0_1px_rgba(24,194,96,0.15),0_0_12px_rgba(24,194,96,0.15)] focus:outline-none transition-all duration-300"
+            className="h-10 rounded-xl bg-white/80 backdrop-blur-sm border border-emerald-200/50 text-sm text-gray-900 placeholder:text-gray-400 focus:border-[#18c260]/70 focus:shadow-[0_0_0_2px_rgba(24,194,96,0.3),0_0_20px_rgba(24,194,96,0.2)] focus:outline-none transition-all duration-300 hover:bg-white/90"
             placeholder="your.email@example.com"
           />
         </div>
@@ -197,7 +197,7 @@ export default function PageOne({
         <div className="grid gap-4 md:grid-cols-2">
           {/* Age */}
           <div className="space-y-1.5">
-            <Label htmlFor="age" className="text-xs text-white/80">
+            <Label htmlFor="age" className="text-xs text-gray-700">
               Age <span className="text-[#18c260]">*</span>
             </Label>
               <NumberInput
@@ -207,14 +207,14 @@ export default function PageOne({
               max="120"
               value={formData.age}
               onChange={(e) => updateFormData({ age: e.target.value })}
-              className="h-10 rounded-xl bg-white/5 border border-white/20 text-sm text-white placeholder:text-white/50 focus:border-[#18c260]/50 focus:shadow-[0_0_0_1px_rgba(24,194,96,0.15),0_0_12px_rgba(24,194,96,0.15)] focus:outline-none transition-all duration-300"
+              className="h-10 rounded-xl bg-white/80 backdrop-blur-sm border border-emerald-200/50 text-sm text-gray-900 placeholder:text-gray-400 focus:border-[#18c260]/70 focus:shadow-[0_0_0_2px_rgba(24,194,96,0.3),0_0_20px_rgba(24,194,96,0.2)] focus:outline-none transition-all duration-300 hover:bg-white/90"
               placeholder="25"
             />
           </div>
 
           {/* Gender */}
           <div className="space-y-1.5">
-            <Label htmlFor="gender" className="text-xs text-white/80">
+            <Label htmlFor="gender" className="text-xs text-gray-700">
               Gender <span className="text-[#18c260]">*</span>
             </Label>
             <Select
@@ -222,7 +222,7 @@ export default function PageOne({
               required
               value={formData.gender}
               onChange={(e) => updateFormData({ gender: e.target.value })}
-              className="h-10 rounded-xl bg-white/5 border border-white/20 text-sm text-white focus:border-[#18c260]/50 focus:shadow-[0_0_0_1px_rgba(24,194,96,0.15),0_0_12px_rgba(24,194,96,0.15)] focus:outline-none transition-all duration-300 [&>option]:bg-gray-900 [&>option]:text-white"
+              className="h-10 rounded-xl bg-white/80 backdrop-blur-sm border border-emerald-200/50 text-sm text-gray-900 focus:border-[#18c260]/70 focus:shadow-[0_0_0_2px_rgba(24,194,96,0.3),0_0_20px_rgba(24,194,96,0.2)] focus:outline-none transition-all duration-300 hover:bg-white/90 [&>option]:bg-white [&>option]:text-gray-900"
             >
               <option value="">Select gender</option>
               <option value="male">Male</option>
@@ -234,7 +234,7 @@ export default function PageOne({
 
         {/* Weight */}
         <div className="space-y-1.5">
-          <Label className="text-xs uppercase tracking-wide text-white/60 font-medium">
+          <Label className="text-xs uppercase tracking-wide text-gray-700 font-medium">
             Current Weight <span className="text-[#18c260]">*</span>
           </Label>
           <div className="flex gap-2">
@@ -246,13 +246,13 @@ export default function PageOne({
               step="0.1"
               value={weightUnit === "kg" ? formData.weightKg : formData.weightLbs}
               onChange={(e) => handleWeightChange(e.target.value, weightUnit)}
-              className="flex-1 h-10 rounded-xl bg-white/5 border border-white/20 text-sm text-white placeholder:text-white/50 focus:border-[#18c260]/50 focus:shadow-[0_0_0_1px_rgba(24,194,96,0.15),0_0_12px_rgba(24,194,96,0.15)] focus:outline-none transition-all duration-300"
+              className="flex-1 h-10 rounded-xl bg-white/80 backdrop-blur-sm border border-emerald-200/50 text-sm text-gray-900 placeholder:text-gray-400 focus:border-[#18c260]/70 focus:shadow-[0_0_0_2px_rgba(24,194,96,0.3),0_0_20px_rgba(24,194,96,0.2)] focus:outline-none transition-all duration-300 hover:bg-white/90"
               placeholder={weightUnit === "kg" ? "70" : "154.3"}
             />
             <Select
               value={weightUnit}
               onChange={(e) => handleWeightUnitChange(e.target.value as "kg" | "lbs")}
-              className="w-20 h-10 rounded-xl bg-white/5 border border-white/20 text-sm text-white focus:border-[#18c260]/50 focus:shadow-[0_0_0_1px_rgba(24,194,96,0.15),0_0_12px_rgba(24,194,96,0.15)] focus:outline-none transition-all duration-300 [&>option]:bg-gray-900 [&>option]:text-white"
+              className="w-20 h-10 rounded-xl bg-white/80 backdrop-blur-sm border border-emerald-200/50 text-sm text-gray-900 focus:border-[#18c260]/70 focus:shadow-[0_0_0_2px_rgba(24,194,96,0.3),0_0_20px_rgba(24,194,96,0.2)] focus:outline-none transition-all duration-300 hover:bg-white/90 [&>option]:bg-white [&>option]:text-gray-900"
             >
               <option value="kg">kg</option>
               <option value="lbs">lbs</option>
@@ -262,7 +262,7 @@ export default function PageOne({
 
         {/* Height */}
         <div className="space-y-1.5">
-          <Label className="text-xs uppercase tracking-wide text-white/60 font-medium">
+          <Label className="text-xs uppercase tracking-wide text-gray-700 font-medium">
             Height <span className="text-[#18c260]">*</span>
           </Label>
           <div className="flex gap-2">
@@ -275,7 +275,7 @@ export default function PageOne({
                 step="0.1"
                 value={formData.heightCm}
                 onChange={(e) => handleHeightChange(e.target.value, "cm")}
-                className="flex-1 h-10 rounded-xl bg-white/5 border border-white/20 text-sm text-white placeholder:text-white/50 focus:border-[#18c260]/50 focus:shadow-[0_0_0_1px_rgba(24,194,96,0.15),0_0_12px_rgba(24,194,96,0.15)] focus:outline-none transition-all duration-300"
+                className="flex-1 h-10 rounded-xl bg-white/80 backdrop-blur-sm border border-emerald-200/50 text-sm text-gray-900 placeholder:text-gray-400 focus:border-[#18c260]/70 focus:shadow-[0_0_0_2px_rgba(24,194,96,0.3),0_0_20px_rgba(24,194,96,0.2)] focus:outline-none transition-all duration-300 hover:bg-white/90"
                 placeholder="175"
               />
             ) : (
@@ -285,14 +285,14 @@ export default function PageOne({
                 required
                 value={formData.heightFt}
                 onChange={(e) => handleHeightChange(e.target.value, "ft")}
-                className="flex-1 h-10 rounded-xl bg-white/5 border border-white/20 text-sm text-white placeholder:text-white/50 focus:border-[#18c260]/50 focus:shadow-[0_0_0_1px_rgba(24,194,96,0.15),0_0_12px_rgba(24,194,96,0.15)] focus:outline-none transition-all duration-300"
+                className="flex-1 h-10 rounded-xl bg-white/80 backdrop-blur-sm border border-emerald-200/50 text-sm text-gray-900 placeholder:text-gray-400 focus:border-[#18c260]/70 focus:shadow-[0_0_0_2px_rgba(24,194,96,0.3),0_0_20px_rgba(24,194,96,0.2)] focus:outline-none transition-all duration-300 hover:bg-white/90"
                 placeholder="ex: 5'10&quot;"
               />
             )}
             <Select
               value={heightUnit}
               onChange={(e) => handleHeightUnitChange(e.target.value as "cm" | "ft")}
-              className="w-20 h-10 rounded-xl bg-white/5 border border-white/20 text-sm text-white focus:border-[#18c260]/50 focus:shadow-[0_0_0_1px_rgba(24,194,96,0.15),0_0_12px_rgba(24,194,96,0.15)] focus:outline-none transition-all duration-300 [&>option]:bg-gray-900 [&>option]:text-white"
+              className="w-20 h-10 rounded-xl bg-white/80 backdrop-blur-sm border border-emerald-200/50 text-sm text-gray-900 focus:border-[#18c260]/70 focus:shadow-[0_0_0_2px_rgba(24,194,96,0.3),0_0_20px_rgba(24,194,96,0.2)] focus:outline-none transition-all duration-300 hover:bg-white/90 [&>option]:bg-white [&>option]:text-gray-900"
             >
               <option value="cm">cm</option>
               <option value="ft">ft</option>
@@ -302,7 +302,7 @@ export default function PageOne({
 
         {/* Goal */}
         <div className="space-y-2">
-          <Label htmlFor="goal" className="text-xs uppercase tracking-wide text-white/60 font-medium">
+          <Label htmlFor="goal" className="text-xs uppercase tracking-wide text-gray-700 font-medium">
             Goal <span className="text-[#18c260]">*</span>
           </Label>
           <Select
@@ -310,7 +310,7 @@ export default function PageOne({
             required
             value={formData.goal}
             onChange={(e) => updateFormData({ goal: e.target.value })}
-            className="h-10 rounded-xl bg-white/5 border border-white/20 text-sm text-white focus:border-green-400/70 focus:ring-2 focus:ring-green-400/30 transition-all [&>option]:bg-gray-900 [&>option]:text-white"
+            className="h-10 rounded-xl bg-white/80 backdrop-blur-sm border border-emerald-200/50 text-sm text-gray-900 focus:border-[#18c260]/70 focus:shadow-[0_0_0_2px_rgba(24,194,96,0.3),0_0_20px_rgba(24,194,96,0.2)] focus:outline-none transition-all duration-300 hover:bg-white/90 [&>option]:bg-white [&>option]:text-gray-900"
           >
             <option value="">Select goal</option>
             <option value="weight-loss">Weight Loss</option>
@@ -320,7 +320,7 @@ export default function PageOne({
 
         {/* Goal Weight */}
         <div className="space-y-1.5">
-          <Label htmlFor="goalWeight" className="text-xs text-white/80">
+          <Label htmlFor="goalWeight" className="text-xs text-white/90">
             Goal Weight (kg) <span className="text-[#18c260]">*</span>
           </Label>
           <NumberInput
@@ -331,7 +331,7 @@ export default function PageOne({
             step="0.1"
             value={formData.goalWeight}
             onChange={(e) => updateFormData({ goalWeight: e.target.value })}
-            className="h-10 rounded-xl bg-white/5 border border-white/20 text-sm text-white placeholder:text-white/50 focus:border-[#18c260]/50 focus:shadow-[0_0_0_1px_rgba(24,194,96,0.15),0_0_12px_rgba(24,194,96,0.15)] focus:outline-none transition-all duration-300"
+            className="h-10 rounded-xl bg-white/80 backdrop-blur-sm border border-emerald-200/50 text-sm text-gray-900 placeholder:text-gray-500 focus:border-[#18c260]/70 focus:shadow-[0_0_0_2px_rgba(24,194,96,0.3),0_0_20px_rgba(24,194,96,0.2)] focus:outline-none transition-all duration-300 hover:bg-white/90"
             placeholder="65"
           />
         </div>

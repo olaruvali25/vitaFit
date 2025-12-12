@@ -236,29 +236,22 @@ function AssessmentPageContent() {
       const hasActiveMembership = result.membership?.hasActiveMembership || false
       const membershipStatus = result.membership?.status || "INACTIVE"
 
-      // If user doesn't have active membership, redirect to pricing
+      // If user doesn't have active membership, redirect to pricing and preserve next
       if (!hasActiveMembership && membershipStatus === "INACTIVE") {
-        // Store assessment data for after membership activation
         sessionStorage.setItem("assessmentData", JSON.stringify(data))
-        
-        // Check if user has used free trial
         const user = session?.user as any
-        if (user?.hasUsedFreeTrial) {
-          // User needs to subscribe
-          router.push(`/pricing?profileId=${result.profileId}&assessment=completed`)
-        } else {
-          // User can start free trial
-          router.push(`/pricing?profileId=${result.profileId}&assessment=completed&trial=available`)
-        }
+        const trialQuery = user?.hasUsedFreeTrial ? "" : "&trial=available"
+        router.push(
+          `/pricing?profileId=${result.profileId}&assessment=completed&next=/meal-plan/loading${trialQuery}`
+        )
         return
       }
 
-      // User has active membership or trial - show loading immediately and generate plan
+      // User has active membership or trial - go to loading/generation page
+      sessionStorage.setItem("assessmentData", JSON.stringify(data))
       setShowLoading(true)
       setError(null)
-      // Submit assessment to Make.com (already done, but ensure webhook is triggered)
-      // Start polling immediately - don't await, let it run in background
-      pollForPlan(result.profileId)
+      router.push(`/meal-plan/loading?profileId=${result.profileId}&assessment=completed`)
 
     } catch (err: any) {
       console.error("Assessment submit error:", err)
@@ -294,48 +287,25 @@ function AssessmentPageContent() {
 
   return (
     <main className="overflow-hidden [--color-primary-foreground:var(--color-white)] [--color-primary:var(--color-green-600)]">
-      <section className="relative overflow-hidden bg-gradient-to-br from-slate-900 via-emerald-950/30 to-slate-900 min-h-screen">
-        {/* Nature-inspired wellness background layers */}
-        <div className="absolute inset-0 pointer-events-none z-[1]">
-          {/* Base gradient - lighter nature tones */}
-          <div 
-            className="absolute inset-0"
-            style={{
-              background: `
-                radial-gradient(circle at 20% 30%, rgba(24, 194, 96, 0.15) 0%, rgba(24, 194, 96, 0.05) 25%, transparent 50%),
-                radial-gradient(circle at 80% 70%, rgba(16, 185, 129, 0.12) 0%, rgba(16, 185, 129, 0.04) 30%, transparent 55%),
-                radial-gradient(circle at 50% 50%, rgba(230, 247, 236, 0.08) 0%, transparent 40%),
-                linear-gradient(135deg, rgba(15, 23, 42, 0.95) 0%, rgba(6, 78, 59, 0.3) 50%, rgba(15, 23, 42, 0.95) 100%)
-              `
-            }}
-          />
-          {/* Soft light rays for wellness feel */}
-          <div 
-            className="absolute inset-0 opacity-30"
-            style={{
-              background: `
-                linear-gradient(180deg, transparent 0%, rgba(24, 194, 96, 0.03) 20%, transparent 40%),
-                linear-gradient(90deg, transparent 0%, rgba(16, 185, 129, 0.02) 30%, transparent 60%)
-              `
-            }}
-          />
-        </div>
+      <section className="relative overflow-hidden bg-gradient-to-b from-emerald-50 via-teal-50 via-emerald-100/60 via-green-100/40 to-green-950/30 min-h-screen scroll-mt-20">
+        {/* Page-specific light background with green/teal gradient - darker at bottom */}
+        <div className="pointer-events-none absolute inset-0 -z-10 bg-gradient-to-b from-emerald-50/80 via-teal-50/60 via-emerald-100/50 via-green-100/40 to-green-950/20" />
+        {/* Green shadows at corners - more intense */}
+        <div className="pointer-events-none absolute top-0 left-0 w-96 h-96 bg-emerald-600/15 rounded-full blur-3xl -z-10" />
+        <div className="pointer-events-none absolute top-0 right-0 w-96 h-96 bg-teal-600/15 rounded-full blur-3xl -z-10" />
+        <div className="pointer-events-none absolute bottom-0 left-0 w-96 h-96 bg-emerald-800/20 rounded-full blur-3xl -z-10" />
+        <div className="pointer-events-none absolute bottom-0 right-0 w-96 h-96 bg-teal-800/20 rounded-full blur-3xl -z-10" />
+        {/* Additional green gradient overlay for blending */}
+        <div className="pointer-events-none absolute inset-0 -z-10 bg-gradient-to-b from-transparent via-green-500/5 to-green-950/15" />
         {/* Shooting Stars - must be above gradient */}
         <ShootingStars />
         <StarsBackground />
         <div className="relative mx-auto max-w-6xl px-6 pb-12 pt-32 lg:pt-40">
           <div className="relative z-10 mx-auto max-w-4xl text-center">
-            <h1 className="text-balance text-4xl font-medium md:text-5xl text-white mb-4">
-              Your Personal <span className="text-[#18c260] relative inline-block" style={{
-                background: 'linear-gradient(90deg, #18c260 0%, #1FCC5F 50%, #18c260 100%)',
-                backgroundSize: '200% 100%',
-                WebkitBackgroundClip: 'text',
-                WebkitTextFillColor: 'transparent',
-                backgroundClip: 'text',
-                animation: 'shimmer 3s ease-in-out infinite'
-              }}>AI Nutritionist</span>
+            <h1 className="text-balance text-4xl font-medium md:text-5xl text-gray-900 mb-4">
+              Your Personal <span className="text-emerald-600 relative inline-block">AI Nutritionist</span>
             </h1>
-            <p className="mx-auto mt-4 max-w-2xl text-pretty text-base text-white/80">
+            <p className="mx-auto mt-4 max-w-2xl text-pretty text-base text-gray-700">
               No more guessing. No more random diets.
               Just a weekly plan built exactly for your body, your schedule, and your goals, so you finally stay consistent and see real results.
             </p>
@@ -365,8 +335,8 @@ function AssessmentPageContent() {
 export default function AssessmentPage() {
   return (
     <Suspense fallback={
-      <main className="overflow-hidden min-h-screen bg-gradient-to-br from-slate-900 via-emerald-950/30 to-slate-900 flex items-center justify-center">
-        <Loader2 className="h-8 w-8 animate-spin text-emerald-400" />
+      <main className="overflow-hidden min-h-screen bg-gradient-to-b from-emerald-50 via-teal-50 via-emerald-100/60 via-green-100/40 to-green-950/30 flex items-center justify-center">
+        <Loader2 className="h-8 w-8 animate-spin text-emerald-600" />
       </main>
     }>
       <AssessmentPageContent />

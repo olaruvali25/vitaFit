@@ -6,7 +6,7 @@ import { Button } from '@/components/ui/button'
 import React from 'react'
 import { cn } from '@/lib/utils'
 import { useSession, signOut } from 'next-auth/react'
-import { useRouter } from 'next/navigation'
+import { useRouter, usePathname } from 'next/navigation'
 
 const menuItems = [
     { name: 'Pricing', href: '/pricing' },
@@ -20,6 +20,8 @@ export const HeroHeader = () => {
     const [accountDropdownOpen, setAccountDropdownOpen] = React.useState(false)
     const { data: session } = useSession()
     const router = useRouter()
+    const pathname = usePathname()
+    const isAccountPage = pathname?.startsWith('/account')
 
     React.useEffect(() => {
         const handleScroll = () => {
@@ -59,7 +61,12 @@ export const HeroHeader = () => {
                                         <Link
                                             href={item.href}
                                             onClick={() => setMenuState(false)}
-                                            className="text-white hover:text-white/80 block duration-150">
+                                            className={cn(
+                                                "block duration-150",
+                                                isAccountPage
+                                                    ? "text-white hover:text-white/80"
+                                                    : "text-gray-900 hover:text-gray-700"
+                                            )}>
                                             <span>{item.name}</span>
                                         </Link>
                                     </li>
@@ -75,7 +82,12 @@ export const HeroHeader = () => {
                                             <Link
                                                 href={item.href}
                                                 onClick={() => setMenuState(false)}
-                                                className="text-white hover:text-white/80 block duration-150">
+                                                className={cn(
+                                                    "block duration-150",
+                                                    isAccountPage
+                                                        ? "text-white hover:text-white/80"
+                                                        : "text-gray-900 hover:text-gray-700"
+                                                )}>
                                                 <span>{item.name}</span>
                                             </Link>
                                         </li>
@@ -85,7 +97,12 @@ export const HeroHeader = () => {
                                             <Link
                                                 href="/account"
                                                 onClick={() => setMenuState(false)}
-                                                className="text-white hover:text-white/80 block duration-150">
+                                                className={cn(
+                                                    "block duration-150",
+                                                    isAccountPage
+                                                        ? "text-white hover:text-white/80"
+                                                        : "text-gray-900 hover:text-gray-700"
+                                                )}>
                                                 <span>My Account</span>
                                             </Link>
                                         </li>
@@ -94,7 +111,12 @@ export const HeroHeader = () => {
                                             <Link
                                                 href="/login"
                                                 onClick={() => setMenuState(false)}
-                                                className="text-white hover:text-white/80 block duration-150">
+                                                className={cn(
+                                                    "block duration-150",
+                                                    isAccountPage
+                                                        ? "text-white hover:text-white/80"
+                                                        : "text-gray-900 hover:text-gray-700"
+                                                )}>
                                                 <span>Login</span>
                                             </Link>
                                         </li>
@@ -108,14 +130,21 @@ export const HeroHeader = () => {
                                             <Button
                                                 variant="ghost"
                                                 size="sm"
-                                                className="text-white hover:text-white/80 hover:bg-white/10"
+                                                className={cn(
+                                                    isAccountPage
+                                                        ? "text-white hover:text-white/80 hover:bg-white/10"
+                                                        : "text-black hover:text-gray-800 hover:bg-gray-100"
+                                                )}
                                                 onClick={() => setAccountDropdownOpen(!accountDropdownOpen)}
                                                 onBlur={() => setTimeout(() => setAccountDropdownOpen(false), 200)}>
-                                                <span>My Account</span>
+                                                <span className={isAccountPage ? "text-white" : undefined}>My Account</span>
                                                 <ChevronDown className={cn("ml-1 h-4 w-4 transition-transform", accountDropdownOpen && "rotate-180")} />
                                             </Button>
                                             {accountDropdownOpen && (
-                                                <div className="absolute right-0 top-full mt-1 w-48 rounded-md border border-white/20 bg-slate-900/95 backdrop-blur-lg shadow-lg z-50">
+                                                <div className={cn(
+                                                    "absolute right-0 top-full mt-1 w-48 rounded-md border backdrop-blur-lg shadow-lg z-50",
+                                                    isAccountPage ? "border-white/20 bg-white/5" : "border-gray-200 bg-white"
+                                                )}>
                                                     <div className="py-1">
                                                         <Link
                                                             href="/account"
@@ -123,7 +152,12 @@ export const HeroHeader = () => {
                                                                 setAccountDropdownOpen(false)
                                                                 setMenuState(false)
                                                             }}
-                                                            className="flex items-center gap-2 px-4 py-2 text-sm text-white hover:bg-white/10 transition-colors">
+                                                            className={cn(
+                                                              "flex items-center gap-2 px-4 py-2 text-sm transition-colors",
+                                                              isAccountPage
+                                                                ? "text-white hover:bg-white/10"
+                                                                : "text-black hover:bg-gray-100"
+                                                            )}>
                                                             <User className="h-4 w-4" />
                                                             <span>My Account</span>
                                                         </Link>
@@ -135,7 +169,12 @@ export const HeroHeader = () => {
                                                                 router.push('/')
                                                                 router.refresh()
                                                             }}
-                                                            className="flex w-full items-center gap-2 px-4 py-2 text-sm text-white hover:bg-white/10 transition-colors">
+                                                            className={cn(
+                                                              "flex w-full items-center gap-2 px-4 py-2 text-sm transition-colors",
+                                                              isAccountPage
+                                                                ? "text-white hover:bg-white/10"
+                                                                : "text-black hover:bg-gray-100"
+                                                            )}>
                                                             <LogOut className="h-4 w-4" />
                                                             <span>Logout</span>
                                                         </button>
@@ -154,10 +193,15 @@ export const HeroHeader = () => {
                                     </>
                                 ) : (
                                     <>
-                                        <Link 
-                                            href="/login" 
+                                        <Link
+                                            href="/login"
                                             onClick={() => setMenuState(false)}
-                                            className="inline-flex items-center justify-center rounded-md text-sm font-medium transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 h-9 px-3 text-white hover:text-white/80 hover:bg-white/10"
+                                            className={cn(
+                                                "inline-flex items-center justify-center rounded-md text-sm font-medium transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 h-9 px-3",
+                                                isAccountPage
+                                                    ? "text-white hover:text-white/80 hover:bg-white/10"
+                                                    : "text-gray-900 hover:text-gray-700 hover:bg-gray-100"
+                                            )}
                                         >
                                             Login
                                         </Link>

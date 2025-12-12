@@ -1,6 +1,6 @@
 "use client"
 
-import { useEffect, useState } from "react"
+import { useEffect, useState, Suspense } from "react"
 import { useSession } from "next-auth/react"
 import { redirect, useSearchParams } from "next/navigation"
 import { Tabs, TabsContent } from "@/components/ui/tabs"
@@ -11,7 +11,7 @@ import { SubscriptionTab } from "@/components/account/SubscriptionTab"
 import { ProgressTracker } from "@/components/account/ProgressTracker"
 import { cn } from "@/lib/utils"
 
-export default function AccountPage() {
+function AccountPageContent() {
   const { data: session, status } = useSession()
   const searchParams = useSearchParams()
   const [activeTab, setActiveTab] = useState("profiles")
@@ -111,6 +111,18 @@ export default function AccountPage() {
         </div>
       </div>
     </section>
+  )
+}
+
+export default function AccountPage() {
+  return (
+    <Suspense fallback={
+      <div className="container px-4 py-16 md:py-24">
+        <div className="mx-auto max-w-4xl text-center text-white">Loading...</div>
+      </div>
+    }>
+      <AccountPageContent />
+    </Suspense>
   )
 }
 
