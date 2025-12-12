@@ -3,7 +3,7 @@
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import Link from "next/link"
-import { motion } from "motion/react"
+import { motion } from "framer-motion"
 import { FadeInView } from "@/components/ui/fade-in-view"
 import { CheckCircle2, Heart, Target, Users, ChevronRight } from "lucide-react"
 import { CtaCard } from "@/components/ui/cta-card"
