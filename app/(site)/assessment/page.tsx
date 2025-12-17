@@ -1,7 +1,7 @@
 "use client"
 
 import { useState, useEffect, Suspense, useRef } from "react"
-import { useSession } from "next-auth/react"
+import { useSupabase } from "@/components/providers/SupabaseProvider"
 import { useRouter, useSearchParams } from "next/navigation"
 import AssessmentForm from "@/components/forms/AssessmentForm"
 import type { AssessmentFormData } from "@/components/forms/AssessmentForm"
@@ -11,7 +11,8 @@ import { StarsBackground } from "@/components/ui/stars-background"
 import { Loader2 } from "lucide-react"
 
 function AssessmentPageContent() {
-  const { data: session, status } = useSession()
+  const { user, loading: authLoading } = useSupabase()
+  const status = authLoading ? "loading" : user ? "authenticated" : "unauthenticated"
   const router = useRouter()
   const searchParams = useSearchParams()
   const [loading, setLoading] = useState(false)
@@ -239,8 +240,8 @@ function AssessmentPageContent() {
       // If user doesn't have active membership, redirect to pricing and preserve next
       if (!hasActiveMembership && membershipStatus === "INACTIVE") {
         sessionStorage.setItem("assessmentData", JSON.stringify(data))
-        const user = session?.user as any
-        const trialQuery = user?.hasUsedFreeTrial ? "" : "&trial=available"
+        const userObj = user as any
+        const trialQuery = userObj?.hasUsedFreeTrial ? "" : "&trial=available"
         router.push(
           `/pricing?profileId=${result.profileId}&assessment=completed&next=/meal-plan/loading${trialQuery}`
         )

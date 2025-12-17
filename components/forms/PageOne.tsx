@@ -152,7 +152,7 @@ export default function PageOne({
         <p className="text-xs text-gray-600 mt-1.5">
         It takes you 60 seconds, we'll create the plan you've been missing to succeed!
         </p>
-        <div className="mt-2 h-px bg-gradient-to-r from-transparent via-emerald-300/40 to-transparent"></div>
+        <div className="mt-2 h-px bg-gradient-to-r from-transparent via-emerald-300/40 to-transparent" suppressHydrationWarning></div>
       </div>
 
       <form

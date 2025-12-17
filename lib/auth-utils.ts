@@ -1,15 +1,42 @@
-import { auth } from "@/auth"
+import { createServerClient } from '@supabase/ssr'
+import { cookies } from 'next/headers'
 import { redirect } from "next/navigation"
 import { UserRole } from "@prisma/client"
 import { NextResponse } from "next/server"
+
+/**
+ * Create Supabase server client for auth
+ */
+async function createSupabaseServerClient() {
+  const cookieStore = await cookies()
+
+  return createServerClient(
+    process.env.NEXT_PUBLIC_SUPABASE_URL!,
+    process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
+    {
+      cookies: {
+        get(name: string) {
+          return cookieStore.get(name)?.value
+        },
+        set(name: string, value: string, options: any) {
+          cookieStore.set({ name, value, ...options })
+        },
+        remove(name: string, options: any) {
+          cookieStore.set({ name, value: '', ...options })
+        },
+      },
+    }
+  )
+}
 
 /**
  * Get the current authenticated user
  * Returns null if not authenticated
  */
 export async function getCurrentUser() {
-  const session = await auth()
-  return session?.user || null
+  const supabase = await createSupabaseServerClient()
+  const { data: { user } } = await supabase.auth.getUser()
+  return user
 }
 
 /**
@@ -17,7 +44,9 @@ export async function getCurrentUser() {
  * Returns null if not authenticated
  */
 export async function getAuthSession() {
-  return await auth()
+  const supabase = await createSupabaseServerClient()
+  const { data: { session } } = await supabase.auth.getSession()
+  return session
 }
 
 // For API routes - throws error that can be caught and returned as JSON

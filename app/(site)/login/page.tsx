@@ -1,13 +1,27 @@
 "use client"
 
 import { useState } from "react"
-import { signIn } from "next-auth/react"
 import { useRouter } from "next/navigation"
+import { createClient } from '@supabase/supabase-js'
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import Link from "next/link"
 import { LogoIcon } from "@/components/logo"
+import { Eye, EyeOff } from "lucide-react"
+
+// Create isolated Supabase client for login only
+const supabase = createClient(
+  process.env.NEXT_PUBLIC_SUPABASE_URL!,
+  process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
+  {
+    auth: {
+      autoRefreshToken: true,
+      persistSession: true,
+      detectSessionInUrl: false // Disable URL session detection for login
+    }
+  }
+)
 
 export default function LoginPage() {
   const router = useRouter()
@@ -15,110 +29,74 @@ export default function LoginPage() {
   const [password, setPassword] = useState("")
   const [error, setError] = useState("")
   const [loading, setLoading] = useState(false)
+  const [showPassword, setShowPassword] = useState(false)
 
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault()
-    setError("")
+  const handleLogin = async () => {
     setLoading(true)
+    setError("")
 
     try {
-      // Normalize email (trim and lowercase) to match signup and auth
-      const normalizedEmail = email.trim().toLowerCase()
-      console.log("[Login] ====== LOGIN ATTEMPT ======")
-      console.log("[Login] Email input:", email)
-      console.log("[Login] Normalized email:", normalizedEmail)
-      console.log("[Login] Password provided:", password ? "YES (length: " + password.length + ")" : "NO")
-      console.log("[Login] Attempting to sign in with email:", normalizedEmail)
-      const result = await signIn("credentials", {
-        email: normalizedEmail,
-        password,
-        redirect: false,
+      console.log("[LOGIN] Starting login process...")
+
+      // Step 1: Sign in with Supabase
+      const { data, error: signInError } = await supabase.auth.signInWithPassword({
+        email: email.trim().toLowerCase(),
+        password: password
       })
 
-      console.log("[Login] Sign in result:", { ok: result?.ok, error: result?.error })
-
-      if (result?.error) {
-        // Handle specific error messages
-        console.error("[Login] Sign in error:", result.error)
-        if (result.error === "CredentialsSignin" || result.error.includes("Credentials")) {
-          setError("Invalid email or password. Please check your credentials and try again.")
-        } else {
-          setError(result.error || "Invalid email or password")
-        }
+      if (signInError) {
+        console.error("[LOGIN] Sign in error:", signInError)
+        setError("Invalid email or password")
         setLoading(false)
-      } else if (result?.ok) {
-        // Success - refresh session first
-        await router.refresh()
-        
-        // Wait a moment for session to update
-        await new Promise(resolve => setTimeout(resolve, 500))
-        
-        // Check if there's assessment data to submit
-        const assessmentData = sessionStorage.getItem("assessmentData")
-        const redirectTo = new URLSearchParams(window.location.search).get("redirect")
-        
-        if (assessmentData && redirectTo === "assessment") {
-          try {
-            const data = JSON.parse(assessmentData)
-            // Submit assessment automatically
-            const assessmentResponse = await fetch("/api/assessment/submit", {
-              method: "POST",
-              headers: { "Content-Type": "application/json" },
-              body: JSON.stringify(data),
-            })
-
-            if (assessmentResponse.ok) {
-              const assessmentResult = await assessmentResponse.json()
-              
-              // Check membership and redirect accordingly
-              const hasActiveMembership = assessmentResult.membership?.hasActiveMembership || false
-              const membershipStatus = assessmentResult.membership?.status || "INACTIVE"
-              
-              if (!hasActiveMembership && membershipStatus === "INACTIVE") {
-                // Keep assessment data for after membership activation
-                window.location.href = `/pricing?profileId=${assessmentResult.profileId}&assessment=completed`
-              } else {
-                // User has membership, remove assessment data and go to account
-                sessionStorage.removeItem("assessmentData")
-                window.location.href = "/account?tab=plans"
-              }
-            } else {
-              // Assessment failed, but logged in - keep data for retry
-              const errorData = await assessmentResponse.json().catch(() => ({}))
-              console.error("Assessment submit failed:", errorData)
-              window.location.href = "/account"
-            }
-          } catch (err) {
-            console.error("Error submitting assessment after login:", err)
-            // Keep assessment data for retry
-            window.location.href = "/account"
-          }
-        } else {
-          // No assessment data, normal redirect
-          window.location.href = "/account"
-        }
-      } else {
-        setError("Something went wrong. Please try again.")
-        setLoading(false)
+        return
       }
+
+      if (!data.session) {
+        console.error("[LOGIN] No session returned")
+        setError("Login failed - no session created")
+        setLoading(false)
+        return
+      }
+
+      console.log("[LOGIN] Sign in successful, session created")
+
+      // Step 2: Force session confirmation
+      const { data: sessionData, error: sessionError } = await supabase.auth.getSession()
+
+      if (sessionError) {
+        console.error("[LOGIN] Session confirmation error:", sessionError)
+        setError("Login failed - session verification error")
+        setLoading(false)
+        return
+      }
+
+      if (!sessionData.session) {
+        console.error("[LOGIN] Session confirmation failed - no active session")
+        setError("Login failed - session not confirmed")
+        setLoading(false)
+        return
+      }
+
+      console.log("[LOGIN] Session confirmed, user authenticated:", sessionData.session.user.email)
+
+      // Step 3: Explicit redirect to dashboard
+      console.log("[LOGIN] Redirecting to /account...")
+      router.replace("/account")
+
     } catch (err: any) {
-      console.error("Login error:", err)
-      setError(err?.message || "Something went wrong. Please try again.")
+      console.error("[LOGIN] Unexpected error:", err)
+      setError("An unexpected error occurred")
       setLoading(false)
     }
   }
 
   const handleGoogleSignIn = () => {
-    // Google OAuth will be implemented later
     alert("Google sign-in will be available soon")
   }
 
   return (
     <section className="flex min-h-screen bg-gradient-to-br from-slate-900 via-emerald-950/30 to-slate-900 px-4 py-16 md:py-32">
-      <form
-        onSubmit={handleSubmit}
-        className="max-w-md m-auto h-fit w-full bg-white/10 backdrop-blur-xl border border-white/20 rounded-2xl shadow-2xl p-6"
-      >
+      <div className="max-w-md m-auto h-fit w-full bg-white/10 backdrop-blur-xl border border-white/20 rounded-2xl shadow-2xl p-6">
         <div>
           <Link
             href="/"
@@ -188,12 +166,11 @@ export default function LoginPage() {
             </Label>
             <Input
               type="email"
-              required
-              name="email"
               id="email"
               value={email}
               onChange={(e) => setEmail(e.target.value)}
               className="bg-white/5 border-white/20 text-white placeholder:text-white/50 focus:border-emerald-400"
+              placeholder="Enter your email"
             />
           </div>
           <div className="space-y-2">
@@ -213,20 +190,29 @@ export default function LoginPage() {
                 <Link href="/forgot-password">Forgot password?</Link>
               </Button>
             </div>
-            <Input
-              type="password"
-              required
-              name="password"
-              id="password"
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
-              className="bg-white/5 border-white/20 text-white placeholder:text-white/50 focus:border-emerald-400"
-            />
+            <div className="relative">
+              <Input
+                type={showPassword ? "text" : "password"}
+                id="password"
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+                className="bg-white/5 border-white/20 text-white placeholder:text-white/50 focus:border-emerald-400 pr-10"
+                placeholder="Enter your password"
+              />
+              <button
+                type="button"
+                onClick={() => setShowPassword(!showPassword)}
+                className="absolute right-3 top-1/2 -translate-y-1/2 text-white/50 hover:text-white/70 transition-colors"
+              >
+                {showPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
+              </button>
+            </div>
           </div>
-          <Button 
-            type="submit" 
+          <Button
+            type="button"
             className="w-full bg-emerald-500 hover:bg-emerald-600 text-white"
             disabled={loading}
+            onClick={handleLogin}
           >
             {loading ? "Signing in..." : "Continue"}
           </Button>
@@ -242,7 +228,7 @@ export default function LoginPage() {
             <Link href="/signup">Create account</Link>
           </Button>
         </p>
-      </form>
+      </div>
     </section>
   )
 }

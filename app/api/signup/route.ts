@@ -1,13 +1,10 @@
 import { NextRequest, NextResponse } from "next/server"
-import { prisma } from "@/lib/prisma"
-import bcrypt from "bcryptjs"
+import { supabase } from "@/lib/supabase"
 import { initializeFreeTrial } from "@/lib/membership"
 
-// Ensure this route is public (no auth required)
 export const dynamic = "force-dynamic"
 export const runtime = "nodejs"
 
-// Handle OPTIONS for CORS preflight
 export async function OPTIONS(request: NextRequest) {
   const headers = new Headers()
   headers.set("Access-Control-Allow-Origin", "*")
@@ -16,13 +13,7 @@ export async function OPTIONS(request: NextRequest) {
   return new NextResponse(null, { status: 200, headers })
 }
 
-export async function POST(request: NextRequest) {
-  console.log("[Signup] ====== SIGNUP REQUEST RECEIVED ======")
-  console.log("[Signup] URL:", request.url)
-  console.log("[Signup] Method:", request.method)
-  console.log("[Signup] Headers:", Object.fromEntries(request.headers.entries()))
-  
-  // CORS headers for development
+export async function POST(req: NextRequest) {
   const headers = new Headers()
   headers.set("Content-Type", "application/json")
   headers.set("Access-Control-Allow-Origin", "*")
@@ -32,7 +23,7 @@ export async function POST(request: NextRequest) {
   try {
     let body
     try {
-      body = await request.json()
+      body = await req.json()
       console.log("[Signup] Request body parsed:", { hasName: !!body.name, hasEmail: !!body.email, hasPassword: !!body.password })
     } catch (error) {
       console.error("[Signup] Failed to parse request body:", error)
@@ -60,6 +51,24 @@ export async function POST(request: NextRequest) {
       )
     }
 
+    // Check for at least one number
+    if (!/\d/.test(password)) {
+      console.error("[Signup] Password missing number:", password)
+      return NextResponse.json(
+        { error: "Password must contain at least one number" },
+        { status: 400, headers }
+      )
+    }
+
+    // Check for at least one special character
+    if (!/[!@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?]/.test(password)) {
+      console.error("[Signup] Password missing special character:", password)
+      return NextResponse.json(
+        { error: "Password must contain at least one special character (!@#$%^&* etc.)" },
+        { status: 400, headers }
+      )
+    }
+
     // Normalize email (trim and lowercase) to match auth.ts
     const normalizedEmail = email.trim().toLowerCase()
 
@@ -76,32 +85,15 @@ export async function POST(request: NextRequest) {
       )
     }
 
-    // Hash password
-    const passwordHash = await bcrypt.hash(password, 12)
+    // NOTE: This signup API is for legacy local authentication
+    // Supabase handles user creation and authentication now
+    // This endpoint should be removed or updated for Supabase auth
 
-    // Create user with normalized email
-    const user = await prisma.user.create({
-      data: {
-        name: name.trim(),
-        email: normalizedEmail,
-        passwordHash,
-      },
-    })
-
-    // Initialize free trial
-    try {
-      await initializeFreeTrial(user.id)
-      console.log("[Signup] Free trial initialized for user:", user.id)
-    } catch (trialError) {
-      console.error("[Signup] Failed to initialize free trial:", trialError)
-      // Don't fail the signup if trial initialization fails
-    }
-
-    console.log("[Signup] User created successfully:", user.id)
+    console.log("[Signup] Legacy signup attempted - should use Supabase auth instead")
 
     return NextResponse.json(
-      { message: "User created successfully", userId: user.id },
-      { status: 201, headers }
+      { error: "Please use Supabase authentication" },
+      { status: 400, headers }
     )
   } catch (error: any) {
     console.error("[Signup] Signup error:", error)

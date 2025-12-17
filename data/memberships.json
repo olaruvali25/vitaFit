@@ -1,0 +1,13 @@
+[
+  {
+    "id": "fb_membership_1765900566424_194",
+    "userId": "fb_1765900566424_7545",
+    "plan": "FREE_TRIAL",
+    "status": "TRIAL",
+    "trialStartedAt": "2025-12-16T15:56:06.424Z",
+    "trialEndsAt": "2025-12-30T15:56:06.424Z",
+    "currentPeriodEnd": null,
+    "createdAt": "2025-12-16T15:56:06.424Z",
+    "updatedAt": "2025-12-16T15:56:06.424Z"
+  }
+]

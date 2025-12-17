@@ -1,7 +1,8 @@
 "use client"
 
 import { useEffect, useState, Suspense } from "react"
-import { useSession } from "next-auth/react"
+import { useSupabase } from "@/components/providers/SupabaseProvider"
+import { useRouter } from "next/navigation"
 import { redirect, useSearchParams } from "next/navigation"
 import { Tabs, TabsContent } from "@/components/ui/tabs"
 import { ButtonColorful } from "@/components/ui/button-colorful"
@@ -12,7 +13,8 @@ import { ProgressTracker } from "@/components/account/ProgressTracker"
 import { cn } from "@/lib/utils"
 
 function AccountPageContent() {
-  const { data: session, status } = useSession()
+  const { user, loading, session } = useSupabase()
+  const status = loading ? "loading" : user ? "authenticated" : "unauthenticated"
   const searchParams = useSearchParams()
   const [activeTab, setActiveTab] = useState("profiles")
   const [selectedProfileName, setSelectedProfileName] = useState<string | null>(null)
@@ -28,11 +30,12 @@ function AccountPageContent() {
     }
   }, [searchParams])
 
+  const router = useRouter()
   useEffect(() => {
     if (status === "unauthenticated") {
-      redirect("/login")
+      router.push("/login")
     }
-  }, [status])
+  }, [status, router])
 
   if (status === "loading") {
     return (
@@ -44,7 +47,7 @@ function AccountPageContent() {
     )
   }
 
-  if (!session) {
+  if (!user && !loading) {
     return null
   }
 

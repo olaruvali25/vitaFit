@@ -14,12 +14,12 @@ export async function POST(req: NextRequest) {
     return jsonError("INVALID_INPUT", "profileId is required.", 400)
   }
 
-  const profile = user.profiles.find((p) => p.id === profileId)
+  const profile = user.profiles.find((p: any) => p.id === profileId)
   if (!profile) {
     return jsonError("NOT_FOUND", "Profile not found.", 404)
   }
 
-  const limit = PROFILE_LIMITS[user.subscriptionTier]
+  const limit = PROFILE_LIMITS[user.subscriptionTier as keyof typeof PROFILE_LIMITS] || 1
   const sortedProfiles = [...user.profiles].sort((a, b) => a.createdAt.getTime() - b.createdAt.getTime())
   const primaryProfileId = sortedProfiles[0]?.id
 

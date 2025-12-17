@@ -1,7 +1,7 @@
 "use client"
 
 import { useState, useEffect } from "react"
-import { useSession } from "next-auth/react"
+import { useSupabase } from "@/components/providers/SupabaseProvider"
 import { useRouter } from "next/navigation"
 import { ProfileSelector, ProfileIcon } from "./ProfileSelector"
 import { Plus, X, Trash2 } from "lucide-react"
@@ -26,7 +26,7 @@ interface MembershipInfo {
 }
 
 export function ProfilesTab() {
-  const { data: session } = useSession()
+  const { user } = useSupabase()
   const router = useRouter()
   const [profiles, setProfiles] = useState<Profile[]>([])
   const [loading, setLoading] = useState(true)
@@ -339,7 +339,7 @@ export function ProfilesTab() {
                     setNewProfileName("")
                     setError("")
                   }}
-                  className="border-white/20 text-white hover:bg-white/10"
+                  className="border-white/20 text-black hover:bg-emerald-500"
                 >
                   Cancel
                 </Button>

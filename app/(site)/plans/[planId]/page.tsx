@@ -1,7 +1,7 @@
 "use client"
 
 import { useEffect, useState } from "react"
-import { useSession } from "next-auth/react"
+import { useSupabase } from "@/components/providers/SupabaseProvider"
 import { useParams, useRouter } from "next/navigation"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { Card } from "@/components/ui/card"
@@ -53,7 +53,8 @@ interface Plan {
 }
 
 export default function PlanPage() {
-  const { data: session, status } = useSession()
+  const { user, loading: authLoading } = useSupabase()
+  const status = authLoading ? "loading" : user ? "authenticated" : "unauthenticated"
   const params = useParams()
   const router = useRouter()
   const planId = params.planId as string

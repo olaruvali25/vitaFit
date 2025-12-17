@@ -1,8 +1,9 @@
-"use client"
+ "use client"
 
 import { usePathname } from "next/navigation"
 import { HeroHeader } from "@/components/header"
 import { Footer } from "@/components/footer"
+import { SupabaseProvider } from "@/components/providers/SupabaseProvider"
 
 export default function SiteLayout({
   children,
@@ -13,12 +14,14 @@ export default function SiteLayout({
   const isHomePage = pathname === "/"
   
   return (
-    <>
-      {/* Use the same animated hero navbar on all non-home pages */}
-      {!isHomePage && <HeroHeader />}
-      <main className="flex-1 bg-gradient-to-br from-black via-green-950/20 to-black">{children}</main>
-      <Footer />
-    </>
+    <div suppressHydrationWarning>
+      <SupabaseProvider>
+        {/* Use the same animated hero navbar on all non-home pages */}
+        {!isHomePage && <HeroHeader />}
+        <main className="flex-1 bg-gradient-to-br from-black via-green-950/20 to-black">{children}</main>
+        <Footer />
+      </SupabaseProvider>
+    </div>
   )
 }
 

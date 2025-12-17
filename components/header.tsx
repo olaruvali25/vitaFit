@@ -5,8 +5,9 @@ import { Menu, X, ChevronDown, LogOut, User } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import React from 'react'
 import { cn } from '@/lib/utils'
-import { useSession, signOut } from 'next-auth/react'
+import { useSupabase } from '@/components/providers/SupabaseProvider'
 import { useRouter, usePathname } from 'next/navigation'
+import { supabase } from '@/lib/supabase'
 
 const menuItems = [
     { name: 'Pricing', href: '/pricing' },
@@ -18,7 +19,8 @@ export const HeroHeader = () => {
     const [menuState, setMenuState] = React.useState(false)
     const [isScrolled, setIsScrolled] = React.useState(false)
     const [accountDropdownOpen, setAccountDropdownOpen] = React.useState(false)
-    const { data: session } = useSession()
+    const { user, loading } = useSupabase()
+    const session = user ? { user } : null
     const router = useRouter()
     const pathname = usePathname()
     const isAccountPage = pathname?.startsWith('/account')
@@ -165,7 +167,19 @@ export const HeroHeader = () => {
                                                             onClick={async () => {
                                                                 setAccountDropdownOpen(false)
                                                                 setMenuState(false)
-                                                                await signOut({ redirect: false })
+                                                                // Try supabase signOut if available
+                                                                try {
+                                                                  if (supabase) {
+                                                                    await supabase.auth.signOut()
+                                                                  }
+                                                                } catch (e) {
+                                                                  console.warn('Supabase signOut failed:', e)
+                                                                }
+                                                                // Clear local testing session
+                                                                try {
+                                                                  document.cookie = 'local_session=; Max-Age=0; path=/'
+                                                                  localStorage.removeItem('local_session')
+                                                                } catch (e) {}
                                                                 router.push('/')
                                                                 router.refresh()
                                                             }}
@@ -196,19 +210,14 @@ export const HeroHeader = () => {
                                         <Link
                                             href="/login"
                                             onClick={() => setMenuState(false)}
-                                            className={cn(
-                                                "inline-flex items-center justify-center rounded-md text-sm font-medium transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 h-9 px-3",
-                                                isAccountPage
-                                                    ? "text-white hover:text-white/80 hover:bg-white/10"
-                                                    : "text-gray-900 hover:text-gray-700 hover:bg-gray-100"
-                                            )}
+                                            className="inline-flex items-center justify-center whitespace-nowrap text-sm font-medium transition-all disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg:not([class*='size-'])]:size-4 shrink-0 [&_svg]:shrink-0 outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive text-primary-foreground h-8 rounded-md gap-1.5 px-3 has-[>svg]:px-2.5 bg-emerald-500 hover:bg-emerald-600 no-underline"
                                         >
                                             Login
                                         </Link>
                                         <Button
                                             asChild
                                             size="sm"
-                                            className={cn(isScrolled && 'lg:hidden', 'bg-emerald-500 hover:bg-emerald-600')}>
+                                            className={cn(isScrolled && 'lg:hidden', 'bg-emerald-500 hover:bg-emerald-600',)}>
                                             <Link href="/assessment" onClick={() => setMenuState(false)} className="no-underline">
                                                 Start Free Assessment
                                             </Link>

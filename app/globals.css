@@ -10,6 +10,11 @@ html {
   scroll-padding-top: 80px;
 }
 
+/* Suppress hydration warnings from browser extensions */
+* {
+  -webkit-tap-highlight-color: transparent;
+}
+
 /* Enhanced smooth scrolling for better performance */
 @media (prefers-reduced-motion: no-preference) {
   html {

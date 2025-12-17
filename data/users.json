@@ -1,0 +1,30 @@
+[
+  {
+    "id": "fb_1765895991909_2682",
+    "name": "Test User",
+    "email": "testuser@example.com",
+    "passwordHash": "$2b$12$ppho5HNMRrzQhdBUodseDO7hrAIMtJYS0gLzADK.8Cc.k8oqNksgm",
+    "role": "USER",
+    "createdAt": "2025-12-16T14:39:51.909Z",
+    "updatedAt": "2025-12-16T14:39:51.909Z"
+  },
+  {
+    "id": "fb_1765896118752_6356",
+    "name": "Vali Olaru",
+    "email": "valiolaru24@yahoo.com",
+    "passwordHash": "$2b$12$qONs1SOU/yzizTTS5JygB.gTL42Mn1fFJUFjC3wjlTy9AFL9EvEcy",
+    "role": "USER",
+    "createdAt": "2025-12-16T14:41:58.752Z",
+    "updatedAt": "2025-12-16T14:41:58.752Z"
+  },
+  {
+    "id": "fb_1765900566424_7545",
+    "name": "Vali Olaru",
+    "email": "kkkk@l.com",
+    "passwordHash": "$2b$12$WsyqB2OjidnQL6BYNYU0yu5mKJTey.5JbvHCWVWTWb7N10SRJRqCy",
+    "role": "USER",
+    "createdAt": "2025-12-16T15:56:06.424Z",
+    "updatedAt": "2025-12-16T15:56:06.425Z",
+    "hasUsedFreeTrial": true
+  }
+]

@@ -1,7 +1,7 @@
 "use client"
 
 import { useState, useEffect } from "react"
-import { motion, AnimatePresence } from "motion/react"
+import { motion, AnimatePresence } from "framer-motion"
 import type { AssessmentFormData } from "@/components/forms/AssessmentForm"
 import { Sparkles, Target, Zap, Heart, TrendingUp } from "lucide-react"
 import { OrbitalLoader } from "@/components/ui/orbital-loader"

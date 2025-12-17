@@ -508,7 +508,7 @@ export async function generatePlan(params: PlanGenerationParams) {
 
     console.log(`[Plan Generator] Plan created successfully! ID: ${plan.id}`)
     console.log(`[Plan Generator] Plan has ${plan.days.length} days`)
-    const totalMeals = plan.days.reduce((sum, day) => sum + (day.meals?.length || 0), 0)
+    const totalMeals = plan.days.reduce((sum: number, day: any) => sum + (day.meals?.length || 0), 0)
     console.log(`[Plan Generator] Plan has ${totalMeals} meals total`)
 
     if (!plan.id) {

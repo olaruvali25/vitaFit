@@ -21,7 +21,7 @@ export async function GET(req: NextRequest) {
   const { user } = auth
 
   return jsonOk({
-    profiles: user.profiles.map((p) => ({
+    profiles: user.profiles.map((p: any) => ({
       id: p.id,
       name: p.name,
       createdAt: p.createdAt,
@@ -41,13 +41,13 @@ export async function POST(req: NextRequest) {
   }
   const data = parsed.data
 
-  const limit = PROFILE_LIMITS[user.subscriptionTier]
+  const limit = PROFILE_LIMITS[user.subscriptionTier as SubscriptionTier]
   const count = await prisma.profile.count({ where: { userId: user.id } })
   if (count >= limit) {
     return jsonError("PROFILE_LIMIT_REACHED", "Maximum number of profiles reached.", 400)
   }
 
-  const result = await prisma.$transaction(async (tx) => {
+  const result = await prisma.$transaction(async (tx: any) => {
     const profile = await tx.profile.create({
       data: {
         userId: user.id,

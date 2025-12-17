@@ -8,7 +8,7 @@ import { CheckCheck, Zap } from "lucide-react";
 import { motion } from "framer-motion";
 import { useId, useRef, useState, useEffect, Suspense } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
-import { useSession } from "next-auth/react";
+import { useSupabase } from "@/components/providers/SupabaseProvider"
 import { GlowingEffect } from "./glowing-effect";
 
 const PricingSwitch = ({
@@ -170,7 +170,8 @@ const plans: PlanConfig[] = [
 function PricingSection1Content() {
   const router = useRouter()
   const searchParams = useSearchParams()
-  const { data: session, status } = useSession()
+  const { user, loading } = useSupabase()
+  const status = loading ? "loading" : user ? "authenticated" : "unauthenticated"
   const [isYearly, setIsYearly] = useState(false);
   const [loadingPlan, setLoadingPlan] = useState<string | null>(null);
   const pricingRef = useRef<HTMLDivElement>(null);
@@ -215,8 +216,8 @@ function PricingSection1Content() {
   return (
     <section id="pricing" className="relative py-32 bg-gradient-to-b from-emerald-50/80 via-emerald-50/75 via-emerald-100/70 via-emerald-200/65 via-emerald-300/60 via-emerald-400/55 via-emerald-500/50 via-emerald-600/45 via-emerald-700/40 via-emerald-800/35 via-emerald-900/30 via-green-800/25 via-green-900/20 via-green-950/15 to-slate-950 overflow-hidden scroll-mt-20">
       {/* Static Background Effects */}
-      <div className="absolute inset-0">
-        <div className="absolute inset-0 bg-gradient-to-b from-[#18c260]/[0.12] via-[#18c260]/[0.11] via-[#18c260]/[0.10] via-[#18c260]/[0.09] via-[#18c260]/[0.08] via-[#18c260]/[0.07] via-[#18c260]/[0.06] via-green-500/[0.05] to-[#18c260]/[0.08]" />
+      <div className="absolute inset-0" suppressHydrationWarning>
+        <div className="absolute inset-0 bg-gradient-to-b from-[#18c260]/[0.12] via-[#18c260]/[0.11] via-[#18c260]/[0.10] via-[#18c260]/[0.09] via-[#18c260]/[0.08] via-[#18c260]/[0.07] via-[#18c260]/[0.06] via-green-500/[0.05] to-[#18c260]/[0.08]" suppressHydrationWarning />
       </div>
       
       <div className="px-4 pt-10 w-full mx-auto relative z-10" ref={pricingRef} data-pricing-section>

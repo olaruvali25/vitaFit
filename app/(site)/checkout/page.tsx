@@ -2,7 +2,7 @@
 
 import { useEffect, useMemo, useState, Suspense } from "react"
 import { useRouter, useSearchParams } from "next/navigation"
-import { useSession } from "next-auth/react"
+import { useSupabase } from "@/components/providers/SupabaseProvider"
 import { loadStripe } from "@stripe/stripe-js"
 import { Button } from "@/components/ui/button"
 
@@ -41,7 +41,8 @@ function normalizeBilling(billingParam: string | null): BillingCycle {
 function CheckoutPageContent() {
   const searchParams = useSearchParams()
   const router = useRouter()
-  const { status } = useSession()
+  const { user, loading } = useSupabase()
+  const status = loading ? "loading" : user ? "authenticated" : "unauthenticated"
 
   const [submitting, setSubmitting] = useState(false)
   const [error, setError] = useState<string | null>(null)

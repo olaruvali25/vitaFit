@@ -1,7 +1,7 @@
 "use client"
 
 import { useState, useEffect } from "react"
-import { useSession } from "next-auth/react"
+import { useSupabase } from "@/components/providers/SupabaseProvider"
 import { Droplet, Target, Flame, Dumbbell, TrendingUp, Lock } from "lucide-react"
 import { cn } from "@/lib/utils"
 
@@ -21,14 +21,14 @@ interface Plan {
 }
 
 export function ProgressTracker() {
-  const { data: session } = useSession()
+  const { user } = useSupabase()
   const [profile, setProfile] = useState<Profile | null>(null)
   const [plan, setPlan] = useState<Plan | null>(null)
   const [membership, setMembership] = useState<{ plan: string; status: string } | null>(null)
 
   useEffect(() => {
     fetchProgressData()
-  }, [session])
+  }, [user])
 
   const fetchProgressData = async () => {
     try {
@@ -58,7 +58,7 @@ export function ProgressTracker() {
   }
 
   // Always show tracker, even if no profile exists yet
-  const userName = session?.user?.name || "User"
+  const userName = user?.email || "User"
   const currentWeight = profile?.weightKg || 0
   const goalWeight = profile?.goalWeight || currentWeight || 0
   const dailyCalories = plan?.caloriesTarget || 0
@@ -120,7 +120,7 @@ export function ProgressTracker() {
       <div className="bg-slate-900 border-4 border-emerald-500 rounded-xl backdrop-blur-xl shadow-2xl p-8 w-full">
         <div className="mb-6">
           <h2 className="text-2xl font-bold text-white mb-1">
-            {userName}'s Personal Tracker
+            {profile?.name}'s Personal Tracker
           </h2>
           <p className="text-white/60 text-sm">Your fitness journey at a glance</p>
         </div>

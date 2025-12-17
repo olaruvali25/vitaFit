@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from "react"
 import { useParams, useRouter } from "next/navigation"
-import { useSession } from "next-auth/react"
+import { useSupabase } from "@/components/providers/SupabaseProvider"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
@@ -27,7 +27,7 @@ interface Profile {
 export default function ProgressPage() {
   const params = useParams()
   const router = useRouter()
-  const { data: session } = useSession()
+  const { user } = useSupabase()
   const profileId = params.id as string
 
   const [profile, setProfile] = useState<Profile | null>(null)

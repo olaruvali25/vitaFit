@@ -1,7 +1,7 @@
 "use client"
 
 import { useState, useEffect } from "react"
-import { useSession } from "next-auth/react"
+import { useSupabase } from "@/components/providers/SupabaseProvider"
 import { useSearchParams } from "next/navigation"
 import PageOne from "./PageOne"
 import PageTwo from "./PageTwo"
@@ -49,7 +49,7 @@ interface AssessmentFormProps {
 
 export default function AssessmentForm({ onSubmit }: AssessmentFormProps) {
   const searchParams = useSearchParams()
-  const { data: session } = useSession()
+  const { user } = useSupabase()
   const [currentPage, setCurrentPage] = useState(1)
   const profileType = searchParams?.get("profileType") || "main" // "main" | "additional"
   
@@ -110,10 +110,10 @@ export default function AssessmentForm({ onSubmit }: AssessmentFormProps) {
 
   // Prefill email for main profile with session email; keep blank for additional profiles
   useEffect(() => {
-    if (profileType !== "additional" && session?.user?.email && !formData.email) {
-      setFormData(prev => ({ ...prev, email: session.user?.email || "" }))
+    if (profileType !== "additional" && user?.email && !formData.email) {
+      setFormData(prev => ({ ...prev, email: user?.email || "" }))
     }
-  }, [profileType, session?.user?.email, formData.email])
+  }, [profileType, user?.email, formData.email])
 
   const updateFormData = (updates: Partial<AssessmentFormData>) => {
     setFormData((prev) => ({ ...prev, ...updates }))

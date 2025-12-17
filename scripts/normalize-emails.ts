@@ -3,13 +3,17 @@
  * Run with: npx tsx scripts/normalize-emails.ts
  */
 
-import { PrismaClient } from "@prisma/client"
-import { PrismaLibSql } from "@prisma/adapter-libsql"
 
-const databaseUrl = process.env.DATABASE_URL || "file:./dev.db"
-const adapter = new PrismaLibSql({ url: databaseUrl })
+// import { PrismaLibSql } from "@prisma/adapter-libsql" // Commented out - not used with Supabase
 
-const prisma = new PrismaClient({ adapter })
+// Commented out - moving to Supabase, this script is no longer needed
+// const databaseUrl = process.env.DATABASE_URL || "file:./dev.db"
+// const adapter = new PrismaLibSql({ url: databaseUrl })
+
+// const prisma = new PrismaClient({ adapter })
+
+// Temporary placeholder to avoid build errors
+const prisma = null as any
 
 async function normalizeEmails() {
   console.log("Starting email normalization...")
