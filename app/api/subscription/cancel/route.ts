@@ -1,22 +1,29 @@
-import { NextRequest } from "next/server"
-import { jsonError, jsonOk } from "@/lib/api-response"
-import { getAuthContext } from "@/lib/authz"
-import { SubscriptionStatus } from "@prisma/client"
-import { prisma } from "@/lib/prisma"
+import { NextRequest, NextResponse } from "next/server"
+import { requireAuth } from "@/lib/auth-utils"
+import { supabaseAdmin } from "@/lib/supabase"
 
 export async function POST(req: NextRequest) {
-  const auth = await getAuthContext(req)
-  if (auth.error) return auth.error
-  const { user } = auth
+  try {
+    const user = await requireAuth()
+    
+    // Update plan to free_trial (effectively canceling)
+    const { error: updateError } = await supabaseAdmin
+      .from('profiles')
+      .update({ plan: 'free_trial' })
+      .eq('id', user.id)
 
-  const updated = await prisma.user.update({
-    where: { id: user.id },
-    data: { subscriptionStatus: SubscriptionStatus.canceled },
-  })
+    if (updateError) {
+      throw updateError
+    }
 
-  return jsonOk({
-    message: "Subscription canceled. Access remains until period end.",
-    subscriptionStatus: updated.subscriptionStatus,
-  })
+    return NextResponse.json({
+      message: "Subscription canceled. Access remains until period end.",
+    })
+  } catch (error: any) {
+    console.error("Subscription cancel error:", error)
+    return NextResponse.json(
+      { error: error.message || "Failed to cancel subscription" },
+      { status: 500 }
+    )
+  }
 }
-

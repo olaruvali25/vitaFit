@@ -1,79 +1,94 @@
-import { prisma } from "../lib/prisma"
-import bcrypt from "bcryptjs"
+/**
+ * Create Admin Script - Supabase version
+ * 
+ * Usage: npx tsx scripts/create-admin.ts
+ * 
+ * Environment variables:
+ * - ADMIN_EMAIL (default: admin@vitafit.com)
+ * - ADMIN_PASSWORD (default: admin123)
+ * - NEXT_PUBLIC_SUPABASE_URL
+ * - SUPABASE_SERVICE_ROLE_KEY
+ */
+
+import { createClient } from '@supabase/supabase-js'
 
 async function createAdmin() {
   const email = process.env.ADMIN_EMAIL || "admin@vitafit.com"
   const password = process.env.ADMIN_PASSWORD || "admin123"
-  const name = process.env.ADMIN_NAME || "Admin User"
+
+  const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL
+  const supabaseServiceKey = process.env.SUPABASE_SERVICE_ROLE_KEY
+
+  if (!supabaseUrl || !supabaseServiceKey) {
+    console.error("❌ Missing Supabase environment variables")
+    console.error("Required: NEXT_PUBLIC_SUPABASE_URL, SUPABASE_SERVICE_ROLE_KEY")
+    process.exit(1)
+  }
+
+  const supabase = createClient(supabaseUrl, supabaseServiceKey, {
+    auth: { autoRefreshToken: false, persistSession: false }
+  })
 
   console.log("Creating admin user...")
   console.log(`Email: ${email}`)
-  console.log(`Password: ${password}`)
 
   try {
-    // Check if admin already exists
-    const existingUser = await prisma.user.findUnique({
-      where: { email },
+    // Create user via Supabase Admin API
+    const { data, error } = await supabase.auth.admin.createUser({
+      email,
+      password,
+      email_confirm: true,
+      user_metadata: { role: 'ADMIN' }
     })
 
-    if (existingUser) {
-      // Update to admin if not already
-      if (existingUser.role !== "ADMIN") {
-        await prisma.user.update({
-          where: { email },
-          data: { role: "ADMIN" },
-        })
-        console.log("✅ Updated existing user to ADMIN role")
+    if (error) {
+      if (error.message.includes('already been registered')) {
+        console.log("✅ Admin user already exists, updating role...")
+        
+        // Find user by email
+        const { data: { users } } = await supabase.auth.admin.listUsers()
+        const existingUser = users.find(u => u.email === email)
+        
+        if (existingUser) {
+          await supabase.auth.admin.updateUserById(existingUser.id, {
+            user_metadata: { role: 'ADMIN' }
+          })
+          
+          // Update profile
+          await supabase.from('profiles').upsert({
+            id: existingUser.id,
+            email,
+            plan: 'family',
+            profiles_limit: 4,
+          }, { onConflict: 'id' })
+          
+          console.log("✅ Updated existing user to ADMIN role")
+        }
       } else {
-        console.log("✅ Admin user already exists")
+        throw error
       }
-      
-      // Update password
-      const passwordHash = await bcrypt.hash(password, 12)
-      await prisma.user.update({
-        where: { email },
-        data: { passwordHash },
-      })
-      console.log("✅ Password updated")
-      
-      console.log("\n🎉 Admin account ready!")
-      console.log(`Login with: ${email} / ${password}`)
-      return
+    } else if (data.user) {
+      // Create profile for admin
+      await supabase.from('profiles').upsert({
+        id: data.user.id,
+        email,
+        phone: null,
+        phone_verified: true,
+        plan: 'family',
+        profiles_limit: 4,
+      }, { onConflict: 'id' })
+
+      console.log("✅ Admin user created successfully!")
     }
 
-    // Create new admin user
-    const passwordHash = await bcrypt.hash(password, 12)
-
-    const admin = await prisma.user.create({
-      data: {
-        email,
-        name,
-        passwordHash,
-        role: "ADMIN",
-        hasUsedFreeTrial: true, // Admin doesn't need trial
-      },
-    })
-
-    // Create active membership for admin
-    await prisma.membership.create({
-      data: {
-        userId: admin.id,
-        plan: "FAMILY", // Highest tier
-        status: "ACTIVE",
-      },
-    })
-
-    console.log("✅ Admin user created successfully!")
     console.log("\n🎉 Admin account ready!")
     console.log(`Login with: ${email} / ${password}`)
     console.log("\nYou now have:")
-    console.log("- ADMIN role (unlimited profiles & plans)")
-    console.log("- Active FAMILY membership")
-  } catch (error) {
-    console.error("❌ Error creating admin:", error)
-    throw error
-  } finally {
-    await prisma.$disconnect()
+    console.log("- ADMIN role")
+    console.log("- Family plan (4 profiles)")
+  } catch (error: any) {
+    console.error("❌ Error creating admin:", error.message)
+    process.exit(1)
   }
 }
 

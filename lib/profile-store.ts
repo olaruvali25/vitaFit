@@ -1,8 +1,4 @@
-import fs from "fs"
-import path from "path"
-
-const DATA_DIR = path.join(process.cwd(), "data")
-const PROFILES_FILE = path.join(DATA_DIR, "profiles.json")
+import { supabaseAdmin } from "./supabase"
 
 export type AppProfile = {
   id: string
@@ -11,8 +7,6 @@ export type AppProfile = {
   profilePicture: string | null
   createdAt: string
   updatedAt: string
-
-  // Optional extended fields used across the app
   age?: number | null
   gender?: string | null
   heightCm?: number | null
@@ -27,90 +21,178 @@ export type AppProfile = {
   mealPrepDuration?: string | null
 }
 
-function ensureDataDir() {
-  if (!fs.existsSync(DATA_DIR)) {
-    fs.mkdirSync(DATA_DIR, { recursive: true })
-  }
-  if (!fs.existsSync(PROFILES_FILE)) {
-    fs.writeFileSync(PROFILES_FILE, JSON.stringify([]), "utf8")
-  }
-}
-
-function readAllProfiles(): AppProfile[] {
-  ensureDataDir()
-  const raw = fs.readFileSync(PROFILES_FILE, "utf8")
-  return JSON.parse(raw || "[]")
-}
-
-function writeAllProfiles(profiles: AppProfile[]) {
-  ensureDataDir()
-  fs.writeFileSync(PROFILES_FILE, JSON.stringify(profiles, null, 2), "utf8")
-}
-
-function cryptoRandomUUID() {
-  try {
-    // @ts-ignore
-    return require("crypto").randomUUID()
-  } catch {
-    return Date.now().toString(36) + Math.random().toString(36).slice(2)
+// Convert database row to AppProfile format
+function rowToProfile(row: any): AppProfile {
+  return {
+    id: row.id,
+    userId: row.user_id,
+    name: row.name,
+    profilePicture: row.profile_picture,
+    createdAt: row.created_at,
+    updatedAt: row.updated_at,
+    age: row.age,
+    gender: row.gender,
+    heightCm: row.height_cm,
+    weightKg: row.weight_kg,
+    goal: row.goal,
+    goalWeight: row.goal_weight,
+    activityLevel: row.activity_level,
+    timeline: row.timeline,
+    dietaryRestrictions: row.dietary_restrictions,
+    workoutDays: row.workout_days,
+    workoutDuration: row.workout_duration,
+    mealPrepDuration: row.meal_prep_duration,
   }
 }
 
-export function listProfilesForUser(userId: string): AppProfile[] {
-  const profiles = readAllProfiles()
-  return profiles
-    .filter((p) => p.userId === userId)
-    .sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime())
+export async function listProfilesForUser(userId: string): Promise<AppProfile[]> {
+  if (!supabaseAdmin) {
+    console.error("Supabase admin client not available")
+    return []
+  }
+
+  const { data, error } = await supabaseAdmin
+    .from('app_profiles')
+    .select('*')
+    .eq('user_id', userId)
+    .order('created_at', { ascending: false })
+
+  if (error) {
+    console.error("Error listing profiles:", error)
+    return []
+  }
+
+  return (data || []).map(rowToProfile)
 }
 
-export function getProfileForUser(userId: string, profileId: string): AppProfile | null {
-  const profiles = readAllProfiles()
-  return profiles.find((p) => p.userId === userId && p.id === profileId) || null
+export async function getProfileForUser(userId: string, profileId: string): Promise<AppProfile | null> {
+  if (!supabaseAdmin) {
+    console.error("Supabase admin client not available")
+    return null
+  }
+
+  const { data, error } = await supabaseAdmin
+    .from('app_profiles')
+    .select('*')
+    .eq('id', profileId)
+    .eq('user_id', userId)
+    .single()
+
+  if (error || !data) {
+    return null
+  }
+
+  return rowToProfile(data)
 }
 
-export function createProfileForUser(userId: string, name: string): AppProfile {
+export async function createProfileForUser(userId: string, name: string): Promise<AppProfile> {
+  if (!supabaseAdmin) {
+    throw new Error("Supabase admin client not available")
+  }
+
   const now = new Date().toISOString()
-  const profile: AppProfile = {
-    id: cryptoRandomUUID(),
-    userId,
-    name,
-    profilePicture: `https://api.dicebear.com/7.x/avataaars/svg?seed=${encodeURIComponent(name)}`,
-    createdAt: now,
-    updatedAt: now,
+  const profilePicture = `https://api.dicebear.com/7.x/avataaars/svg?seed=${encodeURIComponent(name)}`
+
+  const { data, error } = await supabaseAdmin
+    .from('app_profiles')
+    .insert({
+      user_id: userId,
+      name,
+      profile_picture: profilePicture,
+      created_at: now,
+      updated_at: now,
+    })
+    .select()
+    .single()
+
+  if (error) {
+    console.error("Error creating profile:", error)
+    throw new Error(error.message || "Failed to create profile")
   }
 
-  const profiles = readAllProfiles()
-  profiles.push(profile)
-  writeAllProfiles(profiles)
-  return profile
+  return rowToProfile(data)
 }
 
-export function updateProfileForUser(
+export async function updateProfileForUser(
   userId: string,
   profileId: string,
   patch: Partial<Omit<AppProfile, "id" | "userId" | "createdAt">>
-): AppProfile | null {
-  const profiles = readAllProfiles()
-  const idx = profiles.findIndex((p) => p.userId === userId && p.id === profileId)
-  if (idx === -1) return null
-
-  const updated: AppProfile = {
-    ...profiles[idx],
-    ...patch,
-    updatedAt: new Date().toISOString(),
+): Promise<AppProfile | null> {
+  if (!supabaseAdmin) {
+    console.error("Supabase admin client not available")
+    return null
   }
-  profiles[idx] = updated
-  writeAllProfiles(profiles)
-  return updated
+
+  // Convert camelCase to snake_case for database
+  const dbPatch: any = {
+    updated_at: new Date().toISOString(),
+  }
+
+  if (patch.name !== undefined) dbPatch.name = patch.name
+  if (patch.profilePicture !== undefined) dbPatch.profile_picture = patch.profilePicture
+  if (patch.age !== undefined) dbPatch.age = patch.age
+  if (patch.gender !== undefined) dbPatch.gender = patch.gender
+  if (patch.heightCm !== undefined) dbPatch.height_cm = patch.heightCm
+  if (patch.weightKg !== undefined) dbPatch.weight_kg = patch.weightKg
+  if (patch.goal !== undefined) dbPatch.goal = patch.goal
+  if (patch.goalWeight !== undefined) dbPatch.goal_weight = patch.goalWeight
+  if (patch.activityLevel !== undefined) dbPatch.activity_level = patch.activityLevel
+  if (patch.timeline !== undefined) dbPatch.timeline = patch.timeline
+  if (patch.dietaryRestrictions !== undefined) dbPatch.dietary_restrictions = patch.dietaryRestrictions
+  if (patch.workoutDays !== undefined) dbPatch.workout_days = patch.workoutDays
+  if (patch.workoutDuration !== undefined) dbPatch.workout_duration = patch.workoutDuration
+  if (patch.mealPrepDuration !== undefined) dbPatch.meal_prep_duration = patch.mealPrepDuration
+
+  const { data, error } = await supabaseAdmin
+    .from('app_profiles')
+    .update(dbPatch)
+    .eq('id', profileId)
+    .eq('user_id', userId)
+    .select()
+    .single()
+
+  if (error || !data) {
+    console.error("Error updating profile:", error)
+    return null
+  }
+
+  return rowToProfile(data)
 }
 
-export function deleteProfileForUser(userId: string, profileId: string): boolean {
-  const profiles = readAllProfiles()
-  const before = profiles.length
-  const next = profiles.filter((p) => !(p.userId === userId && p.id === profileId))
-  if (next.length === before) return false
-  writeAllProfiles(next)
+export async function deleteProfileForUser(userId: string, profileId: string): Promise<boolean> {
+  if (!supabaseAdmin) {
+    console.error("Supabase admin client not available")
+    return false
+  }
+
+  const { error } = await supabaseAdmin
+    .from('app_profiles')
+    .delete()
+    .eq('id', profileId)
+    .eq('user_id', userId)
+
+  if (error) {
+    console.error("Error deleting profile:", error)
+    return false
+  }
+
   return true
 }
 
+export async function countProfilesForUser(userId: string): Promise<number> {
+  if (!supabaseAdmin) {
+    return 0
+  }
 
+  const { count, error } = await supabaseAdmin
+    .from('app_profiles')
+    .select('*', { count: 'exact', head: true })
+    .eq('user_id', userId)
+
+  if (error) {
+    console.error("Error counting profiles:", error)
+    return 0
+  }
+
+  return count || 0
+}

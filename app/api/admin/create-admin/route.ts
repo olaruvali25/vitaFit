@@ -1,86 +1,56 @@
 import { NextRequest, NextResponse } from "next/server"
-import { prisma } from "@/lib/prisma"
-import bcrypt from "bcryptjs"
+import { supabaseAdmin } from "@/lib/supabase"
+
+// Admin creation route - uses Supabase Admin API
 
 export async function POST(request: NextRequest) {
   try {
-    // Only allow in development or with a secret key
-    if (process.env.NODE_ENV === "production" && request.headers.get("x-admin-secret") !== process.env.ADMIN_SECRET) {
-      return NextResponse.json(
-        { error: "Unauthorized" },
-        { status: 401 }
-      )
+    // Only allow in development or with admin secret
+    const adminSecret = request.headers.get("x-admin-secret")
+    if (process.env.NODE_ENV === "production" && adminSecret !== process.env.ADMIN_SECRET) {
+      return NextResponse.json({ error: "Unauthorized" }, { status: 403 })
     }
 
     const body = await request.json()
-    const email = body.email || "admin@vitafit.com"
-    const password = body.password || "admin123"
-    const name = body.name || "Admin User"
+    const { email, password } = body
 
-    // Check if admin already exists
-    const existingUser = await prisma.user.findUnique({
-      where: { email },
-    })
-
-    if (existingUser) {
-      // Update to admin if not already
-      if (existingUser.role !== "ADMIN") {
-        await prisma.user.update({
-          where: { email },
-          data: { role: "ADMIN" },
-        })
-      }
-      
-      // Update password
-      const passwordHash = await bcrypt.hash(password, 12)
-      await prisma.user.update({
-        where: { email },
-        data: { passwordHash },
-      })
-      
-      return NextResponse.json({
-        message: "Admin account updated",
-        email,
-        password,
-        role: "ADMIN",
-      })
+    if (!email || !password) {
+      return NextResponse.json({ error: "Email and password required" }, { status: 400 })
     }
 
-    // Create new admin user
-    const passwordHash = await bcrypt.hash(password, 12)
+    if (!supabaseAdmin) {
+      return NextResponse.json({ error: "Supabase admin not configured" }, { status: 500 })
+    }
 
-    const admin = await prisma.user.create({
-      data: {
-        email,
-        name,
-        passwordHash,
-        role: "ADMIN",
-        hasUsedFreeTrial: true,
-      },
-    })
-
-    // Create active membership for admin
-    await prisma.membership.create({
-      data: {
-        userId: admin.id,
-        plan: "FAMILY",
-        status: "ACTIVE",
-      },
-    })
-
-    return NextResponse.json({
-      message: "Admin account created successfully",
+    // Create admin user via Supabase Admin API
+    const { data, error } = await supabaseAdmin.auth.admin.createUser({
       email,
       password,
-      role: "ADMIN",
-      membership: "FAMILY - ACTIVE",
+      email_confirm: true,
+      user_metadata: { role: 'ADMIN' }
+    })
+
+    if (error) {
+      return NextResponse.json({ error: error.message }, { status: 500 })
+    }
+
+    // Create profile for admin with family plan
+    await supabaseAdmin.from('profiles').upsert({
+      id: data.user.id,
+      email,
+      phone: null,
+      phone_verified: true,
+      plan: 'family',
+      profiles_limit: 4,
+    }, { onConflict: 'id' })
+
+    return NextResponse.json({
+      success: true,
+      message: "Admin created successfully",
+      user: { id: data.user.id, email: data.user.email }
     })
   } catch (error: any) {
-    console.error("Error creating admin:", error)
-    return NextResponse.json(
-      { error: error.message || "Failed to create admin" },
-      { status: 500 }
-    )
+    console.error("Create admin error:", error)
+    return NextResponse.json({ error: error.message }, { status: 500 })
   }
 }
-

@@ -10,7 +10,7 @@ import { PremiumContact } from "@/components/ui/premium-contact"
 
 function HomeContent() {
   return (
-    <div className="flex flex-col relative z-10">
+    <div className="flex flex-col relative z-10 bg-gradient-to-br from-emerald-50 via-teal-50 to-emerald-100/40">
       {/* Hero Section with Integrated Assessment Form */}
       <HeroSection />
 

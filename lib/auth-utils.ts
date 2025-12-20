@@ -1,8 +1,10 @@
 import { createServerClient } from '@supabase/ssr'
 import { cookies } from 'next/headers'
 import { redirect } from "next/navigation"
-import { UserRole } from "@prisma/client"
 import { NextResponse } from "next/server"
+
+// Local type definition to replace Prisma import
+type UserRole = 'USER' | 'ADMIN'
 
 /**
  * Create Supabase server client for auth

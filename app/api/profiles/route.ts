@@ -6,13 +6,13 @@ import { createProfileForUser, listProfilesForUser } from "@/lib/profile-store"
 export async function GET(request: NextRequest) {
   try {
     const user = await requireAuth()
-    const profiles = listProfilesForUser((user as any).id)
+    const profiles = await listProfilesForUser(user.id)
     return NextResponse.json(profiles)
-  } catch (error) {
+  } catch (error: any) {
     console.error("Get profiles error:", error)
     return NextResponse.json(
-      { error: "Failed to fetch profiles" },
-      { status: 500 }
+      { error: error.message || "Failed to fetch profiles" },
+      { status: error.statusCode || 500 }
     )
   }
 }
@@ -20,8 +20,8 @@ export async function GET(request: NextRequest) {
 export async function POST(request: NextRequest) {
   try {
     const user = await requireAuth()
-    const userId = (user as any).id
-    const userRole = (user as any).role || 'USER'
+    const userId = user.id
+    const userRole = (user as any).user_metadata?.role || 'USER'
 
     // Check if user can create more profiles
     const { canCreate, currentCount, limit } = await canCreateProfile(
@@ -48,14 +48,13 @@ export async function POST(request: NextRequest) {
       )
     }
 
-    const created = createProfileForUser(userId, String(name).trim())
+    const created = await createProfileForUser(userId, String(name).trim())
     return NextResponse.json(created, { status: 201 })
-  } catch (error) {
+  } catch (error: any) {
     console.error("Create profile error:", error)
     return NextResponse.json(
-      { error: "Failed to create profile" },
-      { status: 500 }
+      { error: error.message || "Failed to create profile" },
+      { status: error.statusCode || 500 }
     )
   }
 }
-

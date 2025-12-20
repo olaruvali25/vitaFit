@@ -214,10 +214,10 @@ function PricingSection1Content() {
   }
 
   return (
-    <section id="pricing" className="relative py-32 bg-gradient-to-b from-emerald-50/80 via-emerald-50/75 via-emerald-100/70 via-emerald-200/65 via-emerald-300/60 via-emerald-400/55 via-emerald-500/50 via-emerald-600/45 via-emerald-700/40 via-emerald-800/35 via-emerald-900/30 via-green-800/25 via-green-900/20 via-green-950/15 to-slate-950 overflow-hidden scroll-mt-20">
-      {/* Static Background Effects */}
+    <section id="pricing" className="relative py-32 bg-transparent overflow-hidden scroll-mt-20">
+      {/* Static Background Effects - Removed dark blending */}
       <div className="absolute inset-0" suppressHydrationWarning>
-        <div className="absolute inset-0 bg-gradient-to-b from-[#18c260]/[0.12] via-[#18c260]/[0.11] via-[#18c260]/[0.10] via-[#18c260]/[0.09] via-[#18c260]/[0.08] via-[#18c260]/[0.07] via-[#18c260]/[0.06] via-green-500/[0.05] to-[#18c260]/[0.08]" suppressHydrationWarning />
+        <div className="absolute inset-0 bg-transparent" suppressHydrationWarning />
       </div>
       
       <div className="px-4 pt-10 w-full mx-auto relative z-10" ref={pricingRef} data-pricing-section>
@@ -234,7 +234,7 @@ function PricingSection1Content() {
             <span className="text-[#18c260] font-medium">Choose Your Plan</span>
           </TimelineContent>
 
-          <h1 className="md:text-5xl sm:text-4xl text-3xl font-semibold text-white mb-4 leading-[120%]">
+          <h1 className="md:text-5xl sm:text-4xl text-3xl font-semibold text-gray-900 mb-4 leading-[120%]">
             <VerticalCutReveal
               splitBy="words"
               staggerDuration={0.06}
@@ -257,7 +257,7 @@ function PricingSection1Content() {
             animationNum={1}
             timelineRef={pricingRef}
             customVariants={revealVariants}
-            className="text-xl text-white/80 mb-8"
+            className="text-xl text-gray-600 mb-8"
           >
             Choose the perfect plan for your health and fitness goals
           </TimelineContent>
@@ -303,12 +303,13 @@ function PricingSection1Content() {
                   )}
                 >
                   <GlowingEffect spread={50} blur={25} borderWidth={isPopular ? 3 : 2} />
-                  <div className={cn(
-                    "relative bg-white/10 backdrop-blur-xl rounded-xl border shadow-xl p-6 h-full flex flex-col",
-                    (isPopular || isUpgradeTarget)
-                      ? "border-[#18c260]/50 shadow-[#18c260]/20 shadow-2xl" 
-                      : "border-white/30"
-                  )}>
+                  <div 
+                    className={cn(
+                      "relative bg-white/60 backdrop-blur-xl rounded-xl border p-6 h-full flex flex-col",
+                      (isPopular || isUpgradeTarget)
+                        ? "border-[#18c260]/50 shadow-[#18c260]/10" 
+                        : "border-white/30 shadow-sm"
+                    )}>
                     {(isPopular || isUpgradeTarget) && (
                       <div className="absolute -top-4 left-1/2 -translate-x-1/2">
                         <span className="inline-block px-4 py-1 bg-gradient-to-r from-[#18c260] to-[#1FCC5F] text-white text-xs font-bold rounded-full shadow-lg">
@@ -320,7 +321,7 @@ function PricingSection1Content() {
                     <div className="mb-6">
                       <h3 className={cn(
                         "text-2xl font-bold mb-2",
-                        (isPopular || isUpgradeTarget) ? "text-[#18c260]" : "text-white"
+                        (isPopular || isUpgradeTarget) ? "text-[#18c260]" : "text-gray-900"
                       )}>
                         {plan.name}
                       </h3>
@@ -335,25 +336,25 @@ function PricingSection1Content() {
                       {isFreeTrial ? (
                         <div>
                           <div className="flex items-baseline gap-2">
-                            <span className="text-4xl font-bold text-white">FREE</span>
+                            <span className="text-4xl font-bold text-gray-900">FREE</span>
                           </div>
-                          <p className="text-sm text-white/60 mt-1">14 days, no credit card</p>
+                          <p className="text-sm text-gray-500 mt-1">14 days, no credit card</p>
                         </div>
                       ) : (
                         <>
                           <div className="flex items-baseline gap-2">
-                            <span className="text-4xl font-bold text-white flex items-baseline">
+                            <span className="text-4xl font-bold text-gray-900 flex items-baseline">
                               $<NumberFlow value={isYearly ? plan.yearlyPrice : plan.monthlyPrice} />
                             </span>
-                            <span className="text-white/70">/month</span>
+                            <span className="text-gray-600">/month</span>
                           </div>
                           {isYearly && plan.yearlyTotal > 0 && (
-                            <p className="text-sm text-white/60 mt-1">
+                            <p className="text-sm text-gray-500 mt-1">
                               Billed ${plan.yearlyTotal} yearly
                             </p>
                           )}
                           {!isYearly && plan.monthlyPrice > 0 && (
-                            <p className="text-sm text-white/60 line-through mt-1">
+                            <p className="text-sm text-gray-500 line-through mt-1">
                               ${Math.round(plan.monthlyPrice * 1.2)}/month
                             </p>
                           )}
@@ -374,8 +375,8 @@ function PricingSection1Content() {
                             <CheckCheck className="h-3 w-3 text-white" />
                           </div>
                           <span className={cn(
-                            "text-sm",
-                            isPopular ? "text-white font-medium" : "text-white/90"
+                            "text-sm text-gray-700",
+                            isPopular ? "text-gray-900 font-medium" : "text-gray-700"
                           )}>
                             {feature}
                           </span>

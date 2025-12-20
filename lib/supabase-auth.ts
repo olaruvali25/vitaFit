@@ -156,25 +156,12 @@ export async function verifyPhoneOTP(phone: string, token: string) {
 }
 
 /**
- * Sign in with email and password (STRICTLY blocks if phone not verified)
+ * Sign in with email and password
+ * Note: Phone verification is currently disabled for testing
  */
 export async function signInWithEmail(email: string, password: string) {
-  // If Supabase is not configured, fallback to local user store for testing.
   if (!supabase) {
-    const local = await import('./local-auth')
-    const localUser = await local.findLocalUserByEmail(email)
-    if (!localUser) {
-      throw new Error('Invalid login credentials')
-    }
-    const ok = await local.verifyLocalPassword(localUser, password)
-    if (!ok) {
-      throw new Error('Invalid login credentials')
-    }
-    // return object shaped like supabase.auth.signInWithPassword result
-    return {
-      user: { id: localUser.id, email: localUser.email, phone: localUser.phone || null },
-      session: null
-    }
+    throw new Error('Supabase client not initialized. Please configure Supabase environment variables.')
   }
 
   const { data, error } = await supabase.auth.signInWithPassword({
@@ -189,10 +176,6 @@ export async function signInWithEmail(email: string, password: string) {
   if (!data.user) {
     throw new Error('Authentication failed')
   }
-
-  // TEMPORARILY DISABLED: Phone verification check for testing
-  // TODO: Reactivate when phone verification is ready for production
-  console.log('[Auth] Phone verification check DISABLED for testing purposes')
 
   return data
 }

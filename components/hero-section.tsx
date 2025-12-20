@@ -10,7 +10,6 @@ import { AnimatedGroup } from '@/components/ui/animated-group'
 import { HeroHeader } from './header'
 import AssessmentForm from './forms/AssessmentForm'
 import type { AssessmentFormData } from './forms/AssessmentForm'
-import { ShootingStars } from '@/components/ui/shooting-stars'
 import { StarsBackground } from '@/components/ui/stars-background'
 import LogoCloudTwo from '@/components/ui/logo-cloud-two'
 import { InfiniteSlider } from '@/components/motion-primitives/infinite-slider'
@@ -85,20 +84,10 @@ export default function HeroSection() {
         <>
             <HeroHeader />
 
-            <main className="overflow-hidden [--color-primary-foreground:var(--color-white)] [--color-primary:var(--color-green-600)]">
-                <section id="assessment" className="relative overflow-hidden bg-gradient-to-b from-emerald-100 via-emerald-50 via-teal-50 via-emerald-100/60 via-green-100/40 to-green-950/30 scroll-mt-20">
-                    {/* Page-specific light background with green/teal gradient - darker at bottom */}
-                    <div className="pointer-events-none absolute inset-0 -z-10 bg-gradient-to-b from-emerald-100/90 via-emerald-50/85 via-teal-50/70 via-emerald-100/60 via-green-100/40 to-green-950/20" />
-                    {/* Green shadows at corners - more intense */}
-                    <div className="pointer-events-none absolute top-0 left-0 w-96 h-96 bg-emerald-600/15 rounded-full blur-3xl -z-10" />
-                    <div className="pointer-events-none absolute top-0 right-0 w-96 h-96 bg-teal-600/15 rounded-full blur-3xl -z-10" />
-                    <div className="pointer-events-none absolute bottom-0 left-0 w-96 h-96 bg-emerald-800/20 rounded-full blur-3xl -z-10" />
-                    <div className="pointer-events-none absolute bottom-0 right-0 w-96 h-96 bg-teal-800/20 rounded-full blur-3xl -z-10" />
-                    {/* Additional green gradient overlay for blending */}
-                    <div className="pointer-events-none absolute inset-0 -z-10 bg-gradient-to-b from-transparent via-green-500/5 to-green-950/15" />
-                    {/* Shooting Stars - must be above gradient */}
-                    <ShootingStars />
-                    <StarsBackground />
+            <main className="overflow-hidden bg-transparent [--color-primary-foreground:var(--color-white)] [--color-primary:var(--color-green-600)]">
+                <section id="assessment" className="relative overflow-hidden scroll-mt-20">
+                    {/* Background removed - using layout background */}
+                    
                     <div className="relative mx-auto max-w-7xl px-6 pb-12 pt-20 lg:pt-28">
                         {/* Title and Description - Centered */}
                         <div className="relative z-10 mx-auto max-w-4xl text-center mb-8">
@@ -156,16 +145,8 @@ export default function HeroSection() {
                 <LogoCloudTwo />
                 
                 {/* Reviews Slider */}
-                <section className="relative pb-16 md:pb-32 bg-gradient-to-br from-emerald-50 via-teal-50 to-emerald-100/40 z-10">
-                    {/* Page-specific light background with green/teal gradient */}
-                    <div className="pointer-events-none absolute inset-0 -z-10 bg-gradient-to-br from-emerald-50/80 via-teal-50/60 via-emerald-100/50 to-white/90" />
-                    {/* Green shadows at corners */}
-                    <div className="pointer-events-none absolute top-0 left-0 w-96 h-96 bg-emerald-600/10 rounded-full blur-3xl -z-10" />
-                    <div className="pointer-events-none absolute top-0 right-0 w-96 h-96 bg-teal-600/10 rounded-full blur-3xl -z-10" />
-                    <div className="pointer-events-none absolute bottom-0 left-0 w-96 h-96 bg-emerald-700/8 rounded-full blur-3xl -z-10" />
-                    <div className="pointer-events-none absolute bottom-0 right-0 w-96 h-96 bg-teal-700/8 rounded-full blur-3xl -z-10" />
-                    {/* Blending overlay at bottom to connect with FeaturesCards */}
-                    <div className="pointer-events-none absolute bottom-0 left-0 right-0 h-32 bg-gradient-to-b from-transparent via-[#18c260]/[0.06] to-[#18c260]/[0.12] -z-10"></div>
+                <section className="relative pb-16 md:pb-32 z-10">
+                    {/* Background removed - using layout background */}
                     <div className="group relative w-full z-10">
                         <div className="relative py-6 w-full overflow-hidden">
                             <InfiniteSlider speedOnHover={15} speed={30} gap={24}>

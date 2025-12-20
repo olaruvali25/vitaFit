@@ -1,26 +1,40 @@
 import { NextResponse } from "next/server"
-import { prisma } from "@/lib/prisma"
+import { supabaseAdmin } from "@/lib/supabase"
 
 export async function GET() {
-  console.log("DATABASE_URL:", process.env.DATABASE_URL)
+  console.log("SUPABASE_URL:", process.env.NEXT_PUBLIC_SUPABASE_URL)
   console.log("NODE_ENV:", process.env.NODE_ENV)
 
   try {
-    // Test database connection
-    const userCount = await prisma.user.count()
+    if (!supabaseAdmin) {
+      return NextResponse.json({
+        success: false,
+        error: "Supabase admin client not configured",
+        database: "not configured"
+      }, { status: 500 })
+    }
+
+    // Test database connection via Supabase
+    const { count, error } = await supabaseAdmin
+      .from('profiles')
+      .select('*', { count: 'exact', head: true })
+
+    if (error) {
+      throw error
+    }
+
     return NextResponse.json({
       success: true,
-      userCount,
+      profileCount: count,
       database: "connected",
-      DATABASE_URL: process.env.DATABASE_URL
+      SUPABASE_URL: process.env.NEXT_PUBLIC_SUPABASE_URL
     })
   } catch (error: any) {
     console.error("Database test error:", error)
     return NextResponse.json({
       success: false,
       error: error.message,
-      database: "failed",
-      DATABASE_URL: process.env.DATABASE_URL
+      database: "failed"
     }, { status: 500 })
   }
 }

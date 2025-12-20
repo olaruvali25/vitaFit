@@ -1,41 +1,59 @@
-import { NextRequest } from "next/server"
-import { getAuthContext } from "@/lib/authz"
-import { jsonError, jsonOk } from "@/lib/api-response"
-import { signJwt } from "@/lib/jwt"
-import { PROFILE_LIMITS } from "@/lib/subscription"
+import { NextRequest, NextResponse } from "next/server"
+import { requireAuth } from "@/lib/auth-utils"
+import { listProfilesForUser } from "@/lib/profile-store"
+import { getUserMembership } from "@/lib/membership"
+import { PROFILE_LIMITS as MEMBERSHIP_PROFILE_LIMITS } from "@/lib/membership"
 
 export async function POST(req: NextRequest) {
-  const auth = await getAuthContext(req)
-  if (auth.error) return auth.error
-  const { user } = auth
-  const body = await req.json().catch(() => null)
-  const profileId = body?.profileId as string | undefined
-  if (!profileId) {
-    return jsonError("INVALID_INPUT", "profileId is required.", 400)
+  try {
+    const user = await requireAuth()
+    const body = await req.json().catch(() => null)
+    const profileId = body?.profileId as string | undefined
+    
+    if (!profileId) {
+      return NextResponse.json(
+        { error: "profileId is required" },
+        { status: 400 }
+      )
+    }
+
+    // Get user's profiles
+    const profiles = await listProfilesForUser(user.id)
+    const profile = profiles.find(p => p.id === profileId)
+    
+    if (!profile) {
+      return NextResponse.json(
+        { error: "Profile not found" },
+        { status: 404 }
+      )
+    }
+
+    // Get membership to check limits
+    const membership = await getUserMembership(user.id)
+    const limit = MEMBERSHIP_PROFILE_LIMITS[membership.plan] || 1
+    
+    // Sort profiles by creation date
+    const sortedProfiles = [...profiles].sort((a, b) => 
+      new Date(a.createdAt).getTime() - new Date(b.createdAt).getTime()
+    )
+    const primaryProfileId = sortedProfiles[0]?.id
+
+    // Check if user can access this profile based on plan
+    if (limit === 1 && profile.id !== primaryProfileId) {
+      return NextResponse.json(
+        { error: "Please upgrade your plan to access this profile." },
+        { status: 403 }
+      )
+    }
+
+    return NextResponse.json({
+      activeProfileId: profile.id,
+    })
+  } catch (error: any) {
+    console.error("Switch profile error:", error)
+    return NextResponse.json(
+      { error: error.message || "Failed to switch profile" },
+      { status: error.statusCode || 500 }
+    )
   }
-
-  const profile = user.profiles.find((p: any) => p.id === profileId)
-  if (!profile) {
-    return jsonError("NOT_FOUND", "Profile not found.", 404)
-  }
-
-  const limit = PROFILE_LIMITS[user.subscriptionTier as keyof typeof PROFILE_LIMITS] || 1
-  const sortedProfiles = [...user.profiles].sort((a, b) => a.createdAt.getTime() - b.createdAt.getTime())
-  const primaryProfileId = sortedProfiles[0]?.id
-
-  if (limit === 1 && profile.id !== primaryProfileId) {
-    return jsonError("PROFILE_ACCESS_BLOCKED", "Please upgrade your plan to access this profile.", 403)
-  }
-
-  const token = signJwt({
-    userId: user.id,
-    activeProfileId: profile.id,
-    tokenVersion: user.tokenVersion,
-  })
-
-  return jsonOk({
-    token,
-    activeProfileId: profile.id,
-  })
 }
-

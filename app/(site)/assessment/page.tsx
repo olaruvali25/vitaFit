@@ -287,20 +287,16 @@ function AssessmentPageContent() {
   }
 
   return (
-    <main className="overflow-hidden [--color-primary-foreground:var(--color-white)] [--color-primary:var(--color-green-600)]">
-      <section className="relative overflow-hidden bg-gradient-to-b from-emerald-50 via-teal-50 via-emerald-100/60 via-green-100/40 to-green-950/30 min-h-screen scroll-mt-20">
-        {/* Page-specific light background with green/teal gradient - darker at bottom */}
-        <div className="pointer-events-none absolute inset-0 -z-10 bg-gradient-to-b from-emerald-50/80 via-teal-50/60 via-emerald-100/50 via-green-100/40 to-green-950/20" />
-        {/* Green shadows at corners - more intense */}
-        <div className="pointer-events-none absolute top-0 left-0 w-96 h-96 bg-emerald-600/15 rounded-full blur-3xl -z-10" />
-        <div className="pointer-events-none absolute top-0 right-0 w-96 h-96 bg-teal-600/15 rounded-full blur-3xl -z-10" />
-        <div className="pointer-events-none absolute bottom-0 left-0 w-96 h-96 bg-emerald-800/20 rounded-full blur-3xl -z-10" />
-        <div className="pointer-events-none absolute bottom-0 right-0 w-96 h-96 bg-teal-800/20 rounded-full blur-3xl -z-10" />
-        {/* Additional green gradient overlay for blending */}
-        <div className="pointer-events-none absolute inset-0 -z-10 bg-gradient-to-b from-transparent via-green-500/5 to-green-950/15" />
-        {/* Shooting Stars - must be above gradient */}
-        <ShootingStars />
-        <StarsBackground />
+    <main className="overflow-hidden bg-gradient-to-br from-emerald-50 via-teal-50 to-emerald-100/40 [--color-primary-foreground:var(--color-white)] [--color-primary:var(--color-green-600)]">
+      <section className="relative overflow-hidden min-h-screen scroll-mt-20">
+        {/* Page-specific light background with green/teal gradient */}
+        <div className="pointer-events-none absolute inset-0 -z-10 bg-gradient-to-br from-emerald-50/80 via-teal-50/60 via-emerald-100/50 to-white/90" />
+        {/* Green shadows at corners */}
+        <div className="pointer-events-none absolute top-0 left-0 w-96 h-96 bg-emerald-600/10 rounded-full blur-3xl -z-10" />
+        <div className="pointer-events-none absolute top-0 right-0 w-96 h-96 bg-teal-600/10 rounded-full blur-3xl -z-10" />
+        <div className="pointer-events-none absolute bottom-0 left-0 w-96 h-96 bg-emerald-700/8 rounded-full blur-3xl -z-10" />
+        <div className="pointer-events-none absolute bottom-0 right-0 w-96 h-96 bg-teal-700/8 rounded-full blur-3xl -z-10" />
+        {/* Shooting Stars - removed as per previous instructions to remove them from assessment section */}
         <div className="relative mx-auto max-w-6xl px-6 pb-12 pt-32 lg:pt-40">
           <div className="relative z-10 mx-auto max-w-4xl text-center">
             <h1 className="text-balance text-4xl font-medium md:text-5xl text-gray-900 mb-4">

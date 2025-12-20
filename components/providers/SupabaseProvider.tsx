@@ -2,7 +2,7 @@
 
 import { createContext, useContext, useEffect, useState } from 'react'
 import { Session, User } from '@supabase/supabase-js'
-import { supabase } from '@/lib/supabase'
+import { createSupabaseBrowserClient } from '@/lib/supabase-browser'
 
 type SupabaseContextType = {
   session: Session | null
@@ -22,13 +22,11 @@ export function SupabaseProvider({ children }: { children: React.ReactNode }) {
   const [loading, setLoading] = useState(true)
 
   useEffect(() => {
-    // Get initial session - ONLY use Supabase's getSession()
-    const getSession = async () => {
-      if (!supabase) {
-        setLoading(false)
-        return
-      }
+    // Create browser client that properly syncs cookies
+    const supabase = createSupabaseBrowserClient()
 
+    // Get initial session
+    const getSession = async () => {
       const { data: { session } } = await supabase.auth.getSession()
       setSession(session)
       setUser(session?.user ?? null)
@@ -37,11 +35,7 @@ export function SupabaseProvider({ children }: { children: React.ReactNode }) {
 
     getSession()
 
-    // Listen for auth changes (only if supabase is available)
-    if (!supabase) {
-      return () => {}
-    }
-
+    // Listen for auth changes
     const {
       data: { subscription },
     } = supabase.auth.onAuthStateChange((_event: string, session: Session | null) => {

@@ -100,25 +100,25 @@ function CheckoutPageContent() {
       : { label: "$" + plan.monthly + "/mo", amount: plan.monthly }
 
   return (
-    <main className="min-h-screen bg-gradient-to-br from-black via-green-950/20 to-black text-white">
+    <main className="min-h-screen bg-gradient-to-br from-emerald-50 via-teal-50 to-emerald-100/40 text-gray-900">
       <div className="container mx-auto px-4 py-16 max-w-3xl">
         <div className="mb-8">
           <h1 className="text-3xl font-bold mb-2">Checkout</h1>
-          <p className="text-white/70">
+          <p className="text-gray-600">
             Complete your subscription. You can change plans anytime.
           </p>
         </div>
 
-        <div className="rounded-2xl border border-white/10 bg-white/5 p-6 space-y-4">
+        <div className="rounded-2xl border border-emerald-200/50 bg-white/60 backdrop-blur-xl p-6 space-y-4 shadow-xl">
           <div className="flex items-center justify-between">
             <div>
-              <p className="text-sm text-white/60">Plan</p>
+              <p className="text-sm text-gray-500">Plan</p>
               <p className="text-xl font-semibold">{plan.name}</p>
-              <p className="text-sm text-white/60">
+              <p className="text-sm text-gray-500">
                 {plan.profiles} profile{plan.profiles !== 1 ? "s" : ""} included
               </p>
               {planId === "FREE_TRIAL" && (
-                <p className="text-sm text-emerald-400 mt-1">
+                <p className="text-sm text-emerald-600 mt-1 font-medium">
                   {plan.trialDays} days free • no auto-renew
                 </p>
               )}
@@ -126,16 +126,16 @@ function CheckoutPageContent() {
             <div className="text-right">
               <p className="text-xl font-semibold">{price.label}</p>
               {billing === "monthly" && planId !== "FREE_TRIAL" && (
-                <p className="text-xs text-white/50 line-through">
+                <p className="text-xs text-gray-400 line-through">
                   ${Math.round(plan.monthly * 1.2)}/mo
                 </p>
               )}
-              <p className="text-sm text-white/60 capitalize mt-1">{billing}</p>
+              <p className="text-sm text-gray-500 capitalize mt-1">{billing}</p>
             </div>
           </div>
 
-          <div className="rounded-lg border border-white/10 bg-black/30 p-4 space-y-2">
-            <h3 className="font-semibold">Billing cycle</h3>
+          <div className="rounded-lg border border-emerald-100 bg-emerald-50/50 p-4 space-y-2">
+            <h3 className="font-semibold text-gray-900">Billing cycle</h3>
             <div className="flex gap-3">
               {(["monthly", "yearly"] as BillingCycle[]).map((cycle) => {
                 const isActive = billing === cycle
@@ -147,7 +147,7 @@ function CheckoutPageContent() {
                       router.replace(url)
                     }}
                     className={`rounded-full px-4 py-2 border transition ${
-                      isActive ? "border-emerald-500 bg-emerald-500/10" : "border-white/20 bg-white/5"
+                      isActive ? "border-emerald-500 bg-emerald-500/10 text-emerald-700" : "border-gray-200 bg-white/50 text-gray-600 hover:bg-white"
                     }`}
                   >
                     {cycle === "monthly" ? "Monthly" : "Yearly (save more)"}
@@ -158,7 +158,7 @@ function CheckoutPageContent() {
           </div>
 
           {error && (
-            <div className="rounded-lg border border-red-500/30 bg-red-500/10 p-3 text-sm text-red-200">
+            <div className="rounded-lg border border-red-500/30 bg-red-500/10 p-3 text-sm text-red-600">
               {error}
             </div>
           )}
@@ -172,7 +172,7 @@ function CheckoutPageContent() {
           </Button>
         </div>
 
-        <div className="mt-6 text-sm text-white/60">
+        <div className="mt-6 text-sm text-gray-500">
           <p>Secure checkout powered by Stripe.</p>
           <p>If you have questions, contact support.</p>
         </div>
@@ -184,8 +184,8 @@ function CheckoutPageContent() {
 export default function CheckoutPage() {
   return (
     <Suspense fallback={
-      <main className="min-h-screen bg-gradient-to-br from-black via-green-950/20 to-black text-white flex items-center justify-center px-4">
-        <p className="text-white/70">Loading checkout...</p>
+      <main className="min-h-screen bg-gradient-to-br from-emerald-50 via-teal-50 to-emerald-100/40 text-gray-900 flex items-center justify-center px-4">
+        <p className="text-gray-500">Loading checkout...</p>
       </main>
     }>
       <CheckoutPageContent />

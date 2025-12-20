@@ -96,7 +96,7 @@ function MealPlanLoadingContent() {
   }, [router, profileId, assessmentCompleted])
 
   return (
-    <main className="min-h-screen bg-gradient-to-b from-emerald-900 via-emerald-950 to-black text-white flex items-center justify-center px-4">
+    <main className="min-h-screen bg-gradient-to-br from-emerald-50 via-teal-50 to-emerald-100/40 text-gray-900 flex items-center justify-center px-4">
       <div className="max-w-md w-full text-center space-y-4">
         {/* Layered modern loader */}
         <div className="relative flex justify-center">
@@ -107,15 +107,15 @@ function MealPlanLoadingContent() {
         <h1 className="text-2xl font-semibold">
           This is where your progress begins{ name ? `, ${name}!` : "!"}
         </h1>
-        <p className="text-sm text-white/70">{statusText}</p>
+        <p className="text-sm text-gray-600">{statusText}</p>
         {error && (
-          <p className="text-sm text-red-400">
+          <p className="text-sm text-red-600">
             {error}
           </p>
         )}
         {!error && (
-          <div className="flex items-center justify-center gap-2 text-white/70 text-sm">
-            <Loader2 className="h-4 w-4 animate-spin" />
+          <div className="flex items-center justify-center gap-2 text-gray-500 text-sm">
+            <Loader2 className="h-4 w-4 animate-spin text-emerald-600" />
             <span>Customizing every day around your goal </span>
           </div>
         )}
@@ -127,9 +127,9 @@ function MealPlanLoadingContent() {
 export default function MealPlanLoadingPage() {
   return (
     <Suspense fallback={
-      <main className="min-h-screen bg-gradient-to-b from-emerald-900 via-emerald-950 to-black text-white flex items-center justify-center px-4">
-        <div className="flex items-center gap-3 text-white/80 text-sm">
-          <Loader2 className="h-4 w-4 animate-spin" />
+      <main className="min-h-screen bg-gradient-to-br from-emerald-50 via-teal-50 to-emerald-100/40 text-gray-900 flex items-center justify-center px-4">
+        <div className="flex items-center gap-3 text-gray-600 text-sm">
+          <Loader2 className="h-4 w-4 animate-spin text-emerald-600" />
           <span>Loading...</span>
         </div>
       </main>

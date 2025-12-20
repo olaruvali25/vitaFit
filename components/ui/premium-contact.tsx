@@ -134,12 +134,12 @@ export function PremiumContact() {
   };
 
   return (
-    <section className="relative py-32 bg-gradient-to-b from-slate-950 via-green-950/20 via-green-950/15 via-green-900/20 via-green-800/25 via-emerald-900/30 via-emerald-800/35 via-emerald-700/40 via-emerald-600/45 via-emerald-500/50 via-emerald-400/55 via-emerald-300/60 via-emerald-200/65 via-emerald-100/70 via-emerald-50/75 to-emerald-50/80 text-white overflow-hidden">
-      {/* Enhanced Background Effects */}
+    <section className="relative py-32 bg-transparent text-gray-900 overflow-hidden">
+      {/* Enhanced Background Effects - Removed dark blending */}
       <div className="absolute inset-0">
         {/* Animated gradient mesh */}
         <motion.div 
-          className="absolute inset-0 bg-gradient-to-b from-[#18c260]/[0.08] via-green-500/[0.05] via-[#18c260]/[0.06] via-[#18c260]/[0.07] via-[#18c260]/[0.08] via-[#18c260]/[0.09] via-[#18c260]/[0.10] via-[#18c260]/[0.11] to-[#18c260]/[0.12]"
+          className="absolute inset-0 bg-transparent"
           animate={{
             backgroundPosition: ['0% 0%', '100% 100%', '0% 0%'],
           }}
@@ -230,22 +230,22 @@ export function PremiumContact() {
             >
               <Sparkles className="h-4 w-4 text-[#18c260]" />
             </motion.div>
-            <span className="text-sm font-medium text-white/80">
+            <span className="text-sm font-medium text-gray-700">
               ✨ Let's Connect
             </span>
             <div className="w-2 h-2 bg-green-400 rounded-full animate-pulse" />
           </motion.div>
 
           <motion.h2 
-            className="text-4xl sm:text-6xl md:text-7xl font-bold mb-8 tracking-tight"
+            className="text-4xl sm:text-6xl md:text-7xl font-bold mb-8 tracking-tight text-gray-900"
             variants={fadeInUp}
           >
-            <span className="bg-clip-text text-transparent bg-gradient-to-r from-white to-white/80">
+            <span className="bg-clip-text text-transparent bg-gradient-to-r from-gray-900 to-gray-700">
               Have Questions?
             </span>
             <br />
             <motion.span 
-              className="bg-clip-text text-transparent bg-gradient-to-r from-[#18c260] via-green-300 to-[#1FCC5F]"
+              className="bg-clip-text text-transparent bg-gradient-to-r from-[#18c260] via-green-600 to-[#1FCC5F]"
               animate={{
                 backgroundPosition: ['0% 50%', '100% 50%', '0% 50%'],
               }}
@@ -263,7 +263,7 @@ export function PremiumContact() {
           </motion.h2>
           
           <motion.p 
-            className="text-xl sm:text-2xl text-white/60 max-w-4xl mx-auto leading-relaxed"
+            className="text-xl sm:text-2xl text-gray-600 max-w-4xl mx-auto leading-relaxed"
             variants={fadeInUp}
           >
             Ask us anything about your meals, your plan, or how VitaFit works.<br />
@@ -279,19 +279,19 @@ export function PremiumContact() {
           {companyStats.map((stat, index) => (
             <motion.div
               key={index}
-              className="text-center p-6 bg-white/[0.05] backdrop-blur-xl rounded-2xl border border-white/[0.15] group hover:bg-white/[0.08] transition-all"
+              className="text-center p-6 bg-white/60 backdrop-blur-xl shadow-sm rounded-2xl border border-white/30 group hover:bg-white/80 transition-all"
               whileHover={{ scale: 1.05, y: -5 }}
               variants={fadeInUp}
             >
               <motion.div
-                className="w-12 h-12 rounded-xl bg-gradient-to-br from-[#18c260]/20 to-green-500/20 border border-white/20 flex items-center justify-center mx-auto mb-3"
+                className="w-12 h-12 rounded-xl bg-gradient-to-br from-[#18c260]/20 to-green-500/20 border border-[#18c260]/20 flex items-center justify-center mx-auto mb-3"
                 whileHover={{ rotateY: 180 }}
                 transition={{ duration: 0.6 }}
               >
                 <stat.icon className="w-6 h-6 text-[#18c260]" />
               </motion.div>
-              <div className="text-2xl font-bold text-white mb-1">{stat.value}</div>
-              <div className="text-white/60 text-sm">{stat.label}</div>
+              <div className="text-2xl font-bold text-gray-900 mb-1">{stat.value}</div>
+              <div className="text-gray-500 text-sm">{stat.label}</div>
             </motion.div>
           ))}
         </motion.div>
@@ -303,8 +303,8 @@ export function PremiumContact() {
             variants={fadeInUp}
           >
             <div>
-              <h3 className="text-3xl font-bold text-white mb-4">Send us a message</h3>
-              <p className="text-white/60 text-lg">
+              <h3 className="text-3xl font-bold text-gray-900 mb-4">Send us a message</h3>
+              <p className="text-gray-600 text-lg">
                 Have any questions? We're here to help.
               </p>
             </div>
@@ -321,21 +321,21 @@ export function PremiumContact() {
                 >
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                     <div className="relative">
-                      <User className="absolute left-3 top-1/2 transform -translate-y-1/2 h-5 w-5 text-white/40" />
+                      <User className="absolute left-3 top-1/2 transform -translate-y-1/2 h-5 w-5 text-gray-400" />
                       <input
                         type="text"
                         placeholder="Your Name"
                         value={formData.name}
                         onChange={(e) => handleInputChange('name', e.target.value)}
-                        className={`w-full pl-10 pr-4 py-4 bg-white/[0.08] border rounded-xl text-white placeholder-white/40 focus:outline-none focus:border-[#18c260] transition-all ${
-                          errors.name ? 'border-red-400' : 'border-white/[0.15]'
+                        className={`w-full pl-10 pr-4 py-4 bg-white/60 backdrop-blur-md border rounded-xl text-gray-900 placeholder-gray-400 focus:outline-none focus:border-[#18c260] transition-all ${
+                          errors.name ? 'border-red-400' : 'border-white/30'
                         }`}
                       />
                       {errors.name && (
                         <motion.p
                           initial={{ opacity: 0, y: -10 }}
                           animate={{ opacity: 1, y: 0 }}
-                          className="text-red-400 text-sm mt-2"
+                          className="text-red-500 text-sm mt-2"
                         >
                           {errors.name}
                         </motion.p>
@@ -343,21 +343,21 @@ export function PremiumContact() {
                     </div>
 
                     <div className="relative">
-                      <Mail className="absolute left-3 top-1/2 transform -translate-y-1/2 h-5 w-5 text-white/40" />
+                      <Mail className="absolute left-3 top-1/2 transform -translate-y-1/2 h-5 w-5 text-gray-400" />
                       <input
                         type="email"
                         placeholder="Email Address"
                         value={formData.email}
                         onChange={(e) => handleInputChange('email', e.target.value)}
-                        className={`w-full pl-10 pr-4 py-4 bg-white/[0.08] border rounded-xl text-white placeholder-white/40 focus:outline-none focus:border-[#18c260] transition-all ${
-                          errors.email ? 'border-red-400' : 'border-white/[0.15]'
+                        className={`w-full pl-10 pr-4 py-4 bg-white/60 backdrop-blur-md border rounded-xl text-gray-900 placeholder-gray-400 focus:outline-none focus:border-[#18c260] transition-all ${
+                          errors.email ? 'border-red-400' : 'border-white/30'
                         }`}
                       />
                       {errors.email && (
                         <motion.p
                           initial={{ opacity: 0, y: -10 }}
                           animate={{ opacity: 1, y: 0 }}
-                          className="text-red-400 text-sm mt-2"
+                          className="text-red-500 text-sm mt-2"
                         >
                           {errors.email}
                         </motion.p>
@@ -366,21 +366,21 @@ export function PremiumContact() {
                   </div>
 
                   <div className="relative">
-                    <MessageSquare className="absolute left-3 top-4 h-5 w-5 text-white/40" />
+                    <MessageSquare className="absolute left-3 top-4 h-5 w-5 text-gray-400" />
                     <textarea
                       placeholder="Ask us anything..."
                       rows={6}
                       value={formData.message}
                       onChange={(e) => handleInputChange('message', e.target.value)}
-                      className={`w-full pl-10 pr-4 py-4 bg-white/[0.08] border rounded-xl text-white placeholder-white/40 focus:outline-none focus:border-[#18c260] transition-all resize-none ${
-                        errors.message ? 'border-red-400' : 'border-white/[0.15]'
+                      className={`w-full pl-10 pr-4 py-4 bg-white/60 backdrop-blur-md border rounded-xl text-gray-900 placeholder-gray-400 focus:outline-none focus:border-[#18c260] transition-all resize-none ${
+                        errors.message ? 'border-red-400' : 'border-white/30'
                       }`}
                     />
                     {errors.message && (
                       <motion.p
                         initial={{ opacity: 0, y: -10 }}
                         animate={{ opacity: 1, y: 0 }}
-                        className="text-red-400 text-sm mt-2"
+                        className="text-red-500 text-sm mt-2"
                       >
                         {errors.message}
                       </motion.p>
@@ -432,8 +432,8 @@ export function PremiumContact() {
                   >
                     <CheckCircle className="w-10 h-10 text-green-400" />
                   </motion.div>
-                  <h3 className="text-2xl font-bold text-white mb-4">Message Sent!</h3>
-                  <p className="text-white/60 text-lg mb-6">
+                  <h3 className="text-2xl font-bold text-gray-900 mb-4">Message Sent!</h3>
+                  <p className="text-gray-600 text-lg mb-6">
                     Thank you for reaching out. We'll get back to you within 24 hours.
                   </p>
                   <motion.button
@@ -441,7 +441,7 @@ export function PremiumContact() {
                       setIsSubmitted(false);
                       setFormData({ name: '', email: '', company: '', message: '' });
                     }}
-                    className="px-6 py-3 bg-white/[0.08] border border-white/[0.15] rounded-xl text-white hover:bg-white/[0.12] transition-all"
+                    className="px-6 py-3 bg-white border border-gray-200 rounded-xl text-gray-900 hover:bg-gray-50 transition-all"
                     whileHover={{ scale: 1.05 }}
                     whileTap={{ scale: 0.95 }}
                   >

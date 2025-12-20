@@ -136,19 +136,16 @@ export function LandingAccordionItem() {
   };
 
   return (
-    <div className="font-sans relative z-10">
-      <section id="reviews" className="relative overflow-hidden bg-gradient-to-b from-slate-950 via-green-950/20 via-green-950/15 via-green-900/20 via-green-800/25 via-emerald-900/30 via-emerald-800/35 via-emerald-700/40 via-emerald-600/45 via-emerald-500/50 via-emerald-400/55 via-emerald-300/60 via-emerald-200/65 via-emerald-100/70 via-emerald-50/75 to-emerald-50/80 scroll-mt-20">
-        {/* Green gradient background - matches other sections for smooth blending */}
-        <div className="absolute inset-0 pointer-events-none z-[1]">
-          <div className="absolute inset-0 bg-gradient-to-b from-[#18c260]/[0.08] via-green-500/[0.05] via-[#18c260]/[0.06] via-[#18c260]/[0.07] via-[#18c260]/[0.08] via-[#18c260]/[0.09] via-[#18c260]/[0.10] via-[#18c260]/[0.11] to-[#18c260]/[0.12]"></div>
-        </div>
+    <div className="font-sans relative z-10 bg-transparent">
+      <section id="reviews" className="relative overflow-hidden scroll-mt-20 bg-transparent">
+        {/* Background removed - using global background */}
         <div className="container mx-auto px-4 py-12 md:py-24 relative z-10">
         <div className="flex flex-col md:flex-row items-center justify-between gap-12">
           
           {/* Left Side: Text Content */}
           <FadeInView delay={0.1} className="w-full md:w-1/2">
             <div className="text-center md:text-left">
-            <h1 className="text-4xl md:text-6xl font-bold text-white leading-tight tracking-tighter">
+            <h1 className="text-4xl md:text-6xl font-bold text-gray-900 leading-tight tracking-tighter">
               <span 
                 className="relative inline-block"
                 style={{
@@ -177,7 +174,7 @@ export function LandingAccordionItem() {
                 Real Results!
               </span>
             </h1>
-            <p className="mt-6 text-lg text-white/70 max-w-xl mx-auto md:mx-0">
+            <p className="mt-6 text-lg text-gray-600 max-w-xl mx-auto md:mx-0">
               The hardest part isn't starting.<br />
               It's believing you can.<br />
               These people did, and <span 

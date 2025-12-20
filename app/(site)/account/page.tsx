@@ -39,9 +39,9 @@ function AccountPageContent() {
 
   if (status === "loading") {
     return (
-      <div className="container px-4 py-16 md:py-24">
+      <div className="container px-4 py-16 md:py-24 bg-gradient-to-br from-emerald-50 via-teal-50 to-emerald-100/40 min-h-screen">
         <div className="mx-auto max-w-4xl">
-          <div className="text-center text-white">Loading...</div>
+          <div className="text-center text-gray-900">Loading...</div>
         </div>
       </div>
     )
@@ -52,19 +52,19 @@ function AccountPageContent() {
   }
 
   return (
-    <section className="relative overflow-hidden bg-gradient-to-br from-black via-green-950/20 to-black min-h-screen">
+    <section className="relative overflow-hidden bg-gradient-to-br from-emerald-50 via-teal-50 to-emerald-100/40 min-h-screen">
       {/* Green gradient background layers */}
       <div className="absolute inset-0 pointer-events-none z-[1]">
-        <div className="absolute inset-0 bg-gradient-to-br from-[#18c260]/[0.08] via-green-500/[0.05] to-[#18c260]/[0.08]"></div>
+        <div className="absolute inset-0 bg-gradient-to-br from-emerald-50/80 via-teal-50/60 via-emerald-100/50 to-white/90"></div>
       </div>
       
       <div className="container px-4 py-16 md:py-24 relative z-10">
         <div className="mx-auto max-w-4xl">
           <div className="mb-8">
-            <h1 className="text-3xl font-bold mb-2 text-white">
+            <h1 className="text-3xl font-bold mb-2 text-gray-900">
               {selectedProfileName ? `${selectedProfileName}'s Account` : "My Account"}
             </h1>
-            <p className="text-white/70">
+            <p className="text-gray-600">
               Manage your profiles, plans, and subscription
             </p>
           </div>
@@ -120,8 +120,8 @@ function AccountPageContent() {
 export default function AccountPage() {
   return (
     <Suspense fallback={
-      <div className="container px-4 py-16 md:py-24">
-        <div className="mx-auto max-w-4xl text-center text-white">Loading...</div>
+      <div className="container px-4 py-16 md:py-24 bg-gradient-to-br from-emerald-50 via-teal-50 to-emerald-100/40 min-h-screen">
+        <div className="mx-auto max-w-4xl text-center text-gray-900">Loading...</div>
       </div>
     }>
       <AccountPageContent />

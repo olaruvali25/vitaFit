@@ -1,4 +1,5 @@
-import { SubscriptionTier } from "@prisma/client"
+// Subscription tier type (replacing Prisma enum)
+export type SubscriptionTier = 'free_trial' | 'pro' | 'plus' | 'family'
 
 export const PROFILE_LIMITS: Record<SubscriptionTier, number> = {
   free_trial: 1,
@@ -29,4 +30,3 @@ export function isDowngradeAllowed(from: SubscriptionTier, to: SubscriptionTier)
   if (from === "plus" && to === "pro") return true
   return false
 }
-

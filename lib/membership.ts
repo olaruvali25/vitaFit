@@ -1,10 +1,11 @@
 import { supabaseAdmin } from "./supabase"
-import { listProfilesForUser } from "./profile-store"
+import { countProfilesForUser } from "./profile-store"
 
 type PlanKey = "free trial" | "pro" | "plus" | "family" | "none"
 
 // Profile limits (TOTAL profiles)
 // - No plan / Free / Trial: 1
+// - Pro: 1
 // - Plus: 2
 // - Family: 4
 export const PROFILE_LIMITS: Record<PlanKey, number> = {
@@ -23,7 +24,6 @@ export type MembershipInfo = {
 }
 
 export async function getUserMembership(userId: string): Promise<MembershipInfo> {
-  // If the "account profile" record doesn't exist yet, treat as no plan.
   let plan: PlanKey = "none"
 
   if (supabaseAdmin) {
@@ -64,26 +64,21 @@ export async function getMaxProfilesForUser(userId: string, userRole: string): P
  * Check if user can use app features (trial or active subscription)
  */
 export async function canUseAppFeatures(_userId: string): Promise<boolean> {
-  // Not used for profile gating. Keep conservative default.
   return true
 }
 
 /**
  * Legacy compatibility export.
- * This codebase previously initialized a "free trial" membership record in a separate DB.
- * We now derive profile limits from the user's plan, and default to 1 when missing.
  */
 export async function initializeFreeTrial(_userId: string): Promise<void> {
-  // No-op: profile #1 is always allowed regardless of plan.
   return
 }
 
 /**
- * Get profile count for user (respects admin override)
+ * Get profile count for user
  */
 export async function getUserProfileCount(userId: string, userRole: string): Promise<number> {
-  if (userRole === "ADMIN") return listProfilesForUser(userId).length
-  return listProfilesForUser(userId).length
+  return await countProfilesForUser(userId)
 }
 
 /**
@@ -95,12 +90,17 @@ export async function canCreateProfile(
   userRole: string
 ): Promise<{ canCreate: boolean; currentCount: number; limit: number }> {
   if (userRole === "ADMIN") {
-    const currentCount = listProfilesForUser(userId).length
+    const currentCount = await countProfilesForUser(userId)
     return { canCreate: true, currentCount, limit: Infinity }
   }
 
   const limit = await getMaxProfilesForUser(userId, userRole)
-  const currentCount = listProfilesForUser(userId).length
+  const currentCount = await countProfilesForUser(userId)
+
+  // CRITICAL: First profile is ALWAYS allowed regardless of plan
+  if (currentCount === 0) {
+    return { canCreate: true, currentCount: 0, limit }
+  }
 
   return {
     canCreate: currentCount < limit,
@@ -117,7 +117,5 @@ export async function canCreatePlan(
   profileId: string,
   userRole: string
 ): Promise<{ canCreate: boolean; currentCount: number; limit: number }> {
-  // Plan limits not part of the requested fix; keep permissive behavior.
   return { canCreate: true, currentCount: 0, limit: Infinity }
 }
-

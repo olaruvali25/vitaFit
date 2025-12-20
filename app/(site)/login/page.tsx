@@ -2,26 +2,13 @@
 
 import { useState } from "react"
 import { useRouter } from "next/navigation"
-import { createClient } from '@supabase/supabase-js'
+import { createSupabaseBrowserClient } from '@/lib/supabase-browser'
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import Link from "next/link"
 import { LogoIcon } from "@/components/logo"
 import { Eye, EyeOff } from "lucide-react"
-
-// Create isolated Supabase client for login only
-const supabase = createClient(
-  process.env.NEXT_PUBLIC_SUPABASE_URL!,
-  process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
-  {
-    auth: {
-      autoRefreshToken: true,
-      persistSession: true,
-      detectSessionInUrl: false // Disable URL session detection for login
-    }
-  }
-)
 
 export default function LoginPage() {
   const router = useRouter()
@@ -36,6 +23,9 @@ export default function LoginPage() {
     setError("")
 
     try {
+      // Create browser client that properly syncs cookies with server
+      const supabase = createSupabaseBrowserClient()
+      
       console.log("[LOGIN] Starting login process...")
 
       // Step 1: Sign in with Supabase
@@ -90,13 +80,36 @@ export default function LoginPage() {
     }
   }
 
-  const handleGoogleSignIn = () => {
-    alert("Google sign-in will be available soon")
+  const handleGoogleSignIn = async () => {
+    setLoading(true)
+    setError("")
+
+    try {
+      const supabase = createSupabaseBrowserClient()
+      
+      const { error } = await supabase.auth.signInWithOAuth({
+        provider: 'google',
+        options: {
+          redirectTo: `${window.location.origin}/auth/callback`,
+        },
+      })
+
+      if (error) {
+        console.error("[LOGIN] Google sign-in error:", error)
+        setError("Google sign-in failed. Please try again.")
+        setLoading(false)
+      }
+      // If successful, Supabase will redirect to Google
+    } catch (err: any) {
+      console.error("[LOGIN] Google sign-in error:", err)
+      setError("An unexpected error occurred")
+      setLoading(false)
+    }
   }
 
   return (
-    <section className="flex min-h-screen bg-gradient-to-br from-slate-900 via-emerald-950/30 to-slate-900 px-4 py-16 md:py-32">
-      <div className="max-w-md m-auto h-fit w-full bg-white/10 backdrop-blur-xl border border-white/20 rounded-2xl shadow-2xl p-6">
+    <section className="flex min-h-screen bg-gradient-to-br from-emerald-50 via-teal-50 to-emerald-100/40 px-4 py-16 md:py-32">
+      <div className="max-w-md m-auto h-fit w-full bg-white/60 backdrop-blur-xl border border-white/30 rounded-2xl shadow-2xl p-6">
         <div>
           <Link
             href="/"

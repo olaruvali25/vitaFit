@@ -170,8 +170,8 @@ export default function PhoneVerificationPage() {
 
   if (!pendingSignup) {
     return (
-      <section className="flex min-h-screen bg-gradient-to-br from-slate-900 via-emerald-950/30 to-slate-900 px-4 py-16 md:py-32">
-        <div className="max-w-md m-auto w-full text-center text-white">
+      <section className="flex min-h-screen bg-gradient-to-br from-emerald-50 via-teal-50 to-emerald-100/40 px-4 py-16 md:py-32">
+        <div className="max-w-md m-auto w-full text-center text-gray-900">
           <LogoIcon className="mx-auto mb-4" />
           <p>Loading...</p>
         </div>
@@ -180,16 +180,16 @@ export default function PhoneVerificationPage() {
   }
 
   return (
-    <section className="flex min-h-screen bg-gradient-to-br from-slate-900 via-emerald-950/30 to-slate-900 px-4 py-16 md:py-32">
+    <section className="flex min-h-screen bg-gradient-to-br from-emerald-50 via-teal-50 to-emerald-100/40 px-4 py-16 md:py-32">
       <form
         onSubmit={handleSubmit}
-        className="bg-white/10 backdrop-blur-xl border border-white/20 m-auto h-fit w-full max-w-sm overflow-hidden rounded-2xl shadow-2xl"
+        className="bg-white/60 backdrop-blur-xl border border-white/30 m-auto h-fit w-full max-w-sm overflow-hidden rounded-2xl shadow-2xl"
       >
         <div className="bg-white/5 -m-px rounded-2xl border border-white/20 p-8 pb-6">
           <div className="text-center">
-            <LogoIcon className="text-emerald-400 mx-auto mb-4" />
-            <h1 className="mb-1 mt-4 text-xl font-semibold text-white">Verify Your Phone</h1>
-            <p className="text-sm text-white/70">
+            <LogoIcon className="text-emerald-600 mx-auto mb-4" />
+            <h1 className="mb-1 mt-4 text-xl font-semibold text-gray-900">Verify Your Phone</h1>
+            <p className="text-sm text-gray-600">
               We sent a 6-digit code to {pendingSignup.phone}
             </p>
           </div>

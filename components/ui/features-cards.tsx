@@ -118,18 +118,9 @@ export default function FeaturesCards() {
   }
 
   return (
-    <section id="about" className="relative py-32 overflow-hidden scroll-mt-20">
-      {/* Green gradient background - fading from light green (same as reviews bottom) to LogoCloudTwo color at bottom with smooth blend */}
-      <div className="absolute inset-0">
-        <div className="absolute inset-0 bg-gradient-to-br from-emerald-50 via-teal-50 to-emerald-100/40"></div>
-        <div className="absolute inset-0 bg-gradient-to-b from-transparent via-emerald-100/60 via-green-100/50 via-green-950/30 via-green-950/40 via-green-950/50 via-green-950/30 via-green-950/20 to-slate-950"></div>
-        {/* Light green overlay at top - matches Reviews section bottom for seamless blending */}
-        <div className="absolute top-0 left-0 right-0 h-[15%] bg-gradient-to-b from-emerald-50/90 via-teal-50/80 via-emerald-100/60 to-transparent"></div>
-        <div className="absolute top-0 left-0 right-0 h-[15%] bg-gradient-to-b from-[#18c260]/[0.12] via-[#18c260]/[0.06] to-transparent"></div>
-        {/* Smooth blending overlay that transitions to LogoCloudTwo colors */}
-        <div className="absolute bottom-0 left-0 right-0 h-[50%] bg-gradient-to-t from-slate-950 via-green-950/20 via-green-950/10 to-transparent"></div>
-        <div className="absolute bottom-0 left-0 right-0 h-[50%] bg-gradient-to-t from-[#18c260]/[0.08] via-green-500/[0.05] via-green-500/[0.03] to-transparent"></div>
-      </div>
+    <section id="about" className="relative py-32 overflow-hidden scroll-mt-20 bg-transparent">
+      {/* Background removed - using global background */}
+      
       {/* Green shadows at corners */}
       <div className="pointer-events-none absolute top-0 left-0 w-96 h-96 bg-emerald-600/10 rounded-full blur-3xl -z-10" />
       <div className="pointer-events-none absolute top-0 right-0 w-96 h-96 bg-teal-600/10 rounded-full blur-3xl -z-10" />

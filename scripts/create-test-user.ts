@@ -1,47 +1,63 @@
-import { prisma } from '../lib/prisma'
-import bcrypt from 'bcryptjs'
+/**
+ * Create Test User Script - Supabase version
+ * 
+ * Usage: npx tsx scripts/create-test-user.ts
+ */
 
-async function main() {
-  const email = 'test@vitafit.com'
-  const password = 'test1234'
-  const name = 'Test User'
+import { createClient } from '@supabase/supabase-js'
 
-  // Check if user exists
-  const existing = await prisma.user.findUnique({
-    where: { email }
-  })
+async function createTestUser() {
+  const email = process.env.TEST_EMAIL || "test@vitafit.com"
+  const password = process.env.TEST_PASSWORD || "test123!"
 
-  if (existing) {
-    console.log('User already exists:', email)
-    console.log('Password:', password)
-    return
+  const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL
+  const supabaseServiceKey = process.env.SUPABASE_SERVICE_ROLE_KEY
+
+  if (!supabaseUrl || !supabaseServiceKey) {
+    console.error("❌ Missing Supabase environment variables")
+    process.exit(1)
   }
 
-  // Hash password
-  const passwordHash = await bcrypt.hash(password, 12)
-
-  // Create user
-  const user = await prisma.user.create({
-    data: {
-      name,
-      email,
-      passwordHash,
-      role: 'ADMIN',
-    }
+  const supabase = createClient(supabaseUrl, supabaseServiceKey, {
+    auth: { autoRefreshToken: false, persistSession: false }
   })
 
-  console.log('✅ User created successfully!')
-  console.log('Email:', email)
-  console.log('Password:', password)
-  console.log('User ID:', user.id)
+  console.log("Creating test user...")
+  console.log(`Email: ${email}`)
 
-  // Initialize free trial
-  const { initializeFreeTrial } = await import('../lib/membership')
-  await initializeFreeTrial(user.id)
-  console.log('✅ Free trial initialized')
+  try {
+    const { data, error } = await supabase.auth.admin.createUser({
+      email,
+      password,
+      email_confirm: true,
+    })
+
+    if (error) {
+      if (error.message.includes('already been registered')) {
+        console.log("✅ Test user already exists")
+      } else {
+        throw error
+      }
+    } else if (data.user) {
+      await supabase.from('profiles').upsert({
+        id: data.user.id,
+        email,
+        phone: null,
+        phone_verified: true,
+        plan: 'free trial',
+        profiles_limit: 1,
+      }, { onConflict: 'id' })
+
+      console.log("✅ Test user created successfully!")
+    }
+
+    console.log(`\nLogin with: ${email} / ${password}`)
+  } catch (error: any) {
+    console.error("❌ Error:", error.message)
+    process.exit(1)
+  }
 }
 
-main()
-  .catch(console.error)
-  .finally(() => prisma.$disconnect())
-
+createTestUser()
+  .then(() => process.exit(0))
+  .catch(() => process.exit(1))

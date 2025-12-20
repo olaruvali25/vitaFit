@@ -13,7 +13,7 @@ export type Database = {
         Row: {
           id: string
           email: string
-          phone: string
+          phone: string | null
           phone_verified: boolean
           plan: 'free trial' | 'pro' | 'plus' | 'family'
           profiles_limit: number
@@ -22,7 +22,7 @@ export type Database = {
         Insert: {
           id: string
           email: string
-          phone: string
+          phone?: string | null
           phone_verified?: boolean
           plan?: 'free trial' | 'pro' | 'plus' | 'family'
           profiles_limit?: number
@@ -31,7 +31,7 @@ export type Database = {
         Update: {
           id?: string
           email?: string
-          phone?: string
+          phone?: string | null
           phone_verified?: boolean
           plan?: 'free trial' | 'pro' | 'plus' | 'family'
           profiles_limit?: number
@@ -42,6 +42,77 @@ export type Database = {
             foreignKeyName: "profiles_id_fkey"
             columns: ["id"]
             isOneToOne: true
+            referencedRelation: "users"
+            referencedColumns: ["id"]
+          }
+        ]
+      }
+      app_profiles: {
+        Row: {
+          id: string
+          user_id: string
+          name: string
+          profile_picture: string | null
+          age: number | null
+          gender: string | null
+          height_cm: number | null
+          weight_kg: number | null
+          goal: string | null
+          goal_weight: number | null
+          activity_level: string | null
+          timeline: string | null
+          dietary_restrictions: string | null
+          workout_days: string | null
+          workout_duration: string | null
+          meal_prep_duration: string | null
+          created_at: string
+          updated_at: string
+        }
+        Insert: {
+          id?: string
+          user_id: string
+          name: string
+          profile_picture?: string | null
+          age?: number | null
+          gender?: string | null
+          height_cm?: number | null
+          weight_kg?: number | null
+          goal?: string | null
+          goal_weight?: number | null
+          activity_level?: string | null
+          timeline?: string | null
+          dietary_restrictions?: string | null
+          workout_days?: string | null
+          workout_duration?: string | null
+          meal_prep_duration?: string | null
+          created_at?: string
+          updated_at?: string
+        }
+        Update: {
+          id?: string
+          user_id?: string
+          name?: string
+          profile_picture?: string | null
+          age?: number | null
+          gender?: string | null
+          height_cm?: number | null
+          weight_kg?: number | null
+          goal?: string | null
+          goal_weight?: number | null
+          activity_level?: string | null
+          timeline?: string | null
+          dietary_restrictions?: string | null
+          workout_days?: string | null
+          workout_duration?: string | null
+          meal_prep_duration?: string | null
+          created_at?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "app_profiles_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
             referencedRelation: "users"
             referencedColumns: ["id"]
           }

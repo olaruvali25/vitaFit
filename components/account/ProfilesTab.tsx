@@ -167,7 +167,7 @@ export function ProfilesTab() {
   if (loading) {
     return (
       <div className="flex items-center justify-center min-h-[400px]">
-        <div className="text-white">Loading profiles...</div>
+        <div className="text-gray-900">Loading profiles...</div>
       </div>
     )
   }
@@ -224,7 +224,7 @@ export function ProfilesTab() {
   if (profiles.length === 0 && !showAddButton) {
     return (
       <div className="flex flex-col items-center justify-center min-h-[400px] space-y-4">
-        <p className="text-white/70 text-lg">No profiles yet. Create your first profile to get started.</p>
+        <p className="text-gray-600 text-lg">No profiles yet. Create your first profile to get started.</p>
         <Button
           onClick={handleAddProfileClick}
           className="bg-emerald-500 hover:bg-emerald-600 text-white"
@@ -240,20 +240,20 @@ export function ProfilesTab() {
     <div className="w-full relative">
       {/* If no profiles yet, prompt to create main profile automatically */}
       {profiles.length === 0 && !showAddModal && (
-        <div className="fixed inset-0 z-40 flex items-center justify-center bg-black/50 backdrop-blur-sm">
-          <div className="bg-slate-900 border border-white/20 rounded-2xl p-6 max-w-md w-full mx-4">
+        <div className="fixed inset-0 z-40 flex items-center justify-center bg-black/20 backdrop-blur-sm">
+          <div className="bg-white/80 border border-emerald-200/50 backdrop-blur-xl rounded-2xl p-6 max-w-md w-full mx-4 shadow-2xl">
             <div className="flex items-center justify-between mb-4">
-              <h2 className="text-2xl font-semibold text-white">Create Your Profile</h2>
+              <h2 className="text-2xl font-semibold text-gray-900">Create Your Profile</h2>
               <button
                 onClick={() => {
                   setShowAddModal(true)
                 }}
-                className="text-white/70 hover:text-white"
+                className="text-gray-500 hover:text-gray-900"
               >
                 <Plus className="w-5 h-5" />
               </button>
             </div>
-            <p className="text-white/70 text-sm">
+            <p className="text-gray-600 text-sm">
               Enter your name to set up your main profile.
             </p>
             <div className="mt-4">
@@ -284,31 +284,31 @@ export function ProfilesTab() {
 
       {/* Add Profile Modal */}
       {showAddModal && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm">
-          <div className="bg-slate-900 border border-white/20 rounded-2xl p-6 max-w-md w-full mx-4">
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/20 backdrop-blur-sm">
+          <div className="bg-white/80 border border-emerald-200/50 backdrop-blur-xl rounded-2xl p-6 max-w-md w-full mx-4 shadow-2xl">
             <div className="flex items-center justify-between mb-4">
-              <h2 className="text-2xl font-semibold text-white">Add New Profile</h2>
+              <h2 className="text-2xl font-semibold text-gray-900">Add New Profile</h2>
               <button
                 onClick={() => {
                   setShowAddModal(false)
                   setNewProfileName("")
                   setError("")
                 }}
-                className="text-white/70 hover:text-white"
+                className="text-gray-500 hover:text-gray-900"
               >
                 <X className="w-5 h-5" />
               </button>
             </div>
 
             {error && (
-              <div className="mb-4 rounded-lg bg-red-500/10 border border-red-500/20 p-3 text-sm text-red-400">
+              <div className="mb-4 rounded-lg bg-red-500/10 border border-red-500/20 p-3 text-sm text-red-600">
                 {error}
               </div>
             )}
 
             <div className="space-y-4">
               <div>
-                <Label htmlFor="profile-name" className="text-white">
+                <Label htmlFor="profile-name" className="text-gray-700">
                   Profile Name
                 </Label>
                 <Input
@@ -316,7 +316,7 @@ export function ProfilesTab() {
                   value={newProfileName}
                   onChange={(e) => setNewProfileName(e.target.value)}
                   placeholder="Enter profile name"
-                  className="mt-2 bg-white/5 border-white/20 text-white"
+                  className="mt-2 bg-white/50 border-gray-200 text-gray-900"
                   onKeyDown={(e) => {
                     if (e.key === "Enter") {
                       handleCreateProfile()
@@ -339,7 +339,7 @@ export function ProfilesTab() {
                     setNewProfileName("")
                     setError("")
                   }}
-                  className="border-white/20 text-black hover:bg-emerald-500"
+                  className="border-gray-200 text-gray-600 hover:bg-gray-50"
                 >
                   Cancel
                 </Button>
@@ -351,13 +351,13 @@ export function ProfilesTab() {
 
       {/* Delete Confirmation Modal */}
       {deleteConfirmId && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm">
-          <div className="bg-slate-900 border border-white/20 rounded-2xl p-6 max-w-md w-full mx-4">
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/20 backdrop-blur-sm">
+          <div className="bg-white/80 border border-emerald-200/50 backdrop-blur-xl rounded-2xl p-6 max-w-md w-full mx-4 shadow-2xl">
             <div className="flex items-center justify-between mb-4">
-              <h2 className="text-2xl font-semibold text-white">Delete Profile</h2>
+              <h2 className="text-2xl font-semibold text-gray-900">Delete Profile</h2>
               <button
                 onClick={() => setDeleteConfirmId(null)}
-                className="text-white/70 hover:text-white"
+                className="text-gray-500 hover:text-gray-900"
                 disabled={isDeleting}
               >
                 <X className="w-5 h-5" />
@@ -365,10 +365,10 @@ export function ProfilesTab() {
             </div>
 
             <div className="space-y-4">
-              <p className="text-white/80 text-base">
+              <p className="text-gray-700 text-base">
                 Are you sure you want to delete this profile?
               </p>
-              <p className="text-white/60 text-sm">
+              <p className="text-gray-500 text-sm">
                 This action cannot be undone. All plans and progress data associated with this profile will be permanently deleted.
               </p>
 
@@ -384,7 +384,7 @@ export function ProfilesTab() {
                   variant="outline"
                   onClick={() => setDeleteConfirmId(null)}
                   disabled={isDeleting}
-                  className="border-white/20 text-white hover:bg-white/10"
+                  className="border-gray-200 text-gray-600 hover:bg-gray-50"
                 >
                   Cancel
                 </Button>

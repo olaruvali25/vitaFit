@@ -30,15 +30,15 @@ export function StarsBackground() {
     window.addEventListener("resize", resizeCanvas)
 
     const stars: Star[] = []
-    const numStars = 60
+    const numStars = 100 // Increased number of stars
 
     // Create stars
     for (let i = 0; i < numStars; i++) {
       stars.push({
         x: Math.random() * canvas.width,
         y: Math.random() * canvas.height,
-        radius: Math.random() * 1 + 0.3,
-        opacity: 0.15 + Math.random() * 0.2,
+        radius: Math.random() * 1.5 + 0.5,
+        opacity: 0.2 + Math.random() * 0.3, // Increased opacity
         twinkleSpeed: 0.001 + Math.random() * 0.002,
         twinkleOffset: Math.random() * Math.PI * 2,
       })
@@ -54,8 +54,8 @@ export function StarsBackground() {
         const twinkle = Math.sin(Date.now() * star.twinkleSpeed + star.twinkleOffset) * 0.3 + 0.7
         const currentOpacity = star.opacity * twinkle
 
-        // Very pale green color - subtle
-        ctx.fillStyle = `rgba(200, 240, 220, ${currentOpacity})`
+        // Black color for visibility on light background
+        ctx.fillStyle = `rgba(0, 0, 0, ${currentOpacity})`
         ctx.beginPath()
         ctx.arc(star.x, star.y, star.radius, 0, Math.PI * 2)
         ctx.fill()

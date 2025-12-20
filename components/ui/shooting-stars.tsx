@@ -67,22 +67,31 @@ export function ShootingStars() {
         x,
         y,
         angle,
-        speed: 0.3 + Math.random() * 0.5,
-        length: 20 + Math.random() * 30,
-        opacity: 0.2 + Math.random() * 0.3,
+        speed: 0.05 + Math.random() * 0.05, // Extremely slow speed
+        length: 15 + Math.random() * 20, // Shorter length
+        opacity: 0.12 + Math.random() * 0.1, // Very low opacity
         lastReset: Date.now(),
       }
     }
 
-    const initStars = () => {
-      // Start with 2 stars immediately
-      starsRef.current = [createStar(), createStar()]
-    }
+    // Start with empty array - no stars initially
+    starsRef.current = []
 
-    initStars()
+    // Add first star after 10 seconds delay
+    setTimeout(() => {
+      const initialStar = createStar()
+      initialStar.lastReset = Date.now()
+      starsRef.current = [initialStar]
+    }, 10000)
 
     const animate = () => {
       ctx.clearRect(0, 0, canvas.width, canvas.height)
+
+      // Only process if we have stars (might be empty initially)
+      if (starsRef.current.length === 0) {
+        animationFrameRef.current = requestAnimationFrame(animate)
+        return
+      }
 
       starsRef.current.forEach((star, index) => {
         // Update position
@@ -97,13 +106,13 @@ export function ShootingStars() {
           star.y - Math.sin(star.angle) * star.length
         )
 
-        // Pale green color - visible
-        gradient.addColorStop(0, `rgba(200, 240, 220, ${star.opacity})`)
-        gradient.addColorStop(0.5, `rgba(220, 245, 230, ${star.opacity * 0.4})`)
-        gradient.addColorStop(1, "rgba(230, 250, 240, 0)")
+        // Black color for visibility on light background
+        gradient.addColorStop(0, `rgba(0, 0, 0, ${star.opacity})`)
+        gradient.addColorStop(0.5, `rgba(0, 0, 0, ${star.opacity * 0.4})`)
+        gradient.addColorStop(1, "rgba(0, 0, 0, 0)")
 
         ctx.strokeStyle = gradient
-        ctx.lineWidth = 1.5
+        ctx.lineWidth = 0.5 // Extremely thin line
         ctx.beginPath()
         ctx.moveTo(star.x, star.y)
         ctx.lineTo(
@@ -112,30 +121,32 @@ export function ShootingStars() {
         )
         ctx.stroke()
 
-        // Draw star head/point - visible
-        const starGradient = ctx.createRadialGradient(star.x, star.y, 0, star.x, star.y, 2.5)
-        starGradient.addColorStop(0, `rgba(200, 240, 220, ${star.opacity * 0.8})`)
-        starGradient.addColorStop(0.5, `rgba(220, 245, 230, ${star.opacity * 0.5})`)
-        starGradient.addColorStop(1, "rgba(230, 250, 240, 0)")
+        // Draw star head/point - Black (very subtle, very small)
+        const starGradient = ctx.createRadialGradient(star.x, star.y, 0, star.x, star.y, 1)
+        starGradient.addColorStop(0, `rgba(0, 0, 0, ${star.opacity * 0.5})`)
+        starGradient.addColorStop(0.5, `rgba(0, 0, 0, ${star.opacity * 0.2})`)
+        starGradient.addColorStop(1, "rgba(0, 0, 0, 0)")
         
         ctx.fillStyle = starGradient
         ctx.beginPath()
-        ctx.arc(star.x, star.y, 2, 0, Math.PI * 2)
+        ctx.arc(star.x, star.y, 1, 0, Math.PI * 2)
         ctx.fill()
 
-        // Reset star if it goes off screen - with delay to make them more rare
+        // Reset star if it goes off screen - with delay to make them very rare
         if (
           star.x < -100 ||
           star.x > canvas.width + 100 ||
           star.y < -100 ||
           star.y > canvas.height + 100
         ) {
-          // Reset star if it goes off screen - quicker reappearance
+          // Reset star if it goes off screen - very slow reappearance (30+ seconds)
           const now = Date.now()
-          if (!star.lastReset || (now - star.lastReset) > 3000) {
+          if (!star.lastReset || (now - star.lastReset) > 30000) {
+            // Only allow 1 star at a time - remove all others first
+            starsRef.current = []
             const newStar = createStar()
             newStar.lastReset = now
-            starsRef.current[index] = newStar
+            starsRef.current.push(newStar)
           }
         }
       })

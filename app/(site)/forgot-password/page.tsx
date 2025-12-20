@@ -44,10 +44,10 @@ export default function ForgotPasswordPage() {
   }
 
   return (
-    <section className="flex min-h-screen bg-gradient-to-br from-slate-900 via-emerald-950/30 to-slate-900 px-4 py-16 md:py-32">
+    <section className="flex min-h-screen bg-gradient-to-br from-emerald-50 via-teal-50 to-emerald-100/40 px-4 py-16 md:py-32">
       <form
         onSubmit={handleSubmit}
-        className="bg-white/10 backdrop-blur-xl border border-white/20 m-auto h-fit w-full max-w-sm overflow-hidden rounded-2xl shadow-2xl"
+        className="bg-white/60 backdrop-blur-xl border border-white/30 m-auto h-fit w-full max-w-sm overflow-hidden rounded-2xl shadow-2xl"
       >
         <div className="bg-white/5 -m-px rounded-2xl border border-white/20 p-8 pb-6">
           <div>

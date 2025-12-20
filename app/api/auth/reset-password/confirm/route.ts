@@ -1,15 +1,15 @@
 import { NextRequest, NextResponse } from "next/server"
-import { prisma } from "@/lib/prisma"
-import bcrypt from "bcryptjs"
+import { createServerClient } from '@supabase/ssr'
+import { cookies } from 'next/headers'
 
 export async function POST(request: NextRequest) {
   try {
     const body = await request.json()
-    const { token, password } = body
+    const { password } = body
 
-    if (!token || !password) {
+    if (!password) {
       return NextResponse.json(
-        { error: "Token and password are required" },
+        { error: "Password is required" },
         { status: 400 }
       )
     }
@@ -21,48 +21,45 @@ export async function POST(request: NextRequest) {
       )
     }
 
-    // Find reset token
-    const resetToken = await prisma.passwordResetToken.findUnique({
-      where: { token },
+    // Create Supabase client with cookies (user should have a valid session from the reset link)
+    const cookieStore = await cookies()
+    
+    const supabase = createServerClient(
+      process.env.NEXT_PUBLIC_SUPABASE_URL!,
+      process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
+      {
+        cookies: {
+          get(name: string) {
+            return cookieStore.get(name)?.value
+          },
+          set(name: string, value: string, options: any) {
+            cookieStore.set({ name, value, ...options })
+          },
+          remove(name: string, options: any) {
+            cookieStore.set({ name, value: '', ...options })
+          },
+        },
+      }
+    )
+
+    // Update the user's password
+    const { error } = await supabase.auth.updateUser({
+      password: password
     })
 
-    if (!resetToken) {
+    if (error) {
+      console.error("Password update error:", error)
       return NextResponse.json(
-        { error: "Invalid or expired reset token" },
+        { error: error.message || "Failed to update password" },
         { status: 400 }
       )
     }
-
-    // Check if token is expired
-    if (new Date() > resetToken.expires) {
-      await prisma.passwordResetToken.delete({
-        where: { token },
-      })
-      return NextResponse.json(
-        { error: "Reset token has expired" },
-        { status: 400 }
-      )
-    }
-
-    // Hash new password
-    const passwordHash = await bcrypt.hash(password, 12)
-
-    // Update user password
-    await prisma.user.update({
-      where: { id: resetToken.userId },
-      data: { passwordHash },
-    })
-
-    // Delete used token
-    await prisma.passwordResetToken.delete({
-      where: { token },
-    })
 
     return NextResponse.json(
       { message: "Password reset successfully" },
       { status: 200 }
     )
-  } catch (error) {
+  } catch (error: any) {
     console.error("Reset password confirm error:", error)
     return NextResponse.json(
       { error: "Failed to reset password" },
@@ -70,4 +67,3 @@ export async function POST(request: NextRequest) {
     )
   }
 }
-

@@ -1,44 +1,43 @@
 import { NextRequest, NextResponse } from "next/server"
-import { prisma } from "@/lib/prisma"
-import { randomBytes } from "crypto"
+import { createClient } from '@supabase/supabase-js'
+import { z } from "zod"
 
-export async function POST(request: NextRequest) {
+const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL!
+const supabaseServiceKey = process.env.SUPABASE_SERVICE_ROLE_KEY!
+
+const schema = z.object({
+  email: z.string().email(),
+})
+
+export async function POST(req: NextRequest) {
   try {
-    const { email } = await request.json()
-
-    if (!email) {
-      return NextResponse.json({ error: "Email is required" }, { status: 400 })
+    const body = await req.json().catch(() => null)
+    const parsed = schema.safeParse(body)
+    
+    if (!parsed.success) {
+      // Always return generic success for security
+      return NextResponse.json({ message: "If the email exists, a reset link was sent." })
     }
 
-    const user = await prisma.user.findUnique({ where: { email } })
+    const email = parsed.data.email.trim().toLowerCase()
 
-    if (!user) {
-      return NextResponse.json(
-        { message: "If an account exists, a password reset link has been sent" },
-        { status: 200 }
-      )
-    }
-
-    const token = randomBytes(32).toString("hex")
-    const expiresAt = new Date(Date.now() + 60 * 60 * 1000)
-
-    await prisma.passwordReset.create({
-      data: {
-        userId: user.id,
-        code: token,
-        expiresAt,
-      },
+    const supabase = createClient(supabaseUrl, supabaseServiceKey, {
+      auth: {
+        autoRefreshToken: false,
+        persistSession: false
+      }
     })
 
-    const resetLink = `${process.env.NEXT_PUBLIC_APP_URL}/reset-password?code=${token}`
+    const origin = req.headers.get('origin') || process.env.NEXT_PUBLIC_APP_URL || 'http://localhost:3000'
 
-    if (process.env.NODE_ENV === "development") {
-      console.log("Password reset link:", resetLink)
-    }
+    await supabase.auth.resetPasswordForEmail(email, {
+      redirectTo: `${origin}/reset-password`,
+    })
 
-    return NextResponse.json({ message: "Reset link sent" })
-  } catch (err) {
-    console.error(err)
-    return NextResponse.json({ error: "Internal error" }, { status: 500 })
+    // Always return generic success for security
+    return NextResponse.json({ message: "If the email exists, a reset link was sent." })
+  } catch (error) {
+    console.error("Password reset request error:", error)
+    return NextResponse.json({ message: "If the email exists, a reset link was sent." })
   }
 }

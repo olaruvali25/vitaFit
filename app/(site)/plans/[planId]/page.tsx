@@ -96,10 +96,10 @@ export default function PlanPage() {
 
   if (status === "loading" || loading) {
     return (
-      <div className="container px-4 py-16 md:py-24">
+      <div className="container px-4 py-16 md:py-24 bg-gradient-to-br from-emerald-50 via-teal-50 to-emerald-100/40 min-h-screen">
         <div className="mx-auto max-w-6xl">
           <div className="flex items-center justify-center min-h-[400px]">
-            <Loader2 className="h-8 w-8 animate-spin text-[#18c260]" />
+            <Loader2 className="h-8 w-8 animate-spin text-emerald-600" />
           </div>
         </div>
       </div>
@@ -110,9 +110,9 @@ export default function PlanPage() {
     return (
       <div className="container px-4 py-16 md:py-24">
         <div className="mx-auto max-w-6xl">
-          <Card className="p-8 text-center">
-            <h2 className="text-2xl font-bold mb-4 text-white">Plan Not Found</h2>
-            <p className="text-white/70 mb-6">{error || "The plan you're looking for doesn't exist."}</p>
+          <Card className="p-8 text-center bg-white/60 backdrop-blur-xl border-white/30">
+            <h2 className="text-2xl font-bold mb-4 text-gray-900">Plan Not Found</h2>
+            <p className="text-gray-600 mb-6">{error || "The plan you're looking for doesn't exist."}</p>
             <Button onClick={() => router.push("/account")}>Back to Account</Button>
           </Card>
         </div>
@@ -132,35 +132,35 @@ export default function PlanPage() {
           <Button
             variant="ghost"
             onClick={() => router.push("/account")}
-            className="mb-4"
+            className="mb-4 text-gray-600 hover:text-gray-900"
           >
             ← Back to Account
           </Button>
-          <h1 className="text-3xl md:text-4xl font-bold mb-2 text-white">
+          <h1 className="text-3xl md:text-4xl font-bold mb-2 text-gray-900">
             Welcome, {plan.profile.name}!
           </h1>
-          <p className="text-white/70">{plan.title}</p>
+          <p className="text-gray-600">{plan.title}</p>
         </div>
 
         {/* Daily Targets Cards */}
         {plan.caloriesTarget && plan.proteinTargetG && (
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-8">
-            <Card className="p-6 bg-gradient-to-br from-[#18c260]/10 to-[#18c260]/5 border-[#18c260]/20">
+            <Card className="p-6 bg-white/60 backdrop-blur-xl border-emerald-200/50 shadow-sm">
               <div className="flex items-center justify-between">
                 <div>
-                  <p className="text-sm text-white/70 mb-1">Daily Calories</p>
-                  <p className="text-3xl font-bold text-white">
+                  <p className="text-sm text-gray-500 mb-1">Daily Calories</p>
+                  <p className="text-3xl font-bold text-gray-900">
                     {Math.round(dailyCalories)} / {Math.round(plan.caloriesTarget)}
                   </p>
                 </div>
                 <div className="text-4xl">🔥</div>
               </div>
             </Card>
-            <Card className="p-6 bg-gradient-to-br from-[#18c260]/10 to-[#18c260]/5 border-[#18c260]/20">
+            <Card className="p-6 bg-white/60 backdrop-blur-xl border-emerald-200/50 shadow-sm">
               <div className="flex items-center justify-between">
                 <div>
-                  <p className="text-sm text-white/70 mb-1">Daily Protein</p>
-                  <p className="text-3xl font-bold text-white">
+                  <p className="text-sm text-gray-500 mb-1">Daily Protein</p>
+                  <p className="text-3xl font-bold text-gray-900">
                     {Math.round(dailyProtein)}g / {Math.round(plan.proteinTargetG)}g
                   </p>
                 </div>

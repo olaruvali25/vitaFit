@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { validatePhoneNumber, getPhoneNumberRequirements } from '@/lib/supabase-auth'
+import { validatePhoneNumber } from '@/lib/supabase-auth'
 import { supabaseAdmin } from '@/lib/supabase'
 
 export async function POST(request: NextRequest) {
@@ -45,36 +45,24 @@ export async function POST(request: NextRequest) {
       )
     }
 
-    // For testing: allow signup without enforcing phone verification.
-    // Use Supabase Admin client to create a confirmed user and create a profile row so the account
-    // immediately exists in Supabase and can be used for testing.
-    // If Supabase admin client not configured, fallback to local storage for testing
+    // Check Supabase admin client
     if (!supabaseAdmin) {
-      try {
-        const { createLocalUser } = await import('@/lib/local-auth')
-        const user = await createLocalUser(email, password, phone || undefined)
-        return NextResponse.json({
-          message: 'Signup successful (local testing mode). Account created locally.',
-          user
-        }, { status: 200 })
-      } catch (e: any) {
-        console.error('Local signup error:', e)
-        return NextResponse.json({ error: e?.message || 'Failed to create local user' }, { status: 500 })
-      }
+      return NextResponse.json(
+        { error: 'Supabase is not configured. Please set up environment variables.' },
+        { status: 500 }
+      )
     }
 
-    // If phone is provided, validate its format, but do not require verification.
+    // Validate phone format if provided
     if (phone && !validatePhoneNumber(phone)) {
       return NextResponse.json(
-        {
-          error: 'Invalid phone number format. Provide E.164 (e.g., +40712345678) or leave blank for testing.'
-        },
+        { error: 'Invalid phone number format. Use E.164 format (e.g., +40712345678)' },
         { status: 400 }
       )
     }
 
-    // Create confirmed user via Admin API so email/phone are treated as verified for testing.
-    const createRes = await supabaseAdmin.auth.admin.createUser({
+    // Create confirmed user via Admin API
+    const { data: createData, error: createError } = await supabaseAdmin.auth.admin.createUser({
       email,
       password,
       phone: phone || undefined,
@@ -82,35 +70,49 @@ export async function POST(request: NextRequest) {
       user_metadata: { phone: phone || null }
     })
 
-    if (createRes.error) {
-      console.error('Supabase admin createUser error:', createRes.error)
-      return NextResponse.json({ error: createRes.error.message || 'Failed to create user' }, { status: 500 })
+    if (createError) {
+      console.error('Supabase admin createUser error:', createError)
+      
+      // Handle specific errors
+      if (createError.message?.includes('already been registered')) {
+        return NextResponse.json(
+          { error: 'An account with this email already exists' },
+          { status: 400 }
+        )
+      }
+      
+      return NextResponse.json(
+        { error: createError.message || 'Failed to create user' },
+        { status: 500 }
+      )
     }
 
-    const createdUser = createRes.user
+    const createdUser = createData.user
 
-    // Ensure a profile exists for the user (create or upsert). Mark phone_verified true for testing.
-    try {
-      const { error: profileError } = await supabaseAdmin
-        .from('profiles')
-        .upsert({
-          id: createdUser?.id,
-          email,
-          phone: phone || null,
-          phone_verified: true,
-          plan: 'free trial',
-          profiles_limit: 1
-        }, { onConflict: 'id' })
+    // Create profile for the user
+    if (createdUser) {
+      try {
+        const { error: profileError } = await supabaseAdmin
+          .from('profiles')
+          .upsert({
+            id: createdUser.id,
+            email,
+            phone: phone || null,
+            phone_verified: true, // Mark as verified for testing
+            plan: 'free trial',
+            profiles_limit: 1
+          }, { onConflict: 'id' })
 
-      if (profileError) {
-        console.error('Profile upsert error:', profileError)
+        if (profileError) {
+          console.error('Profile upsert error:', profileError)
+        }
+      } catch (e) {
+        console.error('Failed to upsert profile:', e)
       }
-    } catch (e) {
-      console.error('Failed to upsert profile:', e)
     }
 
     return NextResponse.json({
-      message: 'Signup successful (testing mode). Account created and confirmed.',
+      message: 'Account created successfully',
       user: createdUser ? {
         id: createdUser.id,
         email: createdUser.email,
@@ -121,18 +123,10 @@ export async function POST(request: NextRequest) {
   } catch (error: any) {
     console.error('Signup error:', error)
 
-    // Handle specific Supabase errors
     if (error.message?.includes('already registered')) {
       return NextResponse.json(
-        { error: 'An account with this phone number already exists' },
+        { error: 'An account with this email or phone number already exists' },
         { status: 400 }
-      )
-    }
-
-    if (error.message?.includes('Invalid login credentials')) {
-      return NextResponse.json(
-        { error: 'Invalid email or password' },
-        { status: 401 }
       )
     }
 

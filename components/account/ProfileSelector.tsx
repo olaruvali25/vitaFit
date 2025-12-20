@@ -45,7 +45,7 @@ export const ProfileSelector = ({
     >
       <div className="flex flex-col items-center w-full">
         {title && (
-          <h1 className="mb-2 text-2xl font-medium text-white md:text-3xl">
+          <h1 className="mb-2 text-2xl font-medium text-gray-900 md:text-3xl">
             {title}
           </h1>
         )}
@@ -82,7 +82,7 @@ export const ProfileSelector = ({
               
               {/* Profile name label below with crown for main profile */}
               <div className="flex items-center justify-center gap-1">
-                <p className="text-xs font-medium text-white/80 transition-all duration-300 group-hover:text-white text-center leading-tight">
+                <p className="text-xs font-medium text-gray-900 transition-all duration-300 group-hover:text-emerald-600 text-center leading-tight">
                   {profile.label}
                 </p>
                 {profile.isMain && (
@@ -91,11 +91,11 @@ export const ProfileSelector = ({
                     height="10"
                     viewBox="0 0 24 24"
                     fill="none"
-                    stroke="white"
+                    stroke="currentColor"
                     strokeWidth="2"
                     strokeLinecap="round"
                     strokeLinejoin="round"
-                    className="opacity-70"
+                    className="text-emerald-600"
                     aria-label="Main profile (holds subscription)"
                   >
                     <title>Main profile (holds subscription)</title>
@@ -112,7 +112,7 @@ export const ProfileSelector = ({
                     e.stopPropagation()
                     onDelete(profile.id)
                   }}
-                  className="mt-0 text-white/60 hover:text-red-500 transition-colors duration-200"
+                  className="mt-0 text-gray-400 hover:text-red-500 transition-colors duration-200"
                   aria-label={`Delete profile: ${profile.label}`}
                 >
                   <svg

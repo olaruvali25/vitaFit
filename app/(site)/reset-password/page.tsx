@@ -1,29 +1,64 @@
 "use client"
 
-import { useState, useEffect, Suspense } from "react"
-import { useSearchParams, useRouter } from "next/navigation"
+import { useState, useEffect, Suspense, useRef } from "react"
+import { useRouter, useSearchParams } from "next/navigation"
+import { createSupabaseBrowserClient } from '@/lib/supabase-browser'
 import { Button } from "@/components/ui/button"
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import Link from "next/link"
+import { LogoIcon } from "@/components/logo"
+import { Eye, EyeOff } from "lucide-react"
 
-function ResetPasswordPageContent() {
-  const searchParams = useSearchParams()
+function ResetPasswordContent() {
   const router = useRouter()
-  const token = searchParams.get("token")
-
+  const searchParams = useSearchParams()
   const [password, setPassword] = useState("")
   const [confirmPassword, setConfirmPassword] = useState("")
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState("")
   const [success, setSuccess] = useState(false)
+  const [showPassword, setShowPassword] = useState(false)
+  const [showConfirmPassword, setShowConfirmPassword] = useState(false)
+  const [isValidSession, setIsValidSession] = useState<boolean | null>(null)
+  const supabaseRef = useRef(createSupabaseBrowserClient())
 
+  // Check if we have a valid recovery session
   useEffect(() => {
-    if (!token) {
-      setError("Invalid reset token")
+    const supabase = supabaseRef.current
+    
+    const checkSession = async () => {
+      // Supabase will automatically handle the recovery token from URL
+      const { data: { session } } = await supabase.auth.getSession()
+      
+      if (session) {
+        setIsValidSession(true)
+      } else {
+        // Check if we're in a recovery flow (URL has access_token or type=recovery)
+        const hashParams = new URLSearchParams(window.location.hash.substring(1))
+        const accessToken = hashParams.get('access_token')
+        const type = hashParams.get('type')
+        
+        if (accessToken && type === 'recovery') {
+          // Let Supabase handle the session setup
+          setIsValidSession(true)
+        } else {
+          setIsValidSession(false)
+        }
+      }
     }
-  }, [token])
+
+    checkSession()
+
+    // Listen for auth state changes
+    const { data: { subscription } } = supabase.auth.onAuthStateChange((event, session) => {
+      if (event === 'PASSWORD_RECOVERY') {
+        setIsValidSession(true)
+      }
+    })
+
+    return () => subscription.unsubscribe()
+  }, [])
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
@@ -39,140 +74,193 @@ function ResetPasswordPageContent() {
       return
     }
 
-    if (!token) {
-      setError("Invalid reset token")
+    if (!/\d/.test(password)) {
+      setError("Password must contain at least one number")
+      return
+    }
+
+    if (!/[!@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?]/.test(password)) {
+      setError("Password must contain at least one special character")
       return
     }
 
     setLoading(true)
 
     try {
-      const response = await fetch("/api/auth/reset-password/confirm", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ token, password }),
+      const supabase = supabaseRef.current
+      const { error: updateError } = await supabase.auth.updateUser({
+        password: password
       })
 
-      const data = await response.json()
-
-      if (!response.ok) {
-        setError(data.error || "Failed to reset password")
-      } else {
-        setSuccess(true)
-        setTimeout(() => {
-          router.push("/login")
-        }, 2000)
+      if (updateError) {
+        throw updateError
       }
-    } catch (err) {
-      setError("Something went wrong. Please try again.")
+
+      setSuccess(true)
+      
+      // Redirect to login after 3 seconds
+      setTimeout(() => {
+        router.push("/login")
+      }, 3000)
+    } catch (err: any) {
+      console.error("Password reset error:", err)
+      setError(err.message || "Failed to reset password")
     } finally {
       setLoading(false)
     }
   }
 
+  if (isValidSession === null) {
+    return (
+      <section className="flex min-h-screen bg-gradient-to-br from-emerald-50 via-teal-50 to-emerald-100/40 px-4 py-16 md:py-32">
+        <div className="max-w-md m-auto w-full text-center text-gray-900">
+          <LogoIcon className="mx-auto mb-4" />
+          <p>Loading...</p>
+        </div>
+      </section>
+    )
+  }
+
+  if (isValidSession === false) {
+    return (
+      <section className="flex min-h-screen bg-gradient-to-br from-emerald-50 via-teal-50 to-emerald-100/40 px-4 py-16 md:py-32">
+        <div className="bg-white/60 backdrop-blur-xl border border-white/30 m-auto h-fit w-full max-w-sm overflow-hidden rounded-2xl shadow-2xl p-8 text-center">
+          <LogoIcon className="mx-auto mb-4 text-emerald-400" />
+          <h1 className="text-xl font-semibold text-white mb-4">Invalid or Expired Link</h1>
+          <p className="text-white/70 mb-6">
+            This password reset link is invalid or has expired. Please request a new one.
+          </p>
+          <Button asChild className="w-full bg-emerald-500 hover:bg-emerald-600 text-white">
+            <Link href="/forgot-password">Request New Link</Link>
+          </Button>
+        </div>
+      </section>
+    )
+  }
+
   if (success) {
     return (
-      <div className="container px-4 py-16 md:py-24">
-        <div className="mx-auto max-w-md">
-          <Card>
-            <CardContent className="py-12 text-center">
-              <div className="rounded-full bg-emerald-500/10 w-16 h-16 flex items-center justify-center mx-auto mb-4">
-                <svg
-                  className="h-8 w-8 text-emerald-500"
-                  fill="none"
-                  stroke="currentColor"
-                  viewBox="0 0 24 24"
-                >
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    strokeWidth={2}
-                    d="M5 13l4 4L19 7"
-                  />
-                </svg>
-              </div>
-              <h2 className="text-2xl font-semibold mb-2">Password Reset Successful</h2>
-              <p className="text-muted-foreground mb-4">
-                Your password has been reset. Redirecting to login...
-              </p>
-              <Button asChild>
-                <Link href="/login">Go to Login</Link>
-              </Button>
-            </CardContent>
-          </Card>
+      <section className="flex min-h-screen bg-gradient-to-br from-emerald-50 via-teal-50 to-emerald-100/40 px-4 py-16 md:py-32">
+        <div className="bg-white/60 backdrop-blur-xl border border-white/30 m-auto h-fit w-full max-w-sm overflow-hidden rounded-2xl shadow-2xl p-8 text-center">
+          <LogoIcon className="mx-auto mb-4 text-emerald-400" />
+          <h1 className="text-xl font-semibold text-white mb-4">Password Reset Successful!</h1>
+          <p className="text-white/70 mb-6">
+            Your password has been updated. Redirecting you to login...
+          </p>
+          <Button asChild className="w-full bg-emerald-500 hover:bg-emerald-600 text-white">
+            <Link href="/login">Go to Login</Link>
+          </Button>
         </div>
-      </div>
+      </section>
     )
   }
 
   return (
-    <div className="container px-4 py-16 md:py-24">
-      <div className="mx-auto max-w-md">
-        <Card>
-          <CardHeader className="text-center">
-            <CardTitle className="text-2xl">Set New Password</CardTitle>
-            <CardDescription>
-              Enter your new password below
-            </CardDescription>
-          </CardHeader>
-          <CardContent>
-            <form className="space-y-4" onSubmit={handleSubmit}>
-              {error && (
-                <div className="rounded-lg bg-red-500/10 border border-red-500/20 p-3 text-sm text-red-500">
-                  {error}
-                </div>
-              )}
-              <div className="space-y-2">
-                <Label htmlFor="password">New Password</Label>
+    <section className="flex min-h-screen bg-gradient-to-br from-emerald-50 via-teal-50 to-emerald-100/40 px-4 py-16 md:py-32">
+      <form
+        onSubmit={handleSubmit}
+        className="bg-white/60 backdrop-blur-xl border border-white/30 m-auto h-fit w-full max-w-sm overflow-hidden rounded-2xl shadow-2xl"
+      >
+        <div className="bg-white/5 -m-px rounded-2xl border border-white/20 p-8 pb-6">
+          <div>
+            <Link href="/" aria-label="go home" className="inline-block mb-4">
+              <LogoIcon className="text-emerald-400" />
+            </Link>
+            <h1 className="mb-1 mt-4 text-xl font-semibold text-white">Set New Password</h1>
+            <p className="text-sm text-white/70">Enter your new password below</p>
+          </div>
+
+          {error && (
+            <div className="mt-6 rounded-lg bg-red-500/20 border border-red-500/40 p-3 text-sm text-red-300">
+              {error}
+            </div>
+          )}
+
+          <div className="mt-6 space-y-6">
+            <div className="space-y-2">
+              <Label htmlFor="password" className="block text-sm text-white/90 font-medium">
+                New Password
+              </Label>
+              <div className="relative">
                 <Input
+                  type={showPassword ? "text" : "password"}
+                  required
                   id="password"
-                  type="password"
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
-                  required
+                  className="bg-white/5 border-white/20 text-white placeholder:text-white/50 focus:border-emerald-400 pr-10"
                   minLength={8}
                 />
-                <p className="text-xs text-muted-foreground">
-                  Must be at least 8 characters
-                </p>
+                <button
+                  type="button"
+                  onClick={() => setShowPassword(!showPassword)}
+                  className="absolute right-3 top-1/2 -translate-y-1/2 text-white/50 hover:text-white/70 transition-colors"
+                >
+                  {showPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
+                </button>
               </div>
-              <div className="space-y-2">
-                <Label htmlFor="confirmPassword">Confirm Password</Label>
+              <p className="text-xs text-white/50 mt-1">
+                Must be at least 8 characters, contain a number and special character
+              </p>
+            </div>
+
+            <div className="space-y-2">
+              <Label htmlFor="confirmPassword" className="block text-sm text-white/90 font-medium">
+                Confirm Password
+              </Label>
+              <div className="relative">
                 <Input
+                  type={showConfirmPassword ? "text" : "password"}
+                  required
                   id="confirmPassword"
-                  type="password"
                   value={confirmPassword}
                   onChange={(e) => setConfirmPassword(e.target.value)}
-                  required
+                  className="bg-white/5 border-white/20 text-white placeholder:text-white/50 focus:border-emerald-400 pr-10"
                 />
+                <button
+                  type="button"
+                  onClick={() => setShowConfirmPassword(!showConfirmPassword)}
+                  className="absolute right-3 top-1/2 -translate-y-1/2 text-white/50 hover:text-white/70 transition-colors"
+                >
+                  {showConfirmPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
+                </button>
               </div>
-              <Button type="submit" className="w-full" size="lg" disabled={loading || !token}>
-                {loading ? "Resetting..." : "Reset Password"}
-              </Button>
-            </form>
-            <div className="mt-6 text-center text-sm text-muted-foreground">
-              <Link href="/login" className="text-primary hover:underline">
-                Back to login
-              </Link>
             </div>
-          </CardContent>
-        </Card>
-      </div>
-    </div>
+
+            <Button
+              type="submit"
+              className="w-full bg-emerald-500 hover:bg-emerald-600 text-white"
+              disabled={loading}
+            >
+              {loading ? "Updating..." : "Update Password"}
+            </Button>
+          </div>
+        </div>
+
+        <div className="p-3">
+          <p className="text-white/70 text-center text-sm">
+            Remembered your password?{" "}
+            <Button asChild variant="link" className="px-2 text-emerald-400 hover:text-emerald-300">
+              <Link href="/login">Log in</Link>
+            </Button>
+          </p>
+        </div>
+      </form>
+    </section>
   )
 }
 
 export default function ResetPasswordPage() {
   return (
     <Suspense fallback={
-      <div className="container px-4 py-16 md:py-24">
-        <div className="mx-auto max-w-md text-center">
+      <section className="flex min-h-screen bg-gradient-to-br from-emerald-50 via-teal-50 to-emerald-100/40 px-4 py-16 md:py-32">
+        <div className="max-w-md m-auto w-full text-center text-gray-900">
+          <LogoIcon className="mx-auto mb-4" />
           <p>Loading...</p>
         </div>
-      </div>
+      </section>
     }>
-      <ResetPasswordPageContent />
+      <ResetPasswordContent />
     </Suspense>
   )
 }
-

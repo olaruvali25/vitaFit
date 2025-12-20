@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from "next/server"
 import { requireAuth } from "@/lib/auth-utils"
-import { deleteProfileForUser, getProfileForUser, updateProfileForUser } from "@/lib/profile-store"
+import { deleteProfileForUser, getProfileForUser, updateProfileForUser, countProfilesForUser } from "@/lib/profile-store"
 
 export async function GET(
   request: NextRequest,
@@ -9,7 +9,7 @@ export async function GET(
   try {
     const user = await requireAuth()
     const { id } = await params
-    const profile = getProfileForUser((user as any).id, id)
+    const profile = await getProfileForUser(user.id, id)
 
     if (!profile) {
       return NextResponse.json(
@@ -19,11 +19,11 @@ export async function GET(
     }
 
     return NextResponse.json(profile)
-  } catch (error) {
+  } catch (error: any) {
     console.error("Get profile error:", error)
     return NextResponse.json(
-      { error: "Failed to fetch profile" },
-      { status: 500 }
+      { error: error.message || "Failed to fetch profile" },
+      { status: error.statusCode || 500 }
     )
   }
 }
@@ -37,7 +37,7 @@ export async function PATCH(
     const { id } = await params
     const body = await request.json()
 
-    const updated = updateProfileForUser((user as any).id, id, {
+    const updated = await updateProfileForUser(user.id, id, {
       name: body.name,
       age: body.age ? parseInt(body.age) : null,
       gender: body.gender || null,
@@ -61,11 +61,11 @@ export async function PATCH(
     }
 
     return NextResponse.json(updated)
-  } catch (error) {
+  } catch (error: any) {
     console.error("Update profile error:", error)
     return NextResponse.json(
-      { error: "Failed to update profile" },
-      { status: 500 }
+      { error: error.message || "Failed to update profile" },
+      { status: error.statusCode || 500 }
     )
   }
 }
@@ -78,7 +78,16 @@ export async function DELETE(
     const user = await requireAuth()
     const { id } = await params
 
-    const ok = deleteProfileForUser((user as any).id, id)
+    // Check if this is the last profile
+    const profileCount = await countProfilesForUser(user.id)
+    if (profileCount <= 1) {
+      return NextResponse.json(
+        { error: "You must keep at least one profile" },
+        { status: 400 }
+      )
+    }
+
+    const ok = await deleteProfileForUser(user.id, id)
     if (!ok) {
       return NextResponse.json(
         { error: "Profile not found" },
@@ -87,12 +96,11 @@ export async function DELETE(
     }
 
     return NextResponse.json({ message: "Profile deleted successfully" })
-  } catch (error) {
+  } catch (error: any) {
     console.error("Delete profile error:", error)
     return NextResponse.json(
-      { error: "Failed to delete profile" },
-      { status: 500 }
+      { error: error.message || "Failed to delete profile" },
+      { status: error.statusCode || 500 }
     )
   }
 }
-

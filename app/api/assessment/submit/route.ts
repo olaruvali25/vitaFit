@@ -1,11 +1,9 @@
 import { NextRequest, NextResponse } from "next/server"
-import { getAuthSession } from "@/lib/auth-utils"
-import { prisma } from "@/lib/prisma"
+import { getAuthSession, requireAuth } from "@/lib/auth-utils"
+import { supabaseAdmin } from "@/lib/supabase"
 import type { AssessmentFormData } from "@/components/forms/AssessmentForm"
 
 const MAKE_WEBHOOK_URL = "https://hook.eu2.make.com/6gf31px9yw2lv6voo7oun6h7lfym3xqa"
-// Vercel automatically sets VERCEL_URL in production
-// Use NEXT_PUBLIC_APP_URL if set, otherwise VERCEL_URL, otherwise localhost
 const VITAFIT_API_BASE_URL = 
   process.env.NEXT_PUBLIC_APP_URL || 
   (process.env.VERCEL_URL ? `https://${process.env.VERCEL_URL}` : null) ||
@@ -14,10 +12,9 @@ const VITAFIT_API_BASE_URL =
 export async function POST(request: NextRequest) {
   try {
     // Check if user is authenticated
-    // Note: This endpoint should be accessible, but we check auth inside
-    let session
+    let user
     try {
-      session = await getAuthSession()
+      user = await requireAuth()
     } catch (error) {
       console.error("[Assessment Submit] Auth check error:", error)
       return NextResponse.json(
@@ -25,15 +22,8 @@ export async function POST(request: NextRequest) {
         { status: 401 }
       )
     }
-    
-    if (!session || !session.user) {
-      return NextResponse.json(
-        { error: "Authentication required. Please sign in to continue." },
-        { status: 401 }
-      )
-    }
 
-    const userId = (session.user as any).id
+    const userId = user.id
     const body = await request.json()
     const formData = body as AssessmentFormData
 
@@ -45,12 +35,12 @@ export async function POST(request: NextRequest) {
       )
     }
 
-    // Parse dietary restrictions (comma-separated string to array)
+    // Parse dietary restrictions
     const dietaryRestrictions = formData.dietaryRestrictions
       ? formData.dietaryRestrictions.split(",").map((r) => r.trim()).filter(Boolean)
       : []
 
-    // Parse food preferences from activity level and other fields
+    // Parse food preferences
     const foodPreferences: string[] = []
     if (formData.activityLevel?.toLowerCase().includes("active")) {
       foodPreferences.push("high-protein")
@@ -59,82 +49,93 @@ export async function POST(request: NextRequest) {
       foodPreferences.push("simple", "easy-to-cook")
     }
 
-    // Create or find user profile
-    let profile = await prisma.profile.findFirst({
-      where: {
-        userId,
-        name: formData.fullName,
-      },
-    })
+    // Find existing profile for this user with this name
+    const { data: existingProfile } = await supabaseAdmin
+      .from('app_profiles')
+      .select('*')
+      .eq('user_id', userId)
+      .eq('name', formData.fullName)
+      .single()
 
-    if (!profile) {
-      // Default profile picture URL
-      const defaultProfilePicture = "https://api.dicebear.com/7.x/avataaars/svg?seed=" + formData.fullName
-      
+    let profile
+
+    if (!existingProfile) {
       // Create new profile
-      profile = await prisma.profile.create({
-        data: {
-          userId,
+      const profilePicture = `https://api.dicebear.com/7.x/avataaars/svg?seed=${encodeURIComponent(formData.fullName)}`
+      
+      const { data: newProfile, error: createError } = await supabaseAdmin
+        .from('app_profiles')
+        .insert({
+          user_id: userId,
           name: formData.fullName,
+          profile_picture: profilePicture,
           age: parseInt(formData.age) || null,
           gender: formData.gender || null,
-          heightCm: parseFloat(formData.heightCm) || null,
-          weightKg: parseFloat(formData.weightKg) || null,
+          height_cm: parseFloat(formData.heightCm) || null,
+          weight_kg: parseFloat(formData.weightKg) || null,
           goal: formData.goal || null,
-          goalWeight: parseFloat(formData.goalWeight) || null,
-          activityLevel: formData.activityLevel || null,
+          goal_weight: parseFloat(formData.goalWeight) || null,
+          activity_level: formData.activityLevel || null,
           timeline: formData.timeline || null,
-          dietaryRestrictions: formData.dietaryRestrictions || null,
-          workoutDays: formData.workoutDays || null,
-          workoutDuration: formData.workoutDuration || null,
-          mealPrepDuration: formData.mealPrepDuration || null,
-          profilePicture: defaultProfilePicture,
-        },
-      })
+          dietary_restrictions: formData.dietaryRestrictions || null,
+          workout_days: formData.workoutDays || null,
+          workout_duration: formData.workoutDuration || null,
+          meal_prep_duration: formData.mealPrepDuration || null,
+        })
+        .select()
+        .single()
+
+      if (createError) {
+        console.error("[Assessment Submit] Error creating profile:", createError)
+        throw createError
+      }
+      profile = newProfile
     } else {
       // Update existing profile
-      profile = await prisma.profile.update({
-        where: { id: profile.id },
-        data: {
-          age: parseInt(formData.age) || profile.age,
-          gender: formData.gender || profile.gender,
-          heightCm: parseFloat(formData.heightCm) || profile.heightCm,
-          weightKg: parseFloat(formData.weightKg) || profile.weightKg,
-          goal: formData.goal || profile.goal,
-          goalWeight: parseFloat(formData.goalWeight) || profile.goalWeight,
-          activityLevel: formData.activityLevel || profile.activityLevel,
-          timeline: formData.timeline || profile.timeline,
-          dietaryRestrictions: formData.dietaryRestrictions || profile.dietaryRestrictions,
-          workoutDays: formData.workoutDays || profile.workoutDays,
-          workoutDuration: formData.workoutDuration || profile.workoutDuration,
-          mealPrepDuration: formData.mealPrepDuration || profile.mealPrepDuration,
-        },
-      })
+      const { data: updatedProfile, error: updateError } = await supabaseAdmin
+        .from('app_profiles')
+        .update({
+          age: parseInt(formData.age) || existingProfile.age,
+          gender: formData.gender || existingProfile.gender,
+          height_cm: parseFloat(formData.heightCm) || existingProfile.height_cm,
+          weight_kg: parseFloat(formData.weightKg) || existingProfile.weight_kg,
+          goal: formData.goal || existingProfile.goal,
+          goal_weight: parseFloat(formData.goalWeight) || existingProfile.goal_weight,
+          activity_level: formData.activityLevel || existingProfile.activity_level,
+          timeline: formData.timeline || existingProfile.timeline,
+          dietary_restrictions: formData.dietaryRestrictions || existingProfile.dietary_restrictions,
+          workout_days: formData.workoutDays || existingProfile.workout_days,
+          workout_duration: formData.workoutDuration || existingProfile.workout_duration,
+          meal_prep_duration: formData.mealPrepDuration || existingProfile.meal_prep_duration,
+          updated_at: new Date().toISOString(),
+        })
+        .eq('id', existingProfile.id)
+        .select()
+        .single()
+
+      if (updateError) {
+        console.error("[Assessment Submit] Error updating profile:", updateError)
+        throw updateError
+      }
+      profile = updatedProfile
     }
 
-    // Prepare data to send to Make.com
+    // Prepare data for Make.com
     const makePayload = {
-      // User/Profile info
       profileId: profile.id,
       userId: userId,
       email: formData.email,
       name: formData.fullName,
-      
-      // Body metrics
       age: parseInt(formData.age),
       gender: formData.gender,
       weightKg: parseFloat(formData.weightKg),
       weightLbs: parseFloat(formData.weightLbs),
       heightCm: parseFloat(formData.heightCm),
       heightFt: formData.heightFt,
-      
-      // Goals
       goal: formData.goal,
       goalWeight: parseFloat(formData.goalWeight),
       timeline: formData.timeline,
       goalIntensity: formData.goalIntensity,
-      
-      // Activity & Lifestyle
       activityLevel: formData.activityLevel,
       workoutDays: parseInt(formData.workoutDays) || 4,
       workoutDuration: formData.workoutDuration,
@@ -145,59 +146,35 @@ export async function POST(request: NextRequest) {
       sleepQuality: formData.sleepQuality,
       stressLevel: formData.stressLevel,
       waterIntake: formData.waterIntake,
-      
-      // Dietary info
       dietaryRestrictions: dietaryRestrictions,
       foodPreferences: foodPreferences,
       eatingSchedule: formData.eatingSchedule,
       foodPrepPreference: formData.foodPrepPreference,
-      
-      // Callback URL for Make.com to send results back
       callbackUrl: `${VITAFIT_API_BASE_URL}/api/plans/from-make`,
     }
 
-    // Send data to Make.com webhook
-    // Make.com will process the data and call /api/plans/from-make with the calculated macros
-    console.log("=".repeat(80))
+    // Send to Make.com webhook
     console.log("[Assessment Submit] Sending data to Make.com webhook...")
-    console.log("[Assessment Submit] Webhook URL:", MAKE_WEBHOOK_URL)
-    console.log("[Assessment Submit] Payload:", JSON.stringify(makePayload, null, 2))
-    console.log("[Assessment Submit] Callback URL:", makePayload.callbackUrl)
-    console.log("=".repeat(80))
-    
     try {
       const makeResponse = await fetch(MAKE_WEBHOOK_URL, {
         method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
+        headers: { "Content-Type": "application/json" },
         body: JSON.stringify(makePayload),
       })
 
-      console.log("[Assessment Submit] Make.com response status:", makeResponse.status)
-      console.log("[Assessment Submit] Make.com response headers:", Object.fromEntries(makeResponse.headers.entries()))
-
       if (!makeResponse.ok) {
-        const errorText = await makeResponse.text()
-        console.error("[Assessment Submit] Make.com webhook error (status:", makeResponse.status, "):", errorText)
-        // Don't fail the request - Make.com will retry or we can handle it later
+        console.error("[Assessment Submit] Make.com webhook error:", await makeResponse.text())
       } else {
-        const responseText = await makeResponse.text()
         console.log("[Assessment Submit] Make.com webhook success!")
-        console.log("[Assessment Submit] Make.com response:", responseText.substring(0, 500))
-        // Make.com will process and call /api/plans/from-make with calculated macros
       }
     } catch (error: any) {
-      console.error("[Assessment Submit] Error calling Make.com webhook:", error.message)
-      console.error("[Assessment Submit] Error stack:", error.stack)
-      // Continue anyway - Make.com might process it asynchronously
+      console.error("[Assessment Submit] Error calling Make.com:", error.message)
     }
 
-    // Check membership status
+    // Get membership info
     const { getUserMembership } = await import("@/lib/membership")
     const membership = await getUserMembership(userId)
 
-    // Return success response with membership info
     return NextResponse.json({
       success: true,
       message: "Assessment submitted successfully. Your plan will be generated shortly.",
@@ -207,8 +184,6 @@ export async function POST(request: NextRequest) {
         status: membership?.status || "INACTIVE",
         plan: membership?.plan || null,
       },
-      // If Make.com returns data synchronously, include it here
-      // Otherwise, Make.com will call /api/plans/from-make directly
     })
   } catch (error: any) {
     console.error("Assessment submit error:", error)
@@ -218,4 +193,3 @@ export async function POST(request: NextRequest) {
     )
   }
 }
-

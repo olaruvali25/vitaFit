@@ -64,10 +64,7 @@ export const HeroHeader = () => {
                                             href={item.href}
                                             onClick={() => setMenuState(false)}
                                             className={cn(
-                                                "block duration-150",
-                                                isAccountPage
-                                                    ? "text-white hover:text-white/80"
-                                                    : "text-gray-900 hover:text-gray-700"
+                                                "block duration-150 text-gray-900 hover:text-gray-700"
                                             )}>
                                             <span>{item.name}</span>
                                         </Link>
@@ -84,12 +81,8 @@ export const HeroHeader = () => {
                                             <Link
                                                 href={item.href}
                                                 onClick={() => setMenuState(false)}
-                                                className={cn(
-                                                    "block duration-150",
-                                                    isAccountPage
-                                                        ? "text-white hover:text-white/80"
-                                                        : "text-gray-900 hover:text-gray-700"
-                                                )}>
+                                            className="block duration-150 text-gray-900 hover:text-gray-700"
+                                        >
                                                 <span>{item.name}</span>
                                             </Link>
                                         </li>
@@ -99,12 +92,8 @@ export const HeroHeader = () => {
                                             <Link
                                                 href="/account"
                                                 onClick={() => setMenuState(false)}
-                                                className={cn(
-                                                    "block duration-150",
-                                                    isAccountPage
-                                                        ? "text-white hover:text-white/80"
-                                                        : "text-gray-900 hover:text-gray-700"
-                                                )}>
+                                                className="block duration-150 text-gray-900 hover:text-gray-700"
+                                            >
                                                 <span>My Account</span>
                                             </Link>
                                         </li>
@@ -113,12 +102,8 @@ export const HeroHeader = () => {
                                             <Link
                                                 href="/login"
                                                 onClick={() => setMenuState(false)}
-                                                className={cn(
-                                                    "block duration-150",
-                                                    isAccountPage
-                                                        ? "text-white hover:text-white/80"
-                                                        : "text-gray-900 hover:text-gray-700"
-                                                )}>
+                                            className="block duration-150 text-gray-900 hover:text-gray-700"
+                                        >
                                                 <span>Login</span>
                                             </Link>
                                         </li>
@@ -132,21 +117,14 @@ export const HeroHeader = () => {
                                             <Button
                                                 variant="ghost"
                                                 size="sm"
-                                                className={cn(
-                                                    isAccountPage
-                                                        ? "text-white hover:text-white/80 hover:bg-white/10"
-                                                        : "text-black hover:text-gray-800 hover:bg-gray-100"
-                                                )}
+                                                className="text-black hover:text-gray-800 hover:bg-gray-100"
                                                 onClick={() => setAccountDropdownOpen(!accountDropdownOpen)}
                                                 onBlur={() => setTimeout(() => setAccountDropdownOpen(false), 200)}>
-                                                <span className={isAccountPage ? "text-white" : undefined}>My Account</span>
+                                                <span>My Account</span>
                                                 <ChevronDown className={cn("ml-1 h-4 w-4 transition-transform", accountDropdownOpen && "rotate-180")} />
                                             </Button>
                                             {accountDropdownOpen && (
-                                                <div className={cn(
-                                                    "absolute right-0 top-full mt-1 w-48 rounded-md border backdrop-blur-lg shadow-lg z-50",
-                                                    isAccountPage ? "border-white/20 bg-white/5" : "border-gray-200 bg-white"
-                                                )}>
+                                                <div className="absolute right-0 top-full mt-1 w-48 rounded-md border backdrop-blur-lg shadow-lg z-50 border-gray-200 bg-white">
                                                     <div className="py-1">
                                                         <Link
                                                             href="/account"
@@ -154,12 +132,7 @@ export const HeroHeader = () => {
                                                                 setAccountDropdownOpen(false)
                                                                 setMenuState(false)
                                                             }}
-                                                            className={cn(
-                                                              "flex items-center gap-2 px-4 py-2 text-sm transition-colors",
-                                                              isAccountPage
-                                                                ? "text-white hover:bg-white/10"
-                                                                : "text-black hover:bg-gray-100"
-                                                            )}>
+                                                            className="flex items-center gap-2 px-4 py-2 text-sm transition-colors text-black hover:bg-gray-100">
                                                             <User className="h-4 w-4" />
                                                             <span>My Account</span>
                                                         </Link>
@@ -183,12 +156,7 @@ export const HeroHeader = () => {
                                                                 router.push('/')
                                                                 router.refresh()
                                                             }}
-                                                            className={cn(
-                                                              "flex w-full items-center gap-2 px-4 py-2 text-sm transition-colors",
-                                                              isAccountPage
-                                                                ? "text-white hover:bg-white/10"
-                                                                : "text-black hover:bg-gray-100"
-                                                            )}>
+                                                            className="flex w-full items-center gap-2 px-4 py-2 text-sm transition-colors text-black hover:bg-gray-100">
                                                             <LogOut className="h-4 w-4" />
                                                             <span>Logout</span>
                                                         </button>

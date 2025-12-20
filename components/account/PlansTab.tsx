@@ -94,13 +94,13 @@ export function PlansTab() {
   }
 
   if (loading && !selectedProfileId) {
-    return <div className="text-center py-8 text-white">Loading...</div>
+    return <div className="text-center py-8 text-gray-900">Loading...</div>
   }
 
   if (!selectedProfileId || profiles.length === 0) {
     return (
       <div className="text-center py-12">
-        <p className="text-white/70 mb-4">No profiles found. Create a profile first.</p>
+        <p className="text-gray-600 mb-4">No profiles found. Create a profile first.</p>
       </div>
     )
   }
@@ -112,16 +112,16 @@ export function PlansTab() {
       {/* Profile selector - show which profile's plans we're viewing */}
       {selectedProfile && (
         <div className="mb-4">
-          <p className="text-sm text-white/60 mb-1">Viewing plans for:</p>
-          <p className="text-lg font-semibold text-white">{selectedProfile.name}</p>
+          <p className="text-sm text-gray-500 mb-1">Viewing plans for:</p>
+          <p className="text-lg font-semibold text-gray-900">{selectedProfile.name}</p>
         </div>
       )}
 
       {loading ? (
-        <div className="text-center py-8 text-white">Loading plans...</div>
+        <div className="text-center py-8 text-gray-900">Loading plans...</div>
       ) : plans.length === 0 ? (
         <div className="text-center py-12">
-          <p className="text-white/70 mb-4">No meal plans found for this profile.</p>
+          <p className="text-gray-600 mb-4">No meal plans found for this profile.</p>
           <Link 
             href="/assessment"
             className="inline-block px-4 py-2 bg-emerald-500 hover:bg-emerald-600 text-white rounded-lg transition-colors"
@@ -135,7 +135,7 @@ export function PlansTab() {
             <Link
               key={plan.id}
               href={`/plans/${plan.id}`}
-              className="group relative bg-white/5 hover:bg-white/10 border border-white/20 hover:border-emerald-500/50 rounded-xl p-6 transition-all duration-300 hover:scale-105 hover:shadow-lg hover:shadow-emerald-500/20"
+              className="group relative bg-white/60 backdrop-blur-xl hover:bg-white border border-emerald-200/50 hover:border-emerald-500/50 rounded-xl p-6 transition-all duration-300 hover:scale-105 hover:shadow-lg hover:shadow-emerald-500/20 shadow-sm"
             >
               {/* Week number badge */}
               <div className="absolute -top-3 -right-3 bg-gradient-to-r from-emerald-500 to-emerald-600 text-white text-xs font-bold px-3 py-1 rounded-full shadow-lg">
@@ -144,10 +144,10 @@ export function PlansTab() {
 
               <div className="space-y-3">
                 <div>
-                  <h3 className="text-xl font-semibold text-white mb-1">
+                  <h3 className="text-xl font-semibold text-gray-900 mb-1">
                     {plan.title || getWeekNumber(index)}
                   </h3>
-                  <div className="flex items-center gap-2 text-sm text-white/60">
+                  <div className="flex items-center gap-2 text-sm text-gray-500">
                     <Calendar className="h-4 w-4" />
                     <span>
                       {new Date(plan.startDate).toLocaleDateString("en-US", {
@@ -159,8 +159,8 @@ export function PlansTab() {
                   </div>
                 </div>
 
-                <div className="pt-2 border-t border-white/10">
-                  <p className="text-sm text-emerald-400 group-hover:text-emerald-300 transition-colors">
+                <div className="pt-2 border-t border-gray-100">
+                  <p className="text-sm text-emerald-600 group-hover:text-emerald-700 transition-colors font-medium">
                     Click to view full plan →
                   </p>
                 </div>

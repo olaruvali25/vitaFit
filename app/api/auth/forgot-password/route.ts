@@ -1,41 +1,41 @@
-import { NextRequest } from "next/server"
-import { prisma } from "@/lib/prisma"
-import { jsonOk } from "@/lib/api-response"
-import { sendResetEmail } from "@/lib/send-reset-email"
+import { NextRequest, NextResponse } from "next/server"
+import { createClient } from '@supabase/supabase-js'
 import { z } from "zod"
-import crypto from "crypto"
+
+const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL!
+const supabaseServiceKey = process.env.SUPABASE_SERVICE_ROLE_KEY!
 
 const schema = z.object({
   email: z.string().email(),
 })
 
-function generateResetCode() {
-  return crypto.randomInt(100000, 999999).toString()
-}
-
 export async function POST(req: NextRequest) {
-  const body = await req.json().catch(() => null)
-  const parsed = schema.safeParse(body)
-  if (!parsed.success) {
-    return jsonOk({ message: "If the email exists, a reset code was sent." })
-  }
-  const email = parsed.data.email.trim().toLowerCase()
-  const user = await prisma.user.findUnique({ where: { email } })
+  try {
+    const body = await req.json().catch(() => null)
+    const parsed = schema.safeParse(body)
+    
+    if (!parsed.success) {
+      return NextResponse.json({ message: "If the email exists, a reset link was sent." })
+    }
 
-  if (user) {
-    const code = generateResetCode()
-    const expiresAt = new Date(Date.now() + 15 * 60 * 1000)
-    await prisma.passwordReset.create({
-      data: {
-        userId: user.id,
-        code,
-        expiresAt,
-      },
+    const email = parsed.data.email.trim().toLowerCase()
+
+    const supabase = createClient(supabaseUrl, supabaseServiceKey, {
+      auth: {
+        autoRefreshToken: false,
+        persistSession: false
+      }
     })
-    await sendResetEmail(email, code)
+
+    const origin = req.headers.get('origin') || process.env.NEXT_PUBLIC_APP_URL || 'http://localhost:3000'
+
+    await supabase.auth.resetPasswordForEmail(email, {
+      redirectTo: `${origin}/reset-password`,
+    })
+
+    return NextResponse.json({ message: "If the email exists, a reset link was sent." })
+  } catch (error) {
+    console.error("Forgot password error:", error)
+    return NextResponse.json({ message: "If the email exists, a reset link was sent." })
   }
-
-  // Always return generic success
-  return jsonOk({ message: "If the email exists, a reset code was sent." })
 }
-

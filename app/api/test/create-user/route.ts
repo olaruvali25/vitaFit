@@ -1,50 +1,53 @@
 import { NextRequest, NextResponse } from "next/server"
-import { prisma } from "@/lib/prisma"
-import bcrypt from "bcryptjs"
-import { initializeFreeTrial } from "@/lib/membership"
+import { supabaseAdmin } from "@/lib/supabase"
+
+// Test route for creating users - uses Supabase Admin API
 
 export async function POST(request: NextRequest) {
   try {
-    const email = "admin@vitafit.com"
-    const password = "admin123"
-    const name = "Admin User"
+    if (process.env.NODE_ENV === "production") {
+      return NextResponse.json({ error: "Not available in production" }, { status: 403 })
+    }
 
-    // Delete if exists
-    await prisma.user.deleteMany({ where: { email } }).catch(() => {})
+    const body = await request.json()
+    const { email, password, phone } = body
 
-    // Hash password
-    const passwordHash = await bcrypt.hash(password, 12)
+    if (!email || !password) {
+      return NextResponse.json({ error: "Email and password required" }, { status: 400 })
+    }
 
-    // Create user
-    const user = await prisma.user.create({
-      data: {
-        name,
-        email,
-        passwordHash,
-        role: "ADMIN",
-      },
+    if (!supabaseAdmin) {
+      return NextResponse.json({ error: "Supabase admin not configured" }, { status: 500 })
+    }
+
+    // Create user via Supabase Admin API
+    const { data, error } = await supabaseAdmin.auth.admin.createUser({
+      email,
+      password,
+      phone: phone || undefined,
+      email_confirm: true,
     })
 
-    // Initialize free trial
-    try {
-      await initializeFreeTrial(user.id)
-    } catch (e) {
-      console.error("Trial init error:", e)
+    if (error) {
+      return NextResponse.json({ error: error.message }, { status: 500 })
     }
+
+    // Create profile for user
+    await supabaseAdmin.from('profiles').upsert({
+      id: data.user.id,
+      email,
+      phone: phone || null,
+      phone_verified: true,
+      plan: 'free trial',
+      profiles_limit: 1,
+    }, { onConflict: 'id' })
 
     return NextResponse.json({
       success: true,
-      message: "User created!",
-      email,
-      password,
-      userId: user.id,
+      user: { id: data.user.id, email: data.user.email }
     })
   } catch (error: any) {
-    console.error("Create user error:", error)
-    return NextResponse.json(
-      { error: error?.message || "Failed to create user" },
-      { status: 500 }
-    )
+    console.error("Create test user error:", error)
+    return NextResponse.json({ error: error.message }, { status: 500 })
   }
 }
-

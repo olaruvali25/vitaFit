@@ -1,8 +1,6 @@
-import { NextRequest } from "next/server"
-import { getAuthContext } from "@/lib/authz"
-import { jsonError, jsonOk } from "@/lib/api-response"
-import { prisma } from "@/lib/prisma"
-import { canAccessTracker } from "@/lib/subscription"
+import { NextRequest, NextResponse } from "next/server"
+import { requireAuth } from "@/lib/auth-utils"
+import { supabaseAdmin } from "@/lib/supabase"
 import { z } from "zod"
 
 const updateSchema = z.object({
@@ -20,61 +18,114 @@ export async function GET(
   req: NextRequest,
   { params }: { params: Promise<{ profileId: string }> }
 ) {
-  const auth = await getAuthContext(req)
-  if (auth.error) return auth.error
-  const { user } = auth
-  const { profileId } = await params
+  try {
+    const user = await requireAuth()
+    const { profileId } = await params
 
-  const profile = await prisma.profile.findFirst({
-    where: { id: profileId, userId: user.id },
-    include: { tracker: true },
-  })
-  if (!profile) {
-    return jsonError("NOT_FOUND", "Profile not found.", 404)
-  }
-  if (!profile.tracker) {
-    return jsonError("TRACKER_MISSING", "Tracker not found for this profile.", 404)
-  }
-  if (!canAccessTracker(user.subscriptionTier)) {
-    return jsonError("TRACKER_LOCKED", "Tracker access is locked for your current plan.", 403)
-  }
+    // Verify the profile belongs to this user
+    const { data: profile, error: profileError } = await supabaseAdmin
+      .from('app_profiles')
+      .select('*')
+      .eq('id', profileId)
+      .eq('user_id', user.id)
+      .single()
 
-  return jsonOk({ tracker: profile.tracker })
+    if (profileError || !profile) {
+      return NextResponse.json(
+        { error: "Profile not found" },
+        { status: 404 }
+      )
+    }
+
+    // Return profile data as tracker (tracker data is stored in profile for now)
+    return NextResponse.json({
+      tracker: {
+        id: profile.id,
+        profileId: profile.id,
+        dailyProgress: {},
+        weeklyOverview: {},
+        caloriesHistory: [],
+        workoutHistory: [],
+        hydrationHistory: [],
+        currentPlan: {},
+        goalWeight: profile.goal_weight || 0,
+        startWeight: profile.weight_kg || 0,
+      }
+    })
+  } catch (error: any) {
+    console.error("Get tracker error:", error)
+    return NextResponse.json(
+      { error: error.message || "Failed to get tracker" },
+      { status: error.statusCode || 500 }
+    )
+  }
 }
 
 export async function PATCH(
   req: NextRequest,
   { params }: { params: Promise<{ profileId: string }> }
 ) {
-  const auth = await getAuthContext(req)
-  if (auth.error) return auth.error
-  const { user } = auth
+  try {
+    const user = await requireAuth()
+    const { profileId } = await params
 
-  const { profileId } = await params
-  const profile = await prisma.profile.findFirst({
-    where: { id: profileId, userId: user.id },
-    include: { tracker: true },
-  })
-  if (!profile || !profile.tracker) {
-    return jsonError("NOT_FOUND", "Profile not found.", 404)
+    // Verify the profile belongs to this user
+    const { data: profile, error: profileError } = await supabaseAdmin
+      .from('app_profiles')
+      .select('*')
+      .eq('id', profileId)
+      .eq('user_id', user.id)
+      .single()
+
+    if (profileError || !profile) {
+      return NextResponse.json(
+        { error: "Profile not found" },
+        { status: 404 }
+      )
+    }
+
+    const body = await req.json().catch(() => null)
+    const parsed = updateSchema.safeParse(body)
+    if (!parsed.success) {
+      return NextResponse.json(
+        { error: "Invalid tracker update payload" },
+        { status: 400 }
+      )
+    }
+
+    // Update goal_weight and weight_kg if provided
+    const updates: any = { updated_at: new Date().toISOString() }
+    if (parsed.data.goalWeight !== undefined) {
+      updates.goal_weight = parsed.data.goalWeight
+    }
+    if (parsed.data.startWeight !== undefined) {
+      updates.weight_kg = parsed.data.startWeight
+    }
+
+    const { data: updated, error: updateError } = await supabaseAdmin
+      .from('app_profiles')
+      .update(updates)
+      .eq('id', profileId)
+      .select()
+      .single()
+
+    if (updateError) {
+      throw updateError
+    }
+
+    return NextResponse.json({
+      tracker: {
+        id: updated.id,
+        profileId: updated.id,
+        goalWeight: updated.goal_weight || 0,
+        startWeight: updated.weight_kg || 0,
+      }
+    })
+  } catch (error: any) {
+    console.error("Update tracker error:", error)
+    return NextResponse.json(
+      { error: error.message || "Failed to update tracker" },
+      { status: error.statusCode || 500 }
+    )
   }
-  if (!canAccessTracker(user.subscriptionTier)) {
-    return jsonError("TRACKER_LOCKED", "Tracker access is locked for your current plan.", 403)
-  }
-
-  const body = await req.json().catch(() => null)
-  const parsed = updateSchema.safeParse(body)
-  if (!parsed.success) {
-    return jsonError("INVALID_INPUT", "Invalid tracker update payload.", 400)
-  }
-
-  const tracker = await prisma.tracker.update({
-    where: { id: profile.tracker.id, profileId },
-    data: {
-      ...parsed.data,
-    },
-  })
-
-  return jsonOk({ tracker })
 }
-

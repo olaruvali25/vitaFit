@@ -1,45 +1,51 @@
-import { NextRequest } from "next/server"
-import { prisma } from "@/lib/prisma"
-import { jsonError, jsonOk } from "@/lib/api-response"
-import bcrypt from "bcryptjs"
-import { z } from "zod"
+import { NextRequest, NextResponse } from "next/server"
+import { createClient } from '@supabase/supabase-js'
 
-const schema = z.object({
-  code: z.string().min(1),
-  newPassword: z.string().min(6),
-})
+const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL!
+const supabaseServiceKey = process.env.SUPABASE_SERVICE_ROLE_KEY!
 
 export async function POST(req: NextRequest) {
-  const body = await req.json().catch(() => null)
-  const parsed = schema.safeParse(body)
-  if (!parsed.success) {
-    return jsonError("INVALID_INPUT", "Invalid reset payload.", 400)
-  }
-  const { code, newPassword } = parsed.data
+  try {
+    const body = await req.json()
+    const { email } = body
 
-  const reset = await prisma.passwordReset.findUnique({
-    where: { code },
-  })
-  if (!reset || reset.usedAt || reset.expiresAt < new Date()) {
-    return jsonError("INVALID_RESET_CODE", "Reset code is invalid or expired.", 400)
-  }
+    if (!email) {
+      return NextResponse.json(
+        { error: "Email is required" },
+        { status: 400 }
+      )
+    }
 
-  const passwordHash = await bcrypt.hash(newPassword, 10)
-
-  await prisma.$transaction(async (tx: any) => {
-    await tx.user.update({
-      where: { id: reset.userId },
-      data: {
-        passwordHash,
-        tokenVersion: { increment: 1 },
-      },
+    const supabase = createClient(supabaseUrl, supabaseServiceKey, {
+      auth: {
+        autoRefreshToken: false,
+        persistSession: false
+      }
     })
 
-    await tx.passwordReset.update({
-      where: { code },
-      data: { usedAt: new Date() },
-    })
-  })
+    // Get the origin for the redirect URL
+    const origin = req.headers.get('origin') || 'http://localhost:3000'
 
-  return jsonOk({ message: "Password reset successful. Please log in again." })
+    const { error } = await supabase.auth.resetPasswordForEmail(email, {
+      redirectTo: `${origin}/reset-password`,
+    })
+
+    if (error) {
+      console.error("Password reset error:", error)
+      // Don't reveal if email exists or not for security
+      return NextResponse.json({
+        message: "If an account exists with this email, a password reset link has been sent."
+      })
+    }
+
+    return NextResponse.json({
+      message: "If an account exists with this email, a password reset link has been sent."
+    })
+  } catch (error: any) {
+    console.error("Password reset error:", error)
+    return NextResponse.json(
+      { error: "Failed to process password reset request" },
+      { status: 500 }
+    )
+  }
 }
