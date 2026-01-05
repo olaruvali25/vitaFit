@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from "next/server"
 import { requireAuth } from "@/lib/auth-utils"
-import { initializeFreeTrial } from "@/lib/membership"
+import { initializeFreeTrial, hasUserUsedFreeTrial } from "@/lib/membership"
 
 export async function POST(request: NextRequest) {
   try {
@@ -18,8 +18,31 @@ export async function POST(request: NextRequest) {
     }
     const userId = (user as any).id
 
-    // Initialize free trial
-    await initializeFreeTrial(userId)
+    // Server-side validation: Check if trial was already used
+    const alreadyUsed = await hasUserUsedFreeTrial(userId)
+    if (alreadyUsed) {
+      return NextResponse.json(
+        { 
+          success: false,
+          error: "You've already used your free trial. Please upgrade to continue.",
+          alreadyUsed: true
+        },
+        { status: 403 }
+      )
+    }
+
+    // Initialize free trial with full validation
+    const result = await initializeFreeTrial(userId)
+
+    if (!result.success) {
+      return NextResponse.json(
+        { 
+          success: false,
+          error: result.error || "Failed to activate free trial"
+        },
+        { status: 400 }
+      )
+    }
 
     return NextResponse.json({
       success: true,

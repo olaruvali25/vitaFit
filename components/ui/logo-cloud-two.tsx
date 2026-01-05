@@ -5,7 +5,6 @@ const logos = [
     { src: '/logos/fitbit.svg', alt: 'Fitbit' },
     { src: '/logos/strava.svg', alt: 'Strava' },
     { src: '/logos/whoop.svg', alt: 'WHOOP' },
-    { src: '/logos/cronometer.svg', alt: 'Cronometer' },
     { src: '/logos/underarmour.svg', alt: 'Under Armour' },
     { src: '/logos/lifesum.svg', alt: 'Lifesum' },
     { src: '/logos/oura.svg', alt: 'Oura' },

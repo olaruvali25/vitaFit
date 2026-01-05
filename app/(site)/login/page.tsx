@@ -118,12 +118,12 @@ export default function LoginPage() {
           >
             <LogoIcon className="text-emerald-400" />
           </Link>
-          <h1 className="mb-1 mt-4 text-xl font-semibold text-white">Sign In to VitaFit</h1>
-          <p className="text-white/70">Welcome back! Sign in to continue</p>
+          <h1 className="mb-1 mt-4 text-xl font-semibold text-black">Sign In to VitaFit</h1>
+          <p className="text-black/70">Welcome back! Sign in to continue</p>
         </div>
 
         {error && (
-          <div className="mt-4 rounded-lg bg-red-500/20 border border-red-500/40 p-3 text-sm text-red-300">
+          <div className="mt-4 rounded-lg bg-red-500/20 border border-red-500/40 p-3 text-sm text-red-700">
             {error}
           </div>
         )}
@@ -132,7 +132,7 @@ export default function LoginPage() {
           <Button
             type="button"
             variant="outline"
-            className="w-full bg-white/5 border-white/20 text-white hover:bg-white/10 hover:text-white"
+            className="w-full bg-white/5 border-white/20 text-black hover:bg-white/10 hover:text-black"
             onClick={handleGoogleSignIn}
           >
             <svg
@@ -165,7 +165,7 @@ export default function LoginPage() {
 
         <div className="my-6 grid grid-cols-[1fr_auto_1fr] items-center gap-3">
           <hr className="border-dashed border-white/20" />
-          <span className="text-white/50 text-xs">Or continue With</span>
+          <span className="text-black/50 text-xs">Or continue With</span>
           <hr className="border-dashed border-white/20" />
         </div>
 
@@ -173,7 +173,7 @@ export default function LoginPage() {
           <div className="space-y-2">
             <Label
               htmlFor="email"
-              className="block text-sm text-white/90 font-medium"
+              className="block text-sm text-black/90 font-medium"
             >
               Email
             </Label>
@@ -182,7 +182,7 @@ export default function LoginPage() {
               id="email"
               value={email}
               onChange={(e) => setEmail(e.target.value)}
-              className="bg-white/5 border-white/20 text-white placeholder:text-white/50 focus:border-emerald-400"
+              className="bg-white/5 border-white/20 text-black placeholder:text-black/50 focus:border-emerald-400"
               placeholder="Enter your email"
             />
           </div>
@@ -190,7 +190,7 @@ export default function LoginPage() {
             <div className="flex items-center justify-between">
               <Label
                 htmlFor="password"
-                className="block text-sm text-white/90 font-medium"
+                className="block text-sm text-black/90 font-medium"
               >
                 Password
               </Label>
@@ -209,13 +209,13 @@ export default function LoginPage() {
                 id="password"
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
-                className="bg-white/5 border-white/20 text-white placeholder:text-white/50 focus:border-emerald-400 pr-10"
+                className="bg-white/5 border-white/20 text-black placeholder:text-black/50 focus:border-emerald-400 pr-10"
                 placeholder="Enter your password"
               />
               <button
                 type="button"
                 onClick={() => setShowPassword(!showPassword)}
-                className="absolute right-3 top-1/2 -translate-y-1/2 text-white/50 hover:text-white/70 transition-colors"
+                className="absolute right-3 top-1/2 -translate-y-1/2 text-black/50 hover:text-black/70 transition-colors"
               >
                 {showPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
               </button>
@@ -231,7 +231,7 @@ export default function LoginPage() {
           </Button>
         </div>
 
-        <p className="text-white/70 text-center text-sm mt-6">
+        <p className="text-black/70 text-center text-sm mt-6">
           Don't have an account?{" "}
           <Button
             asChild

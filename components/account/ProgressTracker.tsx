@@ -1,8 +1,10 @@
 "use client"
 
 import { useState, useEffect } from "react"
+import { useRouter } from "next/navigation"
 import { useSupabase } from "@/components/providers/SupabaseProvider"
 import { Droplet, Target, Flame, Dumbbell, TrendingUp, Lock } from "lucide-react"
+import { Button } from "@/components/ui/button"
 import { cn } from "@/lib/utils"
 
 interface Profile {
@@ -20,11 +22,19 @@ interface Plan {
   createdAt?: string
 }
 
+interface MembershipData {
+  plan: string
+  status: string
+  canUseFeatures: boolean
+  isTrialExpired?: boolean
+}
+
 export function ProgressTracker() {
   const { user } = useSupabase()
+  const router = useRouter()
   const [profile, setProfile] = useState<Profile | null>(null)
   const [plan, setPlan] = useState<Plan | null>(null)
-  const [membership, setMembership] = useState<{ plan: string; status: string } | null>(null)
+  const [membership, setMembership] = useState<MembershipData | null>(null)
 
   useEffect(() => {
     fetchProgressData()
@@ -50,7 +60,12 @@ export function ProgressTracker() {
       const membershipRes = await fetch("/api/membership")
       if (membershipRes.ok) {
         const membershipData = await membershipRes.json()
-        setMembership({ plan: membershipData.plan, status: membershipData.status })
+        setMembership({
+          plan: membershipData.plan,
+          status: membershipData.status,
+          canUseFeatures: membershipData.canUseFeatures,
+          isTrialExpired: membershipData.isTrialExpired,
+        })
       }
     } catch (error) {
       console.error("Error fetching progress data:", error)
@@ -125,7 +140,17 @@ export function ProgressTracker() {
           <p className="text-white/60 text-sm">Your fitness journey at a glance</p>
         </div>
 
-        {membership?.plan === "FREE_TRIAL" || membership?.status === "INACTIVE" ? (
+        {/* 
+          Progress Tracker is LOCKED if:
+          - No membership (status === "NONE")
+          - Trial expired (status === "EXPIRED_TRIAL")
+          - Subscription inactive/canceled (status === "INACTIVE")
+          
+          Progress Tracker is AVAILABLE if:
+          - Active trial (status === "TRIAL")
+          - Active paid plan (status === "ACTIVE")
+        */}
+        {!membership?.canUseFeatures || membership?.status === "NONE" || membership?.status === "EXPIRED_TRIAL" || membership?.status === "INACTIVE" ? (
           <div className="flex flex-col items-center justify-center text-center space-y-4 py-10">
             <div className="flex items-center justify-center w-16 h-16 rounded-full bg-white/10 border border-white/20 text-white">
               <Lock className="w-8 h-8" />
@@ -133,8 +158,18 @@ export function ProgressTracker() {
             <div className="space-y-2">
               <p className="text-lg font-semibold text-white">Unlock Progress Tracker</p>
               <p className="text-sm text-white/70">
-                Upgrade to Pro, Plus, or Family to access personalized tracking.
+                {membership?.status === "EXPIRED_TRIAL" 
+                  ? "Your free trial has expired. Upgrade to continue tracking your progress."
+                  : membership?.status === "INACTIVE"
+                  ? "Your subscription is inactive. Renew to access your progress tracker."
+                  : "Start your free trial or upgrade to access personalized tracking."}
               </p>
+              <Button
+                className="mt-4 bg-emerald-500 hover:bg-emerald-600 text-white"
+                onClick={() => router.push("/pricing")}
+              >
+                Upgrade to unlock your progress
+              </Button>
             </div>
           </div>
         ) : (

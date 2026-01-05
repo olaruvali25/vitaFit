@@ -15,27 +15,30 @@ export type Database = {
           email: string
           phone: string | null
           phone_verified: boolean
-          plan: 'free trial' | 'pro' | 'plus' | 'family'
+          plan: 'none' | 'free trial' | 'pro' | 'plus' | 'family'
           profiles_limit: number
           created_at: string
+          has_used_free_trial: boolean
         }
         Insert: {
           id: string
           email: string
           phone?: string | null
           phone_verified?: boolean
-          plan?: 'free trial' | 'pro' | 'plus' | 'family'
+          plan?: 'none' | 'free trial' | 'pro' | 'plus' | 'family'
           profiles_limit?: number
           created_at?: string
+          has_used_free_trial?: boolean
         }
         Update: {
           id?: string
           email?: string
           phone?: string | null
           phone_verified?: boolean
-          plan?: 'free trial' | 'pro' | 'plus' | 'family'
+          plan?: 'none' | 'free trial' | 'pro' | 'plus' | 'family'
           profiles_limit?: number
           created_at?: string
+          has_used_free_trial?: boolean
         }
         Relationships: [
           {
@@ -67,6 +70,7 @@ export type Database = {
           meal_prep_duration: string | null
           created_at: string
           updated_at: string
+          is_main_profile: boolean
         }
         Insert: {
           id?: string
@@ -87,6 +91,7 @@ export type Database = {
           meal_prep_duration?: string | null
           created_at?: string
           updated_at?: string
+          is_main_profile?: boolean
         }
         Update: {
           id?: string
@@ -107,6 +112,7 @@ export type Database = {
           meal_prep_duration?: string | null
           created_at?: string
           updated_at?: string
+          is_main_profile?: boolean
         }
         Relationships: [
           {
@@ -122,23 +128,29 @@ export type Database = {
         Row: {
           id: string
           user_id: string
-          plan: 'free trial' | 'pro' | 'plus' | 'family'
-          status: 'active' | 'canceled' | 'past_due'
+          plan: 'none' | 'free trial' | 'pro' | 'plus' | 'family'
+          status: 'active' | 'canceled' | 'past_due' | 'expired'
           created_at: string
+          trial_started_at: string | null
+          trial_ends_at: string | null
         }
         Insert: {
           id?: string
           user_id: string
-          plan: 'free trial' | 'pro' | 'plus' | 'family'
-          status?: 'active' | 'canceled' | 'past_due'
+          plan: 'none' | 'free trial' | 'pro' | 'plus' | 'family'
+          status?: 'active' | 'canceled' | 'past_due' | 'expired'
           created_at?: string
+          trial_started_at?: string | null
+          trial_ends_at?: string | null
         }
         Update: {
           id?: string
           user_id?: string
-          plan?: 'free trial' | 'pro' | 'plus' | 'family'
-          status?: 'active' | 'canceled' | 'past_due'
+          plan?: 'none' | 'free trial' | 'pro' | 'plus' | 'family'
+          status?: 'active' | 'canceled' | 'past_due' | 'expired'
           created_at?: string
+          trial_started_at?: string | null
+          trial_ends_at?: string | null
         }
         Relationships: [
           {
@@ -158,8 +170,8 @@ export type Database = {
       [_ in never]: never
     }
     Enums: {
-      plan_type: 'free trial' | 'pro' | 'plus' | 'family'
-      subscription_status: 'active' | 'canceled' | 'past_due'
+      plan_type: 'none' | 'free trial' | 'pro' | 'plus' | 'family'
+      subscription_status: 'active' | 'canceled' | 'past_due' | 'expired'
     }
     CompositeTypes: {
       [_ in never]: never

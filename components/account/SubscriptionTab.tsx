@@ -2,10 +2,9 @@
 
 import { useState, useEffect } from "react"
 import { useRouter } from "next/navigation"
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
-import { Check, Crown, Users, Zap } from "lucide-react"
+import { Zap, AlertTriangle, Crown } from "lucide-react"
 
 interface MembershipInfo {
   plan: string
@@ -15,12 +14,21 @@ interface MembershipInfo {
   canUseFeatures: boolean
   profilesLimit: number
   plansPerProfileLimit: number
+  hasUsedTrial?: boolean
+  canStartTrial?: boolean
+  isTrialExpired?: boolean
 }
 
-export function SubscriptionTab() {
+interface SubscriptionTabProps {
+  isMainProfile?: boolean
+}
+
+export function SubscriptionTab({ isMainProfile = true }: SubscriptionTabProps) {
   const router = useRouter()
   const [membership, setMembership] = useState<MembershipInfo | null>(null)
   const [loading, setLoading] = useState(true)
+  const [activatingTrial, setActivatingTrial] = useState(false)
+  const [trialError, setTrialError] = useState<string | null>(null)
 
   useEffect(() => {
     fetchMembership()
@@ -40,6 +48,32 @@ export function SubscriptionTab() {
     }
   }
 
+  const handleStartTrial = async () => {
+    setActivatingTrial(true)
+    setTrialError(null)
+    
+    try {
+      const response = await fetch("/api/membership/activate-trial", {
+        method: "POST",
+      })
+      
+      const data = await response.json()
+      
+      if (!response.ok || !data.success) {
+        setTrialError(data.error || "Failed to activate trial")
+        return
+      }
+      
+      // Refresh membership data
+      await fetchMembership()
+    } catch (err) {
+      console.error("Failed to activate trial:", err)
+      setTrialError("Failed to activate trial. Please try again.")
+    } finally {
+      setActivatingTrial(false)
+    }
+  }
+
   const getDaysRemaining = (endDate: string | null) => {
     if (!endDate) return null
     const days = Math.ceil(
@@ -54,19 +88,27 @@ export function SubscriptionTab() {
         return <Badge className="bg-emerald-500">Free Trial</Badge>
       case "ACTIVE":
         return <Badge className="bg-green-500">Active</Badge>
+      case "EXPIRED_TRIAL":
+        return <Badge className="bg-orange-500">Trial Expired</Badge>
+      case "INACTIVE":
+        return <Badge variant="outline" className="border-red-300 text-red-600">Inactive</Badge>
       case "CANCELED":
         return <Badge variant="outline">Canceled</Badge>
       default:
-        return <Badge variant="outline">Inactive</Badge>
+        return <Badge variant="outline">No Plan</Badge>
     }
   }
 
   const getPlanName = (plan: string) => {
     switch (plan) {
+      case "PRO":
+        return "Pro"
       case "PLUS":
         return "Plus"
       case "FAMILY":
         return "Family"
+      case "FREE_TRIAL":
+        return "Free Trial"
       default:
         return plan
     }
@@ -82,6 +124,45 @@ export function SubscriptionTab() {
 
   const daysRemaining = getDaysRemaining(membership.trialEndsAt)
   const isTrial = membership.status === "TRIAL"
+  const isActive = membership.status === "ACTIVE"
+  const isExpiredTrial = membership.status === "EXPIRED_TRIAL"
+  const isInactive = membership.status === "INACTIVE"
+  const hasNoPlan = membership.status === "NONE"
+  const hasUsedTrial = membership.hasUsedTrial ?? false
+  const canStartTrial = membership.canStartTrial ?? !hasUsedTrial
+
+  // Non-main profiles can only view, not manage
+  if (!isMainProfile) {
+    return (
+      <div className="space-y-6">
+        <div>
+          <h2 className="text-3xl font-semibold mb-1 text-gray-900 tracking-tight">Subscription</h2>
+          <p className="text-base text-gray-600 mb-3">
+            View your current membership
+          </p>
+        </div>
+
+        <div className="rounded-lg border border-gray-200 bg-white/60 p-6">
+          <div className="flex items-center gap-3 mb-4">
+            <Crown className="h-6 w-6 text-emerald-500" />
+            <div>
+              <p className="text-sm text-gray-500">Current Plan</p>
+              <p className="text-lg font-semibold text-gray-900">
+                {hasNoPlan ? "No membership" : getPlanName(membership.plan)}
+              </p>
+            </div>
+            {getStatusBadge(membership.status)}
+          </div>
+          
+          <div className="mt-4 p-3 bg-gray-50 rounded-lg border border-gray-100">
+            <p className="text-sm text-gray-600">
+              Subscription management is available on the main profile.
+            </p>
+          </div>
+        </div>
+      </div>
+    )
+  }
 
   return (
     <div className="space-y-6">
@@ -90,189 +171,160 @@ export function SubscriptionTab() {
         <p className="text-base text-gray-600 mb-3">
           Manage your membership and billing
         </p>
-        <div className="inline-flex items-center gap-2 rounded-full border border-emerald-200 bg-emerald-50 px-4 py-1.5 text-sm font-semibold text-emerald-700 shadow-sm">
-          <span className="inline-block h-2.5 w-2.5 rounded-full bg-emerald-500 shadow-[0_0_10px_rgba(24,194,96,0.6)]" />
-          {membership.status === "INACTIVE"
-            ? "No plan yet"
-            : membership.status === "TRIAL"
-            ? "Free Trial"
-            : getPlanName(membership.plan)}
+        
+        {/* Status Badge */}
+        <div className="flex items-center gap-3 flex-wrap">
+          <div className="inline-flex items-center gap-2 rounded-full border border-emerald-200 bg-emerald-50 px-4 py-1.5 text-sm font-semibold text-emerald-700 shadow-sm">
+            <span className="inline-block h-2.5 w-2.5 rounded-full bg-emerald-500 shadow-[0_0_10px_rgba(24,194,96,0.6)]" />
+            {hasNoPlan
+              ? "No membership yet"
+              : isExpiredTrial
+              ? "Trial Expired"
+              : isTrial
+              ? "Free Trial"
+              : isInactive
+              ? "Subscription Inactive"
+              : getPlanName(membership.plan)}
+          </div>
+
+          {/* Show days remaining for trial */}
+          {isTrial && daysRemaining !== null && (
+            <Badge className="bg-blue-100 text-blue-700 border-blue-200">
+              {daysRemaining} day{daysRemaining !== 1 ? "s" : ""} remaining
+            </Badge>
+          )}
         </div>
       </div>
 
-      <Card className="bg-white/60 backdrop-blur-xl border-emerald-200/50 shadow-sm">
-        <CardHeader>
-          <div className="flex items-center justify-between">
+      {/* Trial Error Message */}
+      {trialError && (
+        <div className="flex items-center gap-2 p-3 bg-red-50 border border-red-200 rounded-lg text-red-700">
+          <AlertTriangle className="h-5 w-5 flex-shrink-0" />
+          <p className="text-sm">{trialError}</p>
+        </div>
+      )}
+
+      {/* No Plan State */}
+      {hasNoPlan && (
+        <div className="rounded-lg border border-gray-200 bg-white/60 p-6">
+          <div className="flex items-center gap-3 mb-4">
+            <Zap className="h-6 w-6 text-emerald-500" />
             <div>
-              <CardTitle className="text-xl text-gray-900">{getPlanName(membership.plan)} Plan</CardTitle>
-              <CardDescription className="mt-1">
-                {getStatusBadge(membership.status)}
-              </CardDescription>
-            </div>
-          </div>
-        </CardHeader>
-        <CardContent className="space-y-4">
-          {isTrial && daysRemaining !== null && (
-            <div className="rounded-lg bg-emerald-50 border border-emerald-100 p-4">
-              <div className="flex items-center gap-2 mb-2">
-                <Zap className="h-5 w-5 text-emerald-600" />
-                <p className="font-semibold text-emerald-600">Free Trial Active</p>
-              </div>
+              <p className="text-lg font-semibold text-gray-900">Get Started with VitaFit</p>
               <p className="text-sm text-gray-600">
-                {daysRemaining > 0
-                  ? `${daysRemaining} day${daysRemaining !== 1 ? "s" : ""} remaining`
-                  : "Trial has ended"}
+                {canStartTrial 
+                  ? "Start your 14-day free trial to unlock all features."
+                  : "Choose a plan to unlock all features."}
               </p>
-            </div>
-          )}
-
-          {membership.status === "ACTIVE" && membership.currentPeriodEnd && (
-            <div>
-              <p className="text-sm text-gray-500 mb-1">Next renewal</p>
-              <p className="font-medium text-gray-900">
-                {new Date(membership.currentPeriodEnd).toLocaleDateString("en-US", {
-                  year: "numeric",
-                  month: "long",
-                  day: "numeric",
-                })}
-              </p>
-            </div>
-          )}
-
-          {membership.status === "INACTIVE" && (
-            <div className="rounded-lg bg-yellow-50 border border-yellow-100 p-4">
-              <p className="text-sm text-yellow-700">
-                Your subscription is inactive. Upgrade to continue using VitaFit.
-              </p>
-            </div>
-          )}
-
-          <div className="pt-4 border-t border-gray-100">
-            <h3 className="font-semibold mb-3 text-gray-900">Plan Features</h3>
-            <div className="space-y-2">
-              <div className="flex items-center gap-2">
-                <Check className="h-4 w-4 text-emerald-500" />
-                <span className="text-sm text-gray-700">
-                  {membership.profilesLimit === Infinity
-                    ? "Unlimited"
-                    : membership.profilesLimit}{" "}
-                  profile{membership.profilesLimit !== 1 ? "s" : ""}
-                </span>
-              </div>
-              <div className="flex items-center gap-2">
-                <Check className="h-4 w-4 text-emerald-500" />
-                <span className="text-sm text-gray-700">
-                  {membership.plansPerProfileLimit === Infinity
-                    ? "Unlimited"
-                    : membership.plansPerProfileLimit}{" "}
-                  plans per profile
-                </span>
-              </div>
             </div>
           </div>
+          
+          {canStartTrial ? (
+            <Button
+              className="bg-emerald-500 hover:bg-emerald-600 text-white"
+              onClick={handleStartTrial}
+              disabled={activatingTrial}
+            >
+              {activatingTrial ? "Activating..." : "Start now for free!"}
+            </Button>
+          ) : (
+            <Button
+              className="bg-emerald-500 hover:bg-emerald-600 text-white"
+              onClick={() => router.push("/pricing")}
+            >
+              Upgrade now!
+            </Button>
+          )}
+        </div>
+      )}
 
-          <div className="flex gap-2 pt-4">
-            {membership.status !== "ACTIVE" && (
+      {/* Expired Trial State */}
+      {isExpiredTrial && (
+        <div className="rounded-lg border border-orange-200 bg-orange-50 p-6">
+          <div className="flex items-center gap-3 mb-4">
+            <AlertTriangle className="h-6 w-6 text-orange-500" />
+            <div>
+              <p className="text-lg font-semibold text-gray-900">Your Free Trial Has Expired</p>
+              <p className="text-sm text-gray-600">
+                Upgrade to a paid plan to continue using VitaFit and unlock your progress.
+              </p>
+            </div>
+          </div>
+          
+          <Button
+            className="bg-emerald-500 hover:bg-emerald-600 text-white"
+            onClick={() => router.push("/pricing")}
+          >
+            Upgrade now!
+          </Button>
+        </div>
+      )}
+
+      {/* Inactive Subscription State */}
+      {isInactive && !isExpiredTrial && (
+        <div className="rounded-lg border border-red-200 bg-red-50 p-6">
+          <div className="flex items-center gap-3 mb-4">
+            <AlertTriangle className="h-6 w-6 text-red-500" />
+            <div>
+              <p className="text-lg font-semibold text-gray-900">Subscription Inactive</p>
+              <p className="text-sm text-gray-600">
+                Your subscription is no longer active. Renew to regain access to all features.
+              </p>
+            </div>
+          </div>
+          
+          <Button
+            className="bg-emerald-500 hover:bg-emerald-600 text-white"
+            onClick={() => router.push("/pricing")}
+          >
+            Renew Subscription
+          </Button>
+        </div>
+      )}
+
+      {/* Active Trial or Paid Plan - Show Manage Button */}
+      {(isTrial || isActive) && (
+        <div className="rounded-lg border border-gray-200 bg-white/60 p-6">
+          <div className="flex items-center gap-3 mb-4">
+            <Crown className="h-6 w-6 text-emerald-500" />
+            <div>
+              <p className="text-sm text-gray-500">Current Plan</p>
+              <p className="text-lg font-semibold text-gray-900">
+                {getPlanName(membership.plan)}
+              </p>
+            </div>
+            {getStatusBadge(membership.status)}
+          </div>
+
+          {isTrial && daysRemaining !== null && (
+            <div className="mb-4 p-3 bg-blue-50 border border-blue-100 rounded-lg">
+              <p className="text-sm text-blue-700">
+                <strong>{daysRemaining}</strong> day{daysRemaining !== 1 ? "s" : ""} left in your free trial.
+                Upgrade anytime to keep your progress.
+              </p>
+            </div>
+          )}
+          
+          <div className="flex gap-3 flex-wrap">
+            <Button
+              className="bg-emerald-500 hover:bg-emerald-600 text-white"
+              onClick={() => router.push("/account/manage-subscription")}
+            >
+              Manage Subscription
+            </Button>
+            
+            {isTrial && (
               <Button
-                className="bg-emerald-500 hover:bg-emerald-600 text-white"
+                variant="outline"
+                className="border-emerald-500 text-emerald-600 hover:bg-emerald-50"
                 onClick={() => router.push("/pricing")}
               >
-                Upgrade Plan
+                Upgrade to Paid Plan
               </Button>
             )}
-            {membership.status === "ACTIVE" && (
-              <Button variant="outline" className="border-gray-200 text-gray-600 hover:bg-gray-50">Manage Billing</Button>
-            )}
           </div>
-        </CardContent>
-      </Card>
-
-      <Card className="bg-white/60 backdrop-blur-xl border-emerald-200/50 shadow-sm">
-        <CardHeader>
-          <CardTitle className="text-gray-900">Available Plans</CardTitle>
-          <CardDescription className="text-gray-600">Choose the plan that fits your needs</CardDescription>
-        </CardHeader>
-        <CardContent>
-          <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
-            <div className="rounded-lg border border-gray-100 bg-white/40 p-4">
-              <div className="flex items-center gap-2 mb-2">
-                <Zap className="h-5 w-5 text-gray-400" />
-                <h3 className="font-semibold text-gray-900">Free Trial</h3>
-              </div>
-              <p className="text-2xl font-bold mb-1 text-gray-900">Free</p>
-              <p className="text-sm text-gray-500 mb-4">14-day trial (no auto-renew)</p>
-              <ul className="space-y-2 text-sm mb-4 text-gray-700">
-                <li className="flex items-center gap-2">
-                  <Check className="h-4 w-4 text-emerald-500" />
-                  1 profile
-                </li>
-                <li className="flex items-center gap-2">
-                  <Check className="h-4 w-4 text-emerald-500" />
-                  3 plans per profile
-                </li>
-              </ul>
-            </div>
-
-            <div className="rounded-lg border-2 border-emerald-500 bg-white/40 p-4">
-              <div className="flex items-center gap-2 mb-2">
-                <Crown className="h-5 w-5 text-emerald-500" />
-                <h3 className="font-semibold text-gray-900">Pro</h3>
-              </div>
-              <p className="text-2xl font-bold mb-1 text-gray-900">$15/mo or $10/mo yearly ($120)</p>
-              <p className="text-sm text-gray-500 mb-4">For one person (1 profile)</p>
-              <ul className="space-y-2 text-sm mb-4 text-gray-700">
-                <li className="flex items-center gap-2">
-                  <Check className="h-4 w-4 text-emerald-500" />
-                  1 profile
-                </li>
-                <li className="flex items-center gap-2">
-                  <Check className="h-4 w-4 text-emerald-500" />
-                  5 plans per profile
-                </li>
-              </ul>
-            </div>
-
-            <div className="rounded-lg border border-gray-100 bg-white/40 p-4">
-              <div className="flex items-center gap-2 mb-2">
-                <Crown className="h-5 w-5 text-gray-400" />
-                <h3 className="font-semibold text-gray-900">Plus</h3>
-              </div>
-              <p className="text-2xl font-bold mb-1 text-gray-900">$25/mo or $15/mo yearly ($180)</p>
-              <p className="text-sm text-gray-500 mb-4">For two profiles</p>
-              <ul className="space-y-2 text-sm mb-4 text-gray-700">
-                <li className="flex items-center gap-2">
-                  <Check className="h-4 w-4 text-emerald-500" />
-                  2 profiles
-                </li>
-                <li className="flex items-center gap-2">
-                  <Check className="h-4 w-4 text-emerald-500" />
-                  5 plans per profile
-                </li>
-              </ul>
-            </div>
-
-            <div className="rounded-lg border border-gray-100 bg-white/40 p-4">
-              <div className="flex items-center gap-2 mb-2">
-                <Users className="h-5 w-5 text-gray-400" />
-                <h3 className="font-semibold text-gray-900">Family</h3>
-              </div>
-              <p className="text-2xl font-bold mb-1 text-gray-900">$35/mo or $25/mo yearly ($300)</p>
-              <p className="text-sm text-gray-500 mb-4">For families (up to 4 profiles)</p>
-              <ul className="space-y-2 text-sm mb-4 text-gray-700">
-                <li className="flex items-center gap-2">
-                  <Check className="h-4 w-4 text-emerald-500" />
-                  4 profiles
-                </li>
-                <li className="flex items-center gap-2">
-                  <Check className="h-4 w-4 text-emerald-500" />
-                  10 plans per profile
-                </li>
-              </ul>
-            </div>
-          </div>
-        </CardContent>
-      </Card>
+        </div>
+      )}
     </div>
   )
 }
-

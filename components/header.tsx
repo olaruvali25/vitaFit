@@ -7,7 +7,7 @@ import React from 'react'
 import { cn } from '@/lib/utils'
 import { useSupabase } from '@/components/providers/SupabaseProvider'
 import { useRouter, usePathname } from 'next/navigation'
-import { supabase } from '@/lib/supabase'
+import { createSupabaseBrowserClient } from '@/lib/supabase-browser'
 
 const menuItems = [
     { name: 'Pricing', href: '/pricing' },
@@ -140,21 +140,30 @@ export const HeroHeader = () => {
                                                             onClick={async () => {
                                                                 setAccountDropdownOpen(false)
                                                                 setMenuState(false)
-                                                                // Try supabase signOut if available
                                                                 try {
-                                                                  if (supabase) {
-                                                                    await supabase.auth.signOut()
-                                                                  }
+                                                                  // Call API route to clear server-side cookies
+                                                                  await fetch('/api/supabase-auth/logout', { method: 'POST' })
                                                                 } catch (e) {
-                                                                  console.warn('Supabase signOut failed:', e)
+                                                                  console.error('API logout failed:', e)
                                                                 }
-                                                                // Clear local testing session
                                                                 try {
-                                                                  document.cookie = 'local_session=; Max-Age=0; path=/'
-                                                                  localStorage.removeItem('local_session')
-                                                                } catch (e) {}
-                                                                router.push('/')
-                                                                router.refresh()
+                                                                  // Also sign out on client side
+                                                                  const supabase = createSupabaseBrowserClient()
+                                                                  await supabase.auth.signOut()
+                                                                } catch (e) {
+                                                                  console.error('Client logout failed:', e)
+                                                                }
+                                                                // Clear all storage
+                                                                try {
+                                                                  localStorage.clear()
+                                                                  sessionStorage.clear()
+                                                                } catch (e) {
+                                                                  console.error('Failed to clear storage:', e)
+                                                                }
+                                                                // Wait a moment for auth state to update, then reload
+                                                                setTimeout(() => {
+                                                                  window.location.href = '/'
+                                                                }, 100)
                                                             }}
                                                             className="flex w-full items-center gap-2 px-4 py-2 text-sm transition-colors text-black hover:bg-gray-100">
                                                             <LogOut className="h-4 w-4" />

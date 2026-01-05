@@ -19,6 +19,7 @@ export type AppProfile = {
   workoutDays?: string | null
   workoutDuration?: string | null
   mealPrepDuration?: string | null
+  isMainProfile?: boolean
 }
 
 // Convert database row to AppProfile format
@@ -42,6 +43,7 @@ function rowToProfile(row: any): AppProfile {
     workoutDays: row.workout_days,
     workoutDuration: row.workout_duration,
     mealPrepDuration: row.meal_prep_duration,
+    isMainProfile: row.is_main_profile === true,
   }
 }
 
@@ -90,6 +92,10 @@ export async function createProfileForUser(userId: string, name: string): Promis
     throw new Error("Supabase admin client not available")
   }
 
+  // Check if this is the first profile for the user (will be main profile)
+  const existingCount = await countProfilesForUser(userId)
+  const isMainProfile = existingCount === 0
+
   const now = new Date().toISOString()
   const profilePicture = `https://api.dicebear.com/7.x/avataaars/svg?seed=${encodeURIComponent(name)}`
 
@@ -101,6 +107,7 @@ export async function createProfileForUser(userId: string, name: string): Promis
       profile_picture: profilePicture,
       created_at: now,
       updated_at: now,
+      is_main_profile: isMainProfile,
     })
     .select()
     .single()
@@ -195,4 +202,45 @@ export async function countProfilesForUser(userId: string): Promise<number> {
   }
 
   return count || 0
+}
+
+/**
+ * Get the main profile ID for a user (first created profile or one marked as main)
+ */
+export async function getMainProfileId(userId: string): Promise<string | null> {
+  if (!supabaseAdmin) {
+    return null
+  }
+
+  // First try to find one explicitly marked as main
+  const { data: mainProfile } = await supabaseAdmin
+    .from('app_profiles')
+    .select('id')
+    .eq('user_id', userId)
+    .eq('is_main_profile', true)
+    .limit(1)
+    .maybeSingle()
+
+  if (mainProfile?.id) {
+    return mainProfile.id
+  }
+
+  // Fallback: get the oldest profile (first created)
+  const { data: oldestProfile } = await supabaseAdmin
+    .from('app_profiles')
+    .select('id')
+    .eq('user_id', userId)
+    .order('created_at', { ascending: true })
+    .limit(1)
+    .maybeSingle()
+
+  return oldestProfile?.id || null
+}
+
+/**
+ * Check if a specific profile is the main profile for the user
+ */
+export async function isMainProfile(userId: string, profileId: string): Promise<boolean> {
+  const mainId = await getMainProfileId(userId)
+  return mainId === profileId
 }

@@ -18,15 +18,51 @@ function AccountPageContent() {
   const searchParams = useSearchParams()
   const [activeTab, setActiveTab] = useState("profiles")
   const [selectedProfileName, setSelectedProfileName] = useState<string | null>(null)
+  const [selectedProfileId, setSelectedProfileId] = useState<string | null>(null)
+  const [mainProfileId, setMainProfileId] = useState<string | null>(null)
   
-  // Get profile name from URL params
+  // Fetch main profile ID
+  useEffect(() => {
+    const fetchMainProfile = async () => {
+      try {
+        const response = await fetch("/api/profiles")
+        if (response.ok) {
+          const profiles = await response.json()
+          if (profiles.length > 0) {
+            // Sort by created_at to find oldest (main) profile
+            const sorted = [...profiles].sort((a: any, b: any) => {
+              const dateA = new Date(a.createdAt || 0).getTime()
+              const dateB = new Date(b.createdAt || 0).getTime()
+              return dateA - dateB
+            })
+            // Main profile is the first one (oldest) or one marked as isMainProfile
+            const main = sorted.find((p: any) => p.isMainProfile) || sorted[0]
+            setMainProfileId(main?.id || null)
+          }
+        }
+      } catch (err) {
+        console.error("Failed to fetch profiles:", err)
+      }
+    }
+    
+    if (user) {
+      fetchMainProfile()
+    }
+  }, [user])
+  
+  // Get profile name and ID from URL params
   useEffect(() => {
     const profileName = searchParams.get("profileName")
+    const profileId = searchParams.get("profileId")
     if (profileName) {
       setSelectedProfileName(profileName)
     } else {
-      // Clear profile name if not in URL
       setSelectedProfileName(null)
+    }
+    if (profileId) {
+      setSelectedProfileId(profileId)
+    } else {
+      setSelectedProfileId(null)
     }
   }, [searchParams])
 
@@ -65,7 +101,7 @@ function AccountPageContent() {
               {selectedProfileName ? `${selectedProfileName}'s Account` : "My Account"}
             </h1>
             <p className="text-gray-600">
-              Manage your profiles, plans, and subscription
+              Manage your profiles, meal plans, and subscription.
             </p>
           </div>
 
@@ -76,21 +112,21 @@ function AccountPageContent() {
               label="Profiles"
               onClick={() => setActiveTab("profiles")}
               className={cn(
-                activeTab === "profiles" && "border-emerald-400 bg-emerald-500/10"
+                activeTab === "profiles" && "border-emerald-400 bg-emerald-400"
               )}
             />
             <ButtonColorful
               label="My Plans"
               onClick={() => setActiveTab("plans")}
               className={cn(
-                activeTab === "plans" && "border-emerald-400 bg-emerald-500/10"
+                activeTab === "plans" && "border-emerald-400 bg-emerald-400"
               )}
             />
             <ButtonColorful
               label="Subscription"
               onClick={() => setActiveTab("subscription")}
               className={cn(
-                activeTab === "subscription" && "border-emerald-400 bg-emerald-500/10"
+                activeTab === "subscription" && "border-emerald-400 bg-emerald-400"
               )}
             />
           </div>
@@ -108,7 +144,13 @@ function AccountPageContent() {
           </TabsContent>
 
           <TabsContent value="subscription" className="mt-6">
-            <SubscriptionTab />
+            <SubscriptionTab 
+              isMainProfile={
+                // If no profile selected (viewing as main user), treat as main profile
+                // Or if selected profile IS the main profile
+                !selectedProfileId || selectedProfileId === mainProfileId
+              } 
+            />
           </TabsContent>
         </Tabs>
         </div>

@@ -11,6 +11,7 @@ export async function GET(request: NextRequest) {
     const membership = await getUserMembership(userId)
     const profileLimits = await canCreateProfile(userId, userRole)
 
+    // Convert plan to uppercase for frontend
     const planUpper =
       membership.plan === "plus"
         ? "PLUS"
@@ -18,17 +19,24 @@ export async function GET(request: NextRequest) {
           ? "FAMILY"
           : membership.plan === "pro"
             ? "PRO"
-            : "FREE_TRIAL"
+            : membership.plan === "free trial"
+              ? "FREE_TRIAL"
+              : "NONE"
 
     return NextResponse.json({
       plan: planUpper,
       status: membership.status,
-      canUseFeatures: true,
+      canUseFeatures: membership.canUseFeatures,
       profilesLimit: membership.profilesLimit,
       plansPerProfileLimit: 0,
       canCreateMore: profileLimits.canCreate,
       currentProfileCount: profileLimits.currentCount,
       profileLimit: profileLimits.limit,
+      // Trial-related fields
+      hasUsedTrial: membership.hasUsedTrial,
+      canStartTrial: membership.canStartTrial,
+      trialEndsAt: membership.trialEndsAt,
+      isTrialExpired: membership.isTrialExpired,
     })
   } catch (error) {
     console.error("Get membership error:", error)
